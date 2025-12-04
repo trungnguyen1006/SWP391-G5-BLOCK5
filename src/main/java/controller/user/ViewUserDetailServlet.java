@@ -37,7 +37,7 @@ public class ViewUserDetailServlet extends HttpServlet {
             Users user = userDAO.findUserById(userId);
 
             if (user == null) {
-                response.sendRedirect(request.getContextPath() + "/admin/user-list");
+                response.sendRedirect(request.getContextPath() + USER_LIST_URL);
                 return;
             }
 
@@ -48,7 +48,7 @@ public class ViewUserDetailServlet extends HttpServlet {
             request.getRequestDispatcher(USER_DETAIL_PAGE).forward(request, response);
 
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/admin/user-list");
+            response.sendRedirect(request.getContextPath() + USER_LIST_URL);
         }
     }
 

@@ -35,7 +35,7 @@
 
     <div class="container-fluid">
       <div class="layout-specing">
-        <div class="d-md-flex justify-content-between">
+        <div class="d-md-flex justify-content-between align-items-center">
           <h5 class="mb-0">User List</h5>
 
           <nav aria-label="breadcrumb" class="d-inline-block mt-4 mt-sm-0">
@@ -44,6 +44,21 @@
               <li class="breadcrumb-item active" aria-current="page">Users</li>
             </ul>
           </nav>
+        </div>
+
+        <c:if test="${param.added == 'true'}">
+          <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <strong>Success!</strong> User has been created successfully.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </c:if>
+
+        <div class="row mt-3">
+          <div class="col-12">
+            <a href="${pageContext.request.contextPath}/admin/add-user" class="btn btn-primary">
+              <i class="uil uil-plus me-1"></i> Add New User
+            </a>
+          </div>
         </div>
 
         <div class="row">

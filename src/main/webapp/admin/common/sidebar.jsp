@@ -18,7 +18,7 @@
                 <div class="sidebar-submenu">
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/admin/user-list">User List</a></li>
-                        <li><a href="${pageContext.request.contextPath}/admin/user-manage/add-user.jsp">Add User</a></li>
+                        <li><a href="${pageContext.request.contextPath}/admin/add-user">Add User</a></li>
                     </ul>
                 </div>
             </li>

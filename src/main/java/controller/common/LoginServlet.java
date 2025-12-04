@@ -23,7 +23,8 @@ import java.util.List;
 public class LoginServlet extends HttpServlet {
 
     private static final String LOGIN_PAGE = "common/login.jsp";
-    private static final String HOME_PAGE = "homepage.jsp";
+    private static final String ADMIN_HOME = "/admin/dashboard";
+    private static final String USER_HOME = "/common/homepage.jsp";
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
@@ -59,7 +60,11 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("user", user);
                 session.setAttribute("roles", userRoles);
 
-                response.sendRedirect(HOME_PAGE);
+                if (hasAdminRole(userRoles)) {
+                    response.sendRedirect(request.getContextPath() + ADMIN_HOME);
+                } else {
+                    response.sendRedirect(request.getContextPath() + USER_HOME);
+                }
                 return;
             } else {
                 errorMessage = "Incorrect password.";
@@ -68,6 +73,15 @@ public class LoginServlet extends HttpServlet {
 
         request.setAttribute("errorMessage", errorMessage);
         request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
+    }
+
+    private boolean hasAdminRole(List<Roles> roles) {
+        for (Roles role : roles) {
+            if ("Admin".equalsIgnoreCase(role.getRoleName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

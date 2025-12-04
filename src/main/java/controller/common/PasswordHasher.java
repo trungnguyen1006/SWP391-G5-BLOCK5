@@ -3,8 +3,6 @@ package controller.common;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class PasswordHasher {
-    // Cost factor: Xác định độ khó và thời gian băm. 12 là mức tốt.
-    // Việc tăng số này lên 1 đơn vị sẽ làm tăng thời gian băm lên gấp đôi.
     private static final int COST_FACTOR = 12;
 
     public static String hashPassword(String password) {
@@ -13,6 +11,18 @@ public class PasswordHasher {
     }
 
     public static boolean checkPassword(String candidatePassword, String hashedPassword) {
-        return BCrypt.checkpw(candidatePassword, hashedPassword);
+        if (hashedPassword == null || hashedPassword.isEmpty()) {
+            return false;
+        }
+
+        try {
+            if (hashedPassword.startsWith("$2a$") || hashedPassword.startsWith("$2b$") || hashedPassword.startsWith("$2y$")) {
+                return BCrypt.checkpw(candidatePassword, hashedPassword);
+            } else {
+                return candidatePassword.equals(hashedPassword);
+            }
+        } catch (IllegalArgumentException e) {
+            return candidatePassword.equals(hashedPassword);
+        }
     }
 }
