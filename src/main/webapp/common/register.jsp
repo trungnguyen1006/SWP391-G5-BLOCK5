@@ -1,13 +1,12 @@
+
 <%@ page isELIgnored="false" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Đăng nhập Hệ thống</title>
+    <title>Đăng ký Tài khoản Mới</title>
     <style>
-        /* CSS tương tự như phiên bản trước */
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -17,12 +16,12 @@
             height: 100vh;
             margin: 0;
         }
-        .login-container {
+        .register-container {
             background-color: #fff;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 350px;
         }
         h2 {
             text-align: center;
@@ -38,31 +37,33 @@
             font-weight: bold;
         }
         .form-group input[type="text"],
-        .form-group input[type="password"] {
+        .form-group input[type="password"],
+        .form-group input[type="email"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
         }
-        .btn-login {
+        .btn-register {
             width: 100%;
             padding: 10px;
-            background-color: #5cb85c;
+            background-color: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
         }
-        .btn-login:hover {
-            background-color: #4cae4c;
+        .btn-register:hover {
+            background-color: #0056b3;
         }
-        .forgot-password {
+        .login-link {
             text-align: center;
-            margin-top: 10px;
+            margin-top: 15px;
+            font-size: 0.9em;
         }
-        .forgot-password a {
+        .login-link a {
             color: #337ab7;
             text-decoration: none;
         }
@@ -71,61 +72,56 @@
             text-align: center;
             margin-bottom: 10px;
         }
-        .register-link {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .register-link a {
-
-            display: inline-block;
-            width: auto;
-            padding: 8px 20px;
-
-
-            background-color: #f0f0f0;
-            color: #555;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        .register-link a:hover {
-            background-color: #e0e0e0;
-            color: #333;
-        }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <h2>Đăng nhập</h2>
+<div class="register-container">
+    <h2>Đăng ký Tài khoản</h2>
 
-    <c:if test="${not empty requestScope.errorMessage}">
-        <p class="error-message">${requestScope.errorMessage}</p>
+    <c:if test="${not empty requestScope.message}">
+        <p class="error-message" style="color: ${requestScope.isSuccess ? 'green' : 'red'};">
+                ${requestScope.message}
+        </p>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/login" method="POST">
+    <form action="RegisterServlet" method="POST">
+
+        <div class="form-group">
+            <label for="fullName">Họ và Tên:</label>
+            <input type="text" id="fullName" name="fullName" required
+                   value="${param.fullName}">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required
+                   value="${param.email}">
+        </div>
+
         <div class="form-group">
             <label for="username">Tên đăng nhập:</label>
             <input type="text" id="username" name="username" required
                    value="${param.username}">
         </div>
+
         <div class="form-group">
             <label for="password">Mật khẩu:</label>
             <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit" class="btn-login">Đăng nhập</button>
+
+        <div class="form-group">
+            <label for="confirmPassword">Xác nhận Mật khẩu:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+
+        <button type="submit" class="btn-register">Đăng ký</button>
     </form>
 
-    <div class="forgot-password">
-        <a href="forgot_password.jsp">Quên mật khẩu?</a>
+    <div class="login-link">
+        Đã có tài khoản? <a href="login.jsp">Đăng nhập ngay</a>
     </div>
 
-    <div class="register-link">
-        <a href="register.jsp">Đăng kí?</a>
-    </div>
 </div>
 
 </body>
