@@ -134,4 +134,93 @@ public class RoleDAO extends DBContext {
         }
     }
 
+    public Roles findRoleById(int roleId) {
+        String sql = "SELECT * FROM Roles WHERE RoleId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, roleId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Roles(
+                            rs.getInt("RoleId"),
+                            rs.getString("RoleName"),
+                            rs.getBoolean("IsActive")
+                    );
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updateRole(Roles role) {
+        String sql = "UPDATE Roles SET RoleName = ?, IsActive = ? WHERE RoleId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, role.getRoleName());
+            ps.setBoolean(2, role.isActive());
+            ps.setInt(3, role.getRoleId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean isRoleNameExists(String roleName) {
+        String sql = "SELECT COUNT(*) FROM Roles WHERE RoleName = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, roleName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isRoleNameExistsForOtherRole(String roleName, int roleId) {
+        String sql = "SELECT COUNT(*) FROM Roles WHERE RoleName = ? AND RoleId != ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, roleName);
+            ps.setInt(2, roleId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    public List<model.Users> getUsersByRoleId(int roleId) {
+        List<model.Users> users = new ArrayList<>();
+        String sql = "SELECT u.* FROM Users u " +
+                     "JOIN UserRoles ur ON u.UserId = ur.UserId " +
+                     "WHERE ur.RoleId = ? ORDER BY u.FullName";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, roleId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    model.Users user = new model.Users();
+                    user.setUserId(rs.getInt("UserId"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setActive(rs.getBoolean("IsActive"));
+                    java.sql.Timestamp ts = rs.getTimestamp("CreatedDate");
+                    user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    users.add(user);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return users;
+    }
+
 }
