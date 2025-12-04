@@ -7,7 +7,6 @@
     <meta charset="UTF-8">
     <title>Đăng nhập Hệ thống</title>
     <style>
-        /* CSS tương tự như phiên bản trước */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -77,12 +76,9 @@
         }
 
         .register-link a {
-
             display: inline-block;
             width: auto;
             padding: 8px 20px;
-
-
             background-color: #f0f0f0;
             color: #555;
             border: 1px solid #ccc;
