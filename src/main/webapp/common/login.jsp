@@ -110,11 +110,15 @@
         <div class="form-group">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required
-                   value="${param.username}">
+                   value="${not empty rememberedUsername ? rememberedUsername : param.username}">
         </div>
         <div class="form-group">
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; margin-bottom: 15px;">
+            <input type="checkbox" id="rememberMe" name="rememberMe" style="width: auto; margin-right: 8px;" ${not empty rememberedUsername ? 'checked' : ''}>
+            <label for="rememberMe" style="margin-bottom: 0; font-weight: normal; cursor: pointer;">Remember me</label>
         </div>
         <button type="submit" class="btn-login">Login</button>
     </form>

@@ -6,12 +6,8 @@ import jakarta.servlet.ServletException;
 
 import jakarta.servlet.annotation.WebServlet;
 
-import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import model.Roles;
 import model.Users;
 
@@ -32,6 +28,16 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("rememberedUsername".equals(cookie.getName())) {
+                    request.setAttribute("rememberedUsername", cookie.getValue());
+                }
+            }
+        }
+
         request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
     }
 
@@ -42,6 +48,7 @@ public class LoginServlet extends HttpServlet {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String rememberMe = request.getParameter("rememberMe");
 
         Users user = userDAO.findUserByUsername(username);
 
@@ -59,6 +66,18 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
                 session.setAttribute("roles", userRoles);
+
+                if ("on".equals(rememberMe)) {
+                    Cookie usernameCookie = new Cookie("rememberedUsername", username);
+                    usernameCookie.setMaxAge(30 * 24 * 60 * 60);
+                    usernameCookie.setPath(request.getContextPath() + "/");
+                    response.addCookie(usernameCookie);
+                } else {
+                    Cookie usernameCookie = new Cookie("rememberedUsername", "");
+                    usernameCookie.setMaxAge(0);
+                    usernameCookie.setPath(request.getContextPath() + "/");
+                    response.addCookie(usernameCookie);
+                }
 
                 if (hasAdminRole(userRoles)) {
                     response.sendRedirect(request.getContextPath() + ADMIN_HOME);
