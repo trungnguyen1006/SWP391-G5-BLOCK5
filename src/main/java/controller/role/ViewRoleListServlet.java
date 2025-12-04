@@ -14,7 +14,7 @@ import java.util.List;
 @WebServlet(name = "ViewRoleListServlet", urlPatterns = {"/admin/role-list"})
 public class ViewRoleListServlet extends HttpServlet {
 
-    private static final String ROLE_LIST_PAGE = "admin/role-manage/view-role-list.jsp";
+    private static final String ROLE_LIST_PAGE = "role-manage/view-role-list.jsp";
 
     private final RoleDAO roleDAO = new RoleDAO();
 
