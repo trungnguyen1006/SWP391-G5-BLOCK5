@@ -47,11 +47,10 @@ public class LoginServlet extends HttpServlet {
         String errorMessage = null;
 
         if (user == null) {
-            errorMessage = "Tên đăng nhập không tồn tại.";
+            errorMessage = "Username does not exist.";
         } else if (!user.isActive()) {
-            errorMessage = "Tài khoản của bạn đã bị khóa hoặc chưa được kích hoạt.";
+            errorMessage = "Your account has been locked or not activated.";
         } else {
-            // Sửa lỗi cú pháp và sử dụng Bcrypt (PasswordHasher)
             if (PasswordHasher.checkPassword(password, user.getPassword())) {
 
                 List<Roles> userRoles = roleDAO.getRolesByUserId(user.getUserId());
@@ -63,7 +62,7 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect(HOME_PAGE);
                 return;
             } else {
-                errorMessage = "Mật khẩu không chính xác.";
+                errorMessage = "Incorrect password.";
             }
         }
 

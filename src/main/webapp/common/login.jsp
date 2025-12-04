@@ -2,10 +2,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng nhập Hệ thống</title>
+    <title>Login System</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -96,7 +96,11 @@
 <body>
 
 <div class="login-container">
-    <h2>Đăng nhập</h2>
+    <h2>Login</h2>
+
+    <c:if test="${param.registered == 'true'}">
+        <p style="color: green; text-align: center; margin-bottom: 10px;">Registration successful! Please login.</p>
+    </c:if>
 
     <c:if test="${not empty requestScope.errorMessage}">
         <p class="error-message">${requestScope.errorMessage}</p>
@@ -104,23 +108,23 @@
 
     <form action="${pageContext.request.contextPath}/login" method="POST">
         <div class="form-group">
-            <label for="username">Tên đăng nhập:</label>
+            <label for="username">Username:</label>
             <input type="text" id="username" name="username" required
                    value="${param.username}">
         </div>
         <div class="form-group">
-            <label for="password">Mật khẩu:</label>
+            <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit" class="btn-login">Đăng nhập</button>
+        <button type="submit" class="btn-login">Login</button>
     </form>
 
     <div class="forgot-password">
-        <a href="forgot_password.jsp">Quên mật khẩu?</a>
+        <a href="forgot_password.jsp">Forgot password?</a>
     </div>
 
     <div class="register-link">
-        <a href="register.jsp">Đăng kí?</a>
+        <a href="${pageContext.request.contextPath}/register">Register</a>
     </div>
 </div>
 
