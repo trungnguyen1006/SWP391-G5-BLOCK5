@@ -4,6 +4,7 @@
  */
 package controller.user;
 
+import controller.common.PasswordHasher;
 import dal.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,29 +32,34 @@ public class changePasswordController extends HttpServlet{
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("text/html;charset=UTF-8");
-//        HttpSession session = req.getSession(false);
-//        if (session == null) {
-//            resp.sendRedirect("login.jsp");
-//            return;
-//        }
-//        Users u =(Users)  session.getAttribute("user");
-//        int userId = u.getUserId();
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
+        Users u =(Users)  session.getAttribute("user");
+        int userId = u.getUserId();
         String oldPass = req.getParameter("oldPass");
         String newPass = req.getParameter("newPass");
         String confirmPass = req.getParameter("confirmPass");
         String errorMessage = null;
         String successMessage = null;
         UserDAO dao = new UserDAO();
-        Users acc = dao.findUserById(1);
+        Users acc = dao.findUserById(userId);
+        boolean oldPassHasher = PasswordHasher.checkPassword(oldPass,acc.getPassword());
+        System.out.println("pass nhập: " + oldPassHasher);
+        System.out.println("pass get: " + acc.getPassword());
         if (acc == null) {
             errorMessage = "Tài khoản không tồn tại!";
 
-        } else if (!oldPass.equals(acc.getPassword())) {
+        } else if (!oldPassHasher) {
+            
             errorMessage = "Mật khẩu cũ không đúng!";
         } else if (!newPass.equals(confirmPass)) {
             errorMessage = "Mật khẩu nhập lại không khớp!";
         } else {
-            boolean isSuccess = dao.changePassword(1, newPass);
+                    String hashedPassword = PasswordHasher.hashPassword(newPass);
+            boolean isSuccess = dao.changePassword(userId, hashedPassword);
             if (isSuccess) {
                 successMessage = "Đổi mật khẩu thành công!";
             } else {
