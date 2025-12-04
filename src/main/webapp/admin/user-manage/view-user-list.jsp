@@ -40,7 +40,7 @@
 
           <nav aria-label="breadcrumb" class="d-inline-block mt-4 mt-sm-0">
             <ul class="breadcrumb bg-transparent rounded mb-0 p-0">
-              <li class="breadcrumb-item"><a href="../dashboard.jsp">Dashboard</a></li>
+              <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Users</li>
             </ul>
           </nav>
@@ -49,6 +49,13 @@
         <c:if test="${param.added == 'true'}">
           <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
             <strong>Success!</strong> User has been created successfully.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </c:if>
+
+        <c:if test="${param.updated == 'true'}">
+          <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <strong>Success!</strong> User has been updated successfully.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         </c:if>
@@ -98,7 +105,7 @@
                         </td>
                         <td class="p-3">
                           <a href="${pageContext.request.contextPath}/admin/user-detail?id=${user.userId}" class="btn btn-icon btn-pills btn-soft-primary"><i data-feather="eye" class="fea icon-sm"></i></a>
-                          <a href="#" class="btn btn-icon btn-pills btn-soft-success"><i data-feather="edit" class="fea icon-sm"></i></a>
+                          <a href="${pageContext.request.contextPath}/admin/update-user?id=${user.userId}" class="btn btn-icon btn-pills btn-soft-success"><i data-feather="edit" class="fea icon-sm"></i></a>
                         </td>
                       </tr>
                     </c:forEach>

@@ -27,7 +27,7 @@
                 <a href="javascript:void(0)"><i class="uil uil-wheelchair me-2 d-inline-block"></i>Role Management</a>
                 <div class="sidebar-submenu">
                     <ul>
-                        <li><a href="${pageContext.request.contextPath}/admin/role-manage/view-role-list.jsp">Role List</a></li>
+                        <li><a href="${pageContext.request.contextPath}/admin/role-list">Role List</a></li>
                     </ul>
                 </div>
             </li>

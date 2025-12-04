@@ -17,6 +17,7 @@ import java.util.List;
 public class ViewUserDetailServlet extends HttpServlet {
 
     private static final String USER_DETAIL_PAGE = "user-manage/view-user-infor.jsp";
+    private static final String USER_LIST_URL = "admin/user-list";
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();

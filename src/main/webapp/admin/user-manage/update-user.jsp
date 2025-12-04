@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Add New User</title>
+    <title>Update User</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
     <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -36,13 +36,13 @@
         <div class="container-fluid">
             <div class="layout-specing">
                 <div class="d-md-flex justify-content-between">
-                    <h5 class="mb-0">Add New User</h5>
+                    <h5 class="mb-0">Update User</h5>
 
                     <nav aria-label="breadcrumb" class="d-inline-block mt-4 mt-sm-0">
                         <ul class="breadcrumb bg-transparent rounded mb-0 p-0">
                             <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin/user-list">Users</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Add User</li>
+                            <li class="breadcrumb-item active" aria-current="page">Update User</li>
                         </ul>
                     </nav>
                 </div>
@@ -60,26 +60,29 @@
                                     </div>
                                 </c:if>
 
-                                <form action="${pageContext.request.contextPath}/admin/add-user" method="POST">
+                                <form action="${pageContext.request.contextPath}/admin/update-user" method="POST">
+                                    <input type="hidden" name="userId" value="${user.userId}">
+                                    
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
+                                                <label class="form-label">Username</label>
+                                                <input type="text" class="form-control" value="${user.username}" disabled>
+                                                <small class="text-muted">Username cannot be changed</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
                                                 <label class="form-label">Full Name <span class="text-danger">*</span></label>
-                                                <input name="fullName" type="text" class="form-control" placeholder="Enter full name" required value="${param.fullName}">
+                                                <input name="fullName" type="text" class="form-control" placeholder="Enter full name" required value="${user.fullName}">
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Email <span class="text-danger">*</span></label>
-                                                <input name="email" type="email" class="form-control" placeholder="Enter email" required value="${param.email}">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Username <span class="text-danger">*</span></label>
-                                                <input name="username" type="text" class="form-control" placeholder="Enter username" required value="${param.username}">
+                                                <input name="email" type="email" class="form-control" placeholder="Enter email" required value="${user.email}">
                                             </div>
                                         </div>
 
@@ -87,34 +90,44 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Status <span class="text-danger">*</span></label>
                                                 <select name="isActive" class="form-control">
-                                                    <option value="1" ${param.isActive == '1' ? 'selected' : ''}>Active</option>
-                                                    <option value="0" ${param.isActive == '0' ? 'selected' : ''}>Inactive</option>
+                                                    <option value="1" ${user.active ? 'selected' : ''}>Active</option>
+                                                    <option value="0" ${!user.active ? 'selected' : ''}>Inactive</option>
                                                 </select>
                                             </div>
                                         </div>
 
+                                        <div class="col-12">
+                                            <hr>
+                                            <h6 class="mb-3">Change Password (Optional)</h6>
+                                        </div>
+
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label class="form-label">Password <span class="text-danger">*</span></label>
-                                                <input name="password" type="password" class="form-control" placeholder="At least 6 characters" required>
+                                                <label class="form-label">New Password</label>
+                                                <input name="newPassword" type="password" class="form-control" placeholder="Leave blank to keep current password">
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
-                                                <input name="confirmPassword" type="password" class="form-control" placeholder="Re-enter password" required>
+                                                <label class="form-label">Confirm New Password</label>
+                                                <input name="confirmPassword" type="password" class="form-control" placeholder="Re-enter new password">
                                             </div>
                                         </div>
 
                                         <div class="col-12">
+                                            <hr>
                                             <div class="mb-3">
                                                 <label class="form-label">Assign Roles <span class="text-danger">*</span></label>
                                                 <div class="row">
                                                     <c:forEach var="role" items="${allRoles}">
                                                         <div class="col-md-6">
                                                             <div class="form-check mb-2">
-                                                                <input class="form-check-input" type="checkbox" name="roleIds" value="${role.roleId}" id="role${role.roleId}">
+                                                                <input class="form-check-input" type="checkbox" name="roleIds" value="${role.roleId}" id="role${role.roleId}"
+                                                                    <c:forEach var="userRole" items="${userRoles}">
+                                                                        <c:if test="${userRole.roleId == role.roleId}">checked</c:if>
+                                                                    </c:forEach>
+                                                                >
                                                                 <label class="form-check-label" for="role${role.roleId}">
                                                                     ${role.roleName}
                                                                 </label>
@@ -126,7 +139,7 @@
                                         </div>
 
                                         <div class="col-12">
-                                            <button type="submit" class="btn btn-primary">Create User</button>
+                                            <button type="submit" class="btn btn-primary">Update User</button>
                                             <a href="${pageContext.request.contextPath}/admin/user-list" class="btn btn-soft-primary ms-2">Cancel</a>
                                         </div>
                                     </div>
@@ -138,36 +151,66 @@
                     <div class="col-lg-4 mt-4">
                         <div class="card border-0 rounded shadow">
                             <div class="card-body">
+                                <h5 class="text-md-start text-center mb-4">User Details</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="d-flex mt-3">
+                                        <i class="uil uil-user h5 mb-0 me-2"></i>
+                                        <div class="flex-1">
+                                            <h6 class="mb-0">User ID</h6>
+                                            <p class="text-muted mb-0">${user.userId}</p>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mt-3">
+                                        <i class="uil uil-calendar-alt h5 mb-0 me-2"></i>
+                                        <div class="flex-1">
+                                            <h6 class="mb-0">Created Date</h6>
+                                            <p class="text-muted mb-0">${user.createdDate}</p>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mt-3">
+                                        <i class="uil uil-check-circle h5 mb-0 me-2"></i>
+                                        <div class="flex-1">
+                                            <h6 class="mb-0">Current Status</h6>
+                                            <c:choose>
+                                                <c:when test="${user.active}">
+                                                    <span class="badge bg-soft-success">Active</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge bg-soft-danger">Inactive</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 rounded shadow mt-4">
+                            <div class="card-body">
                                 <h5 class="text-md-start text-center mb-4">Instructions</h5>
                                 <ul class="list-unstyled mb-0">
                                     <li class="d-flex mt-3">
                                         <i class="uil uil-check-circle text-primary h5 mb-0 me-2"></i>
                                         <div class="flex-1">
-                                            <p class="text-muted mb-0">All fields marked with <span class="text-danger">*</span> are required</p>
+                                            <p class="text-muted mb-0">Username cannot be changed</p>
                                         </div>
                                     </li>
                                     <li class="d-flex mt-3">
                                         <i class="uil uil-check-circle text-primary h5 mb-0 me-2"></i>
                                         <div class="flex-1">
-                                            <p class="text-muted mb-0">Password must be at least 6 characters long</p>
+                                            <p class="text-muted mb-0">Leave password fields blank to keep current password</p>
                                         </div>
                                     </li>
                                     <li class="d-flex mt-3">
                                         <i class="uil uil-check-circle text-primary h5 mb-0 me-2"></i>
                                         <div class="flex-1">
-                                            <p class="text-muted mb-0">Username and email must be unique</p>
+                                            <p class="text-muted mb-0">Email must be unique</p>
                                         </div>
                                     </li>
                                     <li class="d-flex mt-3">
                                         <i class="uil uil-check-circle text-primary h5 mb-0 me-2"></i>
                                         <div class="flex-1">
-                                            <p class="text-muted mb-0">Select at least one role for the user</p>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex mt-3">
-                                        <i class="uil uil-check-circle text-primary h5 mb-0 me-2"></i>
-                                        <div class="flex-1">
-                                            <p class="text-muted mb-0">Password will be encrypted before storing</p>
+                                            <p class="text-muted mb-0">At least one role must be selected</p>
                                         </div>
                                     </li>
                                 </ul>

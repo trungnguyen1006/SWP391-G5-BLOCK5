@@ -117,4 +117,46 @@ public class UserDAO extends DBContext {
         return null;
     }
 
+    public boolean updateUser(Users user) {
+        String sql = "UPDATE Users SET FullName = ?, Email = ?, IsActive = ? WHERE UserId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getEmail());
+            ps.setBoolean(3, user.isActive());
+            ps.setInt(4, user.getUserId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateUserPassword(int userId, String hashedPassword) {
+        String sql = "UPDATE Users SET Password = ? WHERE UserId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, hashedPassword);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean isEmailExistsForOtherUser(String email, int userId) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Email = ? AND UserId != ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setInt(2, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
 }

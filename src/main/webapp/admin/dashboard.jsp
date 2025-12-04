@@ -124,13 +124,13 @@
                                         </a>
                                     </div>
                                     <div class="col-md-6 mt-3">
-                                        <a href="${pageContext.request.contextPath}/admin/role-manage/view-role-list.jsp" class="btn btn-soft-primary w-100 d-flex align-items-center justify-content-between">
+                                        <a href="${pageContext.request.contextPath}/admin/role-list" class="btn btn-soft-primary w-100 d-flex align-items-center justify-content-between">
                                             <span><i class="uil uil-shield me-2"></i>Manage Roles</span>
                                             <i class="uil uil-arrow-right"></i>
                                         </a>
                                     </div>
                                     <div class="col-md-6 mt-3">
-                                        <a href="#" class="btn btn-soft-primary w-100 d-flex align-items-center justify-content-between">
+                                        <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn btn-soft-primary w-100 d-flex align-items-center justify-content-between">
                                             <span><i class="uil uil-setting me-2"></i>System Settings</span>
                                             <i class="uil uil-arrow-right"></i>
                                         </a>
