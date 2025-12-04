@@ -70,4 +70,51 @@ public class UserDAO extends DBContext {
         return false;
     }
 
+    public java.util.List<Users> getAllUsers() {
+        java.util.List<Users> users = new java.util.ArrayList<>();
+        String sql = "SELECT * FROM Users ORDER BY CreatedDate DESC";
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Users user = new Users();
+                user.setUserId(rs.getInt("UserId"));
+                user.setUsername(rs.getString("Username"));
+                user.setPassword(rs.getString("Password"));
+                user.setEmail(rs.getString("Email"));
+                user.setFullName(rs.getString("FullName"));
+                user.setActive(rs.getBoolean("IsActive"));
+                Timestamp ts = rs.getTimestamp("CreatedDate");
+                user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                users.add(user);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return users;
+    }
+
+    public Users findUserById(int userId) {
+        String sql = "SELECT * FROM Users WHERE UserId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Users user = new Users();
+                    user.setUserId(rs.getInt("UserId"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setPassword(rs.getString("Password"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setActive(rs.getBoolean("IsActive"));
+                    Timestamp ts = rs.getTimestamp("CreatedDate");
+                    user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    return user;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
 }
