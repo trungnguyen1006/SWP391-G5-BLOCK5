@@ -116,6 +116,18 @@ public class UserDAO extends DBContext {
         }
         return null;
     }
+    
+    public boolean changePassword(int id, String newPassword) {
+        String query = "Update Users set Password = ? where UserId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, newPassword);
+            ps.setInt(2,id);
+            return ps.executeUpdate() > 0; 
+        } catch (SQLException e) {
+            System.out.println("Lỗi "+ e);
+        }
+        return false;
+    }
 
     public boolean updateUser(Users user) {
         String sql = "UPDATE Users SET FullName = ?, Email = ?, IsActive = ? WHERE UserId = ?";
