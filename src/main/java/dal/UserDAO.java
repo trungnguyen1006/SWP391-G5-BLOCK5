@@ -70,11 +70,25 @@ public class UserDAO extends DBContext {
         return false;
     }
 
+    public void saveResetToken(String email, String token) throws SQLException {
+        String sql = "UPDATE users SET Password = ? WHERE Email = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, token);
+            ps.setString(2, email);
+
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                throw new SQLException("không tìm thấy user có email là:  " + email);
+            }
+        } catch (SQLException e) {
+            throw new SQLException("lỗi " + e.getMessage());
+        }
+    }
+
     public java.util.List<Users> getAllUsers() {
         java.util.List<Users> users = new java.util.ArrayList<>();
         String sql = "SELECT * FROM Users ORDER BY CreatedDate DESC";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Users user = new Users();
                 user.setUserId(rs.getInt("UserId"));
@@ -116,15 +130,15 @@ public class UserDAO extends DBContext {
         }
         return null;
     }
-    
+
     public boolean changePassword(int id, String newPassword) {
         String query = "Update Users set Password = ? where UserId = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, newPassword);
-            ps.setInt(2,id);
-            return ps.executeUpdate() > 0; 
+            ps.setInt(2, id);
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("Lỗi "+ e);
+            System.out.println("Lỗi " + e);
         }
         return false;
     }
@@ -169,6 +183,30 @@ public class UserDAO extends DBContext {
             ex.printStackTrace();
         }
         return false;
+    }
+
+    public Users getUserByEmail(String email) {
+        String sql = "SELECT * FROM Users WHERE Email = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Users user = new Users();
+                    user.setUserId(rs.getInt("UserId"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setPassword(rs.getString("Password"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setActive(rs.getBoolean("IsActive"));
+                    Timestamp ts = rs.getTimestamp("CreatedDate");
+                    user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    return user;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
 }

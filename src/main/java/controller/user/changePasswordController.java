@@ -47,8 +47,6 @@ public class changePasswordController extends HttpServlet{
         UserDAO dao = new UserDAO();
         Users acc = dao.findUserById(userId);
         boolean oldPassHasher = PasswordHasher.checkPassword(oldPass,acc.getPassword());
-        System.out.println("pass nhập: " + oldPassHasher);
-        System.out.println("pass get: " + acc.getPassword());
         if (acc == null) {
             errorMessage = "Tài khoản không tồn tại!";
 
