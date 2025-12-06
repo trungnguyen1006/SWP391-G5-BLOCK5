@@ -20,6 +20,8 @@ public class UserDAO extends DBContext {
                     user.setActive(rs.getBoolean("IsActive"));
                     Timestamp ts = rs.getTimestamp("CreatedDate");
                     user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    user.setPhone(rs.getString("Phone"));
+                    user.setImage(rs.getString("Image"));
                     return user;
                 }
             }
@@ -30,14 +32,17 @@ public class UserDAO extends DBContext {
     }
 
     public int createNewUser(Users user, String hashedPassword) {
-        String sql = "INSERT INTO Users (Username, Password, Email, FullName, IsActive, CreatedDate) "
-                + "VALUES (?, ?, ?, ?, 1, NOW())";
+        String sql = "INSERT INTO Users (Username, Password, Email, FullName, Phone, Image, IsActive, CreatedDate) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
         int newUserId = 0;
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getUsername());
             ps.setString(2, hashedPassword);
             ps.setString(3, user.getEmail());
             ps.setString(4, user.getFullName());
+            ps.setString(5, user.getPhone());
+            ps.setString(6, user.getImage());
+            ps.setBoolean(7, user.isActive());
 
             int affectedRows = ps.executeUpdate();
 
@@ -99,6 +104,8 @@ public class UserDAO extends DBContext {
                 user.setActive(rs.getBoolean("IsActive"));
                 Timestamp ts = rs.getTimestamp("CreatedDate");
                 user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                user.setPhone(rs.getString("Phone"));
+                user.setImage(rs.getString("Image"));
                 users.add(user);
             }
         } catch (SQLException ex) {
@@ -122,6 +129,8 @@ public class UserDAO extends DBContext {
                     user.setActive(rs.getBoolean("IsActive"));
                     Timestamp ts = rs.getTimestamp("CreatedDate");
                     user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    user.setPhone(rs.getString("Phone"));
+                    user.setImage(rs.getString("Image"));
                     return user;
                 }
             }
@@ -144,12 +153,14 @@ public class UserDAO extends DBContext {
     }
 
     public boolean updateUser(Users user) {
-        String sql = "UPDATE Users SET FullName = ?, Email = ?, IsActive = ? WHERE UserId = ?";
+        String sql = "UPDATE Users SET FullName = ?, Email = ?, Phone = ?, Image = ?, IsActive = ? WHERE UserId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getFullName());
             ps.setString(2, user.getEmail());
-            ps.setBoolean(3, user.isActive());
-            ps.setInt(4, user.getUserId());
+            ps.setString(3, user.getPhone());
+            ps.setString(4, user.getImage());
+            ps.setBoolean(5, user.isActive());
+            ps.setInt(6, user.getUserId());
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -200,6 +211,8 @@ public class UserDAO extends DBContext {
                     user.setActive(rs.getBoolean("IsActive"));
                     Timestamp ts = rs.getTimestamp("CreatedDate");
                     user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    user.setPhone(rs.getString("Phone"));
+                    user.setImage(rs.getString("Image"));
                     return user;
                 }
             }

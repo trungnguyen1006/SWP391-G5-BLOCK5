@@ -48,6 +48,35 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-lg-4 mt-4">
+                        <div class="card border-0 rounded shadow">
+                            <div class="card-body text-center">
+                                <c:choose>
+                                    <c:when test="${not empty user.image}">
+                                        <img src="${pageContext.request.contextPath}/${user.image}" class="avatar avatar-large rounded-circle shadow" alt="${user.fullName}">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="avatar avatar-large rounded-circle bg-soft-primary shadow mx-auto d-flex align-items-center justify-content-center">
+                                            <i class="mdi mdi-account text-white" style="font-size: 4rem;"></i>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                                <h5 class="mt-3 mb-0">${user.fullName}</h5>
+                                <p class="text-muted mb-0">@${user.username}</p>
+                                <div class="mt-3">
+                                    <c:choose>
+                                        <c:when test="${user.active}">
+                                            <span class="badge bg-soft-success">Active</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge bg-soft-danger">Inactive</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-lg-8 mt-4">
                         <div class="card border-0 rounded shadow">
                             <div class="card-body">
@@ -97,27 +126,20 @@
 
                                         <div class="col-md-6 mt-3">
                                             <div class="d-flex align-items-center">
-                                                <i class="uil uil-calendar-alt h5 mb-0 me-2"></i>
+                                                <i class="uil uil-phone h5 mb-0 me-2"></i>
                                                 <div class="flex-1">
-                                                    <h6 class="mb-0">Created Date</h6>
-                                                    <p class="text-muted mb-0">${user.createdDate}</p>
+                                                    <h6 class="mb-0">Phone</h6>
+                                                    <p class="text-muted mb-0">${not empty user.phone ? user.phone : 'Not provided'}</p>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6 mt-3">
                                             <div class="d-flex align-items-center">
-                                                <i class="uil uil-check-circle h5 mb-0 me-2"></i>
+                                                <i class="uil uil-calendar-alt h5 mb-0 me-2"></i>
                                                 <div class="flex-1">
-                                                    <h6 class="mb-0">Status</h6>
-                                                    <c:choose>
-                                                        <c:when test="${user.active}">
-                                                            <span class="badge bg-soft-success">Active</span>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <span class="badge bg-soft-danger">Inactive</span>
-                                                        </c:otherwise>
-                                                    </c:choose>
+                                                    <h6 class="mb-0">Created Date</h6>
+                                                    <p class="text-muted mb-0">${user.createdDate}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -126,7 +148,7 @@
 
                                 <div class="mt-4">
                                     <a href="${pageContext.request.contextPath}/admin/user-list" class="btn btn-soft-primary">Back to List</a>
-                                    <a href="#" class="btn btn-primary">Edit User</a>
+                                    <a href="${pageContext.request.contextPath}/admin/update-user?id=${user.userId}" class="btn btn-primary">Edit User</a>
                                 </div>
                             </div>
                         </div>

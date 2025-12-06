@@ -4,17 +4,25 @@ import controller.common.PasswordHasher;
 import dal.RoleDAO;
 import dal.UserDAO;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import model.Roles;
 import model.Users;
+import util.FileUploadUtil;
 
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet(name = "AddUserServlet", urlPatterns = {"/admin/add-user"})
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 1,
+    maxFileSize = 1024 * 1024 * 5,
+    maxRequestSize = 1024 * 1024 * 10
+)
 public class AddUserServlet extends HttpServlet {
 
     private static final String ADD_USER_PAGE = "user-manage/add-user.jsp";
@@ -39,10 +47,14 @@ public class AddUserServlet extends HttpServlet {
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String username = request.getParameter("username");
+        String phone = request.getParameter("phone");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
         String isActiveParam = request.getParameter("isActive");
         String[] roleIds = request.getParameterValues("roleIds");
+        
+        Part imagePart = request.getPart("imageFile");
+        String imagePath = null;
 
         List<Roles> allRoles = roleDAO.getAllRoles();
         request.setAttribute("allRoles", allRoles);
@@ -80,10 +92,23 @@ public class AddUserServlet extends HttpServlet {
             return;
         }
 
+        try {
+            if (imagePart != null && imagePart.getSize() > 0) {
+                String uploadPath = getServletContext().getRealPath("") + "uploads";
+                imagePath = FileUploadUtil.saveFile(imagePart, uploadPath);
+            }
+        } catch (IOException e) {
+            request.setAttribute("errorMessage", "Failed to upload image: " + e.getMessage());
+            request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
+            return;
+        }
+
         Users newUser = new Users();
         newUser.setUsername(username);
         newUser.setEmail(email);
         newUser.setFullName(fullName);
+        newUser.setPhone(phone);
+        newUser.setImage(imagePath);
         newUser.setActive(isActiveParam != null && isActiveParam.equals("1"));
 
         String hashedPassword = PasswordHasher.hashPassword(password);

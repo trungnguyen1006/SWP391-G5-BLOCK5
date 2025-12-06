@@ -10,6 +10,8 @@ public class Users {
     private String fullName;
     private boolean isActive;
     private LocalDateTime createdDate;
+    private String phone;
+    private String image;
 
     public Users() {
 
@@ -74,5 +76,19 @@ public class Users {
     }
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getImage() {
+        return image;
+    }
+    public void setImage(String image) {
+        this.image = image;
     }
 }

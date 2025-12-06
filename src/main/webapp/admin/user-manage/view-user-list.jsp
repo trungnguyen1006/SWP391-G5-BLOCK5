@@ -77,10 +77,11 @@
                     <thead>
                     <tr>
                       <th class="border-bottom p-3" style="min-width: 50px;">ID</th>
-                      <th class="border-bottom p-3" style="min-width: 180px;">Username</th>
+                      <th class="border-bottom p-3" style="min-width: 80px;">Avatar</th>
+                      <th class="border-bottom p-3" style="min-width: 150px;">Username</th>
                       <th class="border-bottom p-3">Full Name</th>
                       <th class="border-bottom p-3">Email</th>
-                      <th class="border-bottom p-3" style="min-width: 150px;">Created Date</th>
+                      <th class="border-bottom p-3">Phone</th>
                       <th class="border-bottom p-3" style="min-width: 100px;">Status</th>
                       <th class="border-bottom p-3" style="min-width: 100px;">Actions</th>
                     </tr>
@@ -89,10 +90,22 @@
                     <c:forEach var="user" items="${userList}">
                       <tr>
                         <th class="p-3">${user.userId}</th>
+                        <td class="p-3">
+                          <c:choose>
+                            <c:when test="${not empty user.image}">
+                              <img src="${pageContext.request.contextPath}/${user.image}" class="avatar avatar-md-sm rounded-circle" alt="${user.fullName}">
+                            </c:when>
+                            <c:otherwise>
+                              <div class="avatar avatar-md-sm rounded-circle bg-soft-primary d-flex align-items-center justify-content-center">
+                                <i class="mdi mdi-account text-white h5 mb-0"></i>
+                              </div>
+                            </c:otherwise>
+                          </c:choose>
+                        </td>
                         <td class="p-3">${user.username}</td>
                         <td class="p-3">${user.fullName}</td>
                         <td class="p-3">${user.email}</td>
-                        <td class="p-3">${user.createdDate}</td>
+                        <td class="p-3">${not empty user.phone ? user.phone : '-'}</td>
                         <td class="p-3">
                           <c:choose>
                             <c:when test="${user.active}">
