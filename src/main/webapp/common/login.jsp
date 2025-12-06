@@ -124,7 +124,7 @@
     </form>
 
     <div class="forgot-password">
-        <a href="forgot_password.jsp">Forgot password?</a>
+        <a href="${pageContext.request.contextPath}/ForgotPassword.jsp">Forgot password?</a>
     </div>
 
     <div class="register-link">
