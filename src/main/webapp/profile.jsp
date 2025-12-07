@@ -15,7 +15,7 @@
     </head>
     <body>
         <%
-            Users user = (Users) request.getAttribute("user");
+            Users user = (Users) session.getAttribute("user");
             if(user != null){
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
