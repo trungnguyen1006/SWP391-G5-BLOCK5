@@ -19,9 +19,9 @@ import model.Users;
  *
  * @author Administrator
  */
-@WebServlet(name = "changePasswordController", urlPatterns = {"/changePassword"})
+@WebServlet(name = "changePasswordServlet", urlPatterns = {"/changePassword"})
 
-public class changePasswordController extends HttpServlet{
+public class changePasswordServlet extends HttpServlet{
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -34,7 +34,7 @@ public class changePasswordController extends HttpServlet{
         resp.setContentType("text/html;charset=UTF-8");
         HttpSession session = req.getSession(false);
         if (session == null) {
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect("/login");
             return;
         }
         Users u =(Users)  session.getAttribute("user");

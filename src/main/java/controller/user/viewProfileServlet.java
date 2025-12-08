@@ -18,23 +18,23 @@ import model.Users;
  *
  * @author Administrator
  */
-@WebServlet(name = "viewProfileController", urlPatterns = {"/profile"})
-public class viewProfileController extends HttpServlet{
+@WebServlet(name = "viewProfileServlet", urlPatterns = {"/profile"})
+public class viewProfileServlet extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("text/html;charset=UTF-8");
        
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
-        Users u =(Users)  session.getAttribute("user");
-        int userId = u.getUserId();
-        UserDAO dao = new UserDAO();
-        Users user = dao.findUserById(userId);
-        req.setAttribute("user", user);
+//        HttpSession session = req.getSession(false);
+//        if (session == null) {
+//            resp.sendRedirect("/login");
+//            return;
+//        }
+//        Users u =(Users)  session.getAttribute("user");
+//        int userId = u.getUserId();
+//        UserDAO dao = new UserDAO();
+//        Users user = dao.findUserById(userId);
+//        req.setAttribute("user", user);
         req.getRequestDispatcher("profile.jsp").forward(req, resp);
     }
 }
