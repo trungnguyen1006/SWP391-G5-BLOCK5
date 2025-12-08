@@ -94,7 +94,9 @@ public class AddUserServlet extends HttpServlet {
 
         try {
             if (imagePart != null && imagePart.getSize() > 0) {
-                String uploadPath = getServletContext().getRealPath("") + "uploads";
+                String realPath = getServletContext().getRealPath("/");
+                String webappPath = FileUploadUtil.getSourceWebappPath(realPath);
+                String uploadPath = webappPath + "uploads";
                 imagePath = FileUploadUtil.saveFile(imagePart, uploadPath);
             }
         } catch (IOException e) {

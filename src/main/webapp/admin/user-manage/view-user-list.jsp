@@ -125,6 +125,66 @@
                     </tbody>
                   </table>
                 </div>
+
+                <c:if test="${totalPages > 1}">
+                  <div class="d-flex justify-content-between align-items-center mt-4 px-3">
+                    <div class="text-muted">
+                      Showing page ${currentPage} of ${totalPages} (Total: ${totalUsers} users)
+                    </div>
+                    <nav aria-label="Page navigation">
+                      <ul class="pagination mb-0">
+                        <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                          <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${currentPage - 1}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+
+                        <c:choose>
+                          <c:when test="${totalPages <= 7}">
+                            <c:forEach var="i" begin="1" end="${totalPages}">
+                              <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${i}">${i}</a>
+                              </li>
+                            </c:forEach>
+                          </c:when>
+                          <c:otherwise>
+                            <c:if test="${currentPage > 3}">
+                              <li class="page-item">
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=1">1</a>
+                              </li>
+                              <c:if test="${currentPage > 4}">
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                              </c:if>
+                            </c:if>
+
+                            <c:forEach var="i" begin="${currentPage - 2 < 1 ? 1 : currentPage - 2}" 
+                                       end="${currentPage + 2 > totalPages ? totalPages : currentPage + 2}">
+                              <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${i}">${i}</a>
+                              </li>
+                            </c:forEach>
+
+                            <c:if test="${currentPage < totalPages - 2}">
+                              <c:if test="${currentPage < totalPages - 3}">
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                              </c:if>
+                              <li class="page-item">
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${totalPages}">${totalPages}</a>
+                              </li>
+                            </c:if>
+                          </c:otherwise>
+                        </c:choose>
+
+                        <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                          <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${currentPage + 1}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </c:if>
+
               </div>
             </div>
           </div>

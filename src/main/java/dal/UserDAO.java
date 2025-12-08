@@ -114,6 +114,47 @@ public class UserDAO extends DBContext {
         return users;
     }
 
+    public java.util.List<Users> getUsersByPage(int page, int pageSize) {
+        java.util.List<Users> users = new java.util.ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = "SELECT * FROM Users ORDER BY CreatedDate DESC LIMIT ? OFFSET ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, pageSize);
+            ps.setInt(2, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Users user = new Users();
+                    user.setUserId(rs.getInt("UserId"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setPassword(rs.getString("Password"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setActive(rs.getBoolean("IsActive"));
+                    Timestamp ts = rs.getTimestamp("CreatedDate");
+                    user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    user.setPhone(rs.getString("Phone"));
+                    user.setImage(rs.getString("Image"));
+                    users.add(user);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return users;
+    }
+
+    public int getTotalUsers() {
+        String sql = "SELECT COUNT(*) FROM Users";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
     public Users findUserById(int userId) {
         String sql = "SELECT * FROM Users WHERE UserId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

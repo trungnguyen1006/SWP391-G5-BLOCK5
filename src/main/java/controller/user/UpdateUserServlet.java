@@ -132,11 +132,12 @@ public class UpdateUserServlet extends HttpServlet {
 
             try {
                 if (imagePart != null && imagePart.getSize() > 0) {
-                    String uploadPath = getServletContext().getRealPath("") + "uploads";
+                    String realPath = getServletContext().getRealPath("/");
+                    String webappPath = FileUploadUtil.getSourceWebappPath(realPath);
+                    String uploadPath = webappPath + "uploads";
                     newImagePath = FileUploadUtil.saveFile(imagePart, uploadPath);
                     
                     if (user.getImage() != null && !user.getImage().isEmpty()) {
-                        String webappPath = getServletContext().getRealPath("");
                         FileUploadUtil.deleteFile(user.getImage(), webappPath);
                     }
                 }

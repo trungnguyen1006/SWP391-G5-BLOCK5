@@ -25,16 +25,16 @@ public class viewProfileServlet extends HttpServlet{
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("text/html;charset=UTF-8");
        
-//        HttpSession session = req.getSession(false);
-//        if (session == null) {
-//            resp.sendRedirect("/login");
-//            return;
-//        }
-//        Users u =(Users)  session.getAttribute("user");
-//        int userId = u.getUserId();
-//        UserDAO dao = new UserDAO();
-//        Users user = dao.findUserById(userId);
-//        req.setAttribute("user", user);
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            resp.sendRedirect("/login");
+            return;
+        }
+        Users u =(Users)  session.getAttribute("user");
+        int userId = u.getUserId();
+        UserDAO dao = new UserDAO();
+        Users user = dao.findUserById(userId);
+        req.setAttribute("user", user);
         req.getRequestDispatcher("profile.jsp").forward(req, resp);
     }
 }

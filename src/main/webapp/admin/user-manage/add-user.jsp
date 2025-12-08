@@ -51,11 +51,11 @@
                     <div class="col-lg-4 mt-4">
                         <div class="card border-0 rounded shadow">
                             <div class="card-body text-center">
-                                <div id="imagePreviewContainer">
-                                    <div id="defaultAvatar" class="avatar avatar-large rounded-circle bg-soft-primary shadow mx-auto d-flex align-items-center justify-content-center">
+                                <div id="imagePreviewContainer" class="position-relative" style="width: 120px; height: 120px; margin: 0 auto;">
+                                    <div id="defaultAvatar" class="avatar avatar-large rounded-circle bg-soft-primary shadow d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
                                         <i class="mdi mdi-account text-white" style="font-size: 4rem;"></i>
                                     </div>
-                                    <img id="imagePreview" src="" class="avatar avatar-large rounded-circle shadow mx-auto" style="display: none;" alt="Preview">
+                                    <img id="imagePreview" src="" class="avatar avatar-large rounded-circle shadow position-absolute top-0 start-0" style="display: none; width: 120px; height: 120px; object-fit: cover;" alt="Preview">
                                 </div>
                                 <div class="mt-3">
                                     <label for="imageFileInput" class="btn btn-sm btn-primary">

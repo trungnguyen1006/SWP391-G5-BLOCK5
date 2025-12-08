@@ -14,6 +14,18 @@ public class FileUploadUtil {
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
     private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif"};
     
+    public static String getSourceWebappPath(String realPath) {
+        String path = realPath;
+        if (path.contains("target")) {
+            path = path.replaceFirst("target[/\\\\][^/\\\\]+", "src/main/webapp");
+        }
+        // Đảm bảo path kết thúc bằng separator
+        if (!path.endsWith(File.separator)) {
+            path += File.separator;
+        }
+        return path;
+    }
+    
     public static String saveFile(Part filePart, String uploadPath) throws IOException {
         if (filePart == null || filePart.getSize() == 0) {
             return null;

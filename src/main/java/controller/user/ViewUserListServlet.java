@@ -15,14 +15,41 @@ import java.util.List;
 public class ViewUserListServlet extends HttpServlet {
 
     private static final String USER_LIST_PAGE = "user-manage/view-user-list.jsp";
+    private static final int PAGE_SIZE = 5;
     private final UserDAO userDAO = new UserDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Users> userList = userDAO.getAllUsers();
+        String pageParam = request.getParameter("page");
+        int currentPage = 1;
+        
+        if (pageParam != null) {
+            try {
+                currentPage = Integer.parseInt(pageParam);
+                if (currentPage < 1) {
+                    currentPage = 1;
+                }
+            } catch (NumberFormatException e) {
+                currentPage = 1;
+            }
+        }
+
+        int totalUsers = userDAO.getTotalUsers();
+        int totalPages = (int) Math.ceil((double) totalUsers / PAGE_SIZE);
+        
+        if (currentPage > totalPages && totalPages > 0) {
+            currentPage = totalPages;
+        }
+
+        List<Users> userList = userDAO.getUsersByPage(currentPage, PAGE_SIZE);
+        
         request.setAttribute("userList", userList);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalUsers", totalUsers);
+        
         request.getRequestDispatcher(USER_LIST_PAGE).forward(request, response);
     }
 
