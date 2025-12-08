@@ -71,7 +71,7 @@ public class RegisterServlet extends HttpServlet {
         Users newUser = new Users();
         newUser.setUsername(username);
         newUser.setEmail(email);
-        newUser.setActive(true);
+//        newUser.setActive(true);
         newUser.setFullName(fullName);
 
         String hashedPassword = PasswordHasher.hashPassword(password);

@@ -13,6 +13,7 @@ import jakarta.servlet.http.Part;
 import model.Roles;
 import model.Users;
 import util.FileUploadUtil;
+import util.Validator;
 
 import java.io.IOException;
 import java.util.List;
@@ -63,19 +64,43 @@ public class AddUserServlet extends HttpServlet {
             password == null || confirmPassword == null ||
             fullName.trim().isEmpty() || email.trim().isEmpty() || 
             username.trim().isEmpty() || password.isEmpty()) {
-            request.setAttribute("errorMessage", "All fields are required.");
+            request.setAttribute("errorMessage", "All required fields must be filled.");
+            request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
+            return;
+        }
+
+        if (!Validator.isValidFullName(fullName)) {
+            request.setAttribute("errorMessage", Validator.getFullNameErrorMessage());
+            request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
+            return;
+        }
+
+        if (!Validator.isValidUsername(username)) {
+            request.setAttribute("errorMessage", Validator.getUsernameErrorMessage());
+            request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
+            return;
+        }
+
+        if (!Validator.isValidEmail(email)) {
+            request.setAttribute("errorMessage", Validator.getEmailErrorMessage());
+            request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
+            return;
+        }
+
+        if (phone != null && !phone.trim().isEmpty() && !Validator.isValidPhone(phone)) {
+            request.setAttribute("errorMessage", Validator.getPhoneErrorMessage());
+            request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
+            return;
+        }
+
+        if (!Validator.isValidPassword(password)) {
+            request.setAttribute("errorMessage", Validator.getPasswordErrorMessage());
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
 
         if (!password.equals(confirmPassword)) {
             request.setAttribute("errorMessage", "Passwords do not match.");
-            request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
-            return;
-        }
-
-        if (password.length() < 6) {
-            request.setAttribute("errorMessage", "Password must be at least 6 characters long.");
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }

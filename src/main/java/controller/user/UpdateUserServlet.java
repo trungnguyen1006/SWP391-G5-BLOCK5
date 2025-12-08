@@ -13,6 +13,7 @@ import jakarta.servlet.http.Part;
 import model.Roles;
 import model.Users;
 import util.FileUploadUtil;
+import util.Validator;
 
 import java.io.IOException;
 import java.util.List;
@@ -101,6 +102,24 @@ public class UpdateUserServlet extends HttpServlet {
                 return;
             }
 
+            if (!Validator.isValidFullName(fullName)) {
+                request.setAttribute("errorMessage", Validator.getFullNameErrorMessage());
+                request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
+                return;
+            }
+
+            if (!Validator.isValidEmail(email)) {
+                request.setAttribute("errorMessage", Validator.getEmailErrorMessage());
+                request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
+                return;
+            }
+
+            if (phone != null && !phone.trim().isEmpty() && !Validator.isValidPhone(phone)) {
+                request.setAttribute("errorMessage", Validator.getPhoneErrorMessage());
+                request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
+                return;
+            }
+
             if (userDAO.isEmailExistsForOtherUser(email, userId)) {
                 request.setAttribute("errorMessage", "Email already exists for another user.");
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
@@ -108,14 +127,14 @@ public class UpdateUserServlet extends HttpServlet {
             }
 
             if (newPassword != null && !newPassword.isEmpty()) {
-                if (!newPassword.equals(confirmPassword)) {
-                    request.setAttribute("errorMessage", "Passwords do not match.");
+                if (!Validator.isValidPassword(newPassword)) {
+                    request.setAttribute("errorMessage", Validator.getPasswordErrorMessage());
                     request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                     return;
                 }
 
-                if (newPassword.length() < 6) {
-                    request.setAttribute("errorMessage", "Password must be at least 6 characters long.");
+                if (!newPassword.equals(confirmPassword)) {
+                    request.setAttribute("errorMessage", "Passwords do not match.");
                     request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                     return;
                 }
