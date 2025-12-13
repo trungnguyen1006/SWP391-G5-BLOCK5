@@ -59,7 +59,9 @@ public class changePasswordServlet extends HttpServlet{
                     String hashedPassword = PasswordHasher.hashPassword(newPass);
             boolean isSuccess = dao.changePassword(userId, hashedPassword);
             if (isSuccess) {
-                successMessage = "Đổi mật khẩu thành công!";
+                
+                resp.sendRedirect("/login");
+                return;
             } else {
                 errorMessage = "Đổi mật khẩu thất bại!";
             }

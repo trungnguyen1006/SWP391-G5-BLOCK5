@@ -2,34 +2,39 @@ package dal;
 
 import model.Users;
 import java.sql.*;
+import model.Dashboard;
 
 public class UserDAO extends DBContext {
 
     public Users findUserByUsername(String username) {
-        String sql = "SELECT * FROM Users WHERE Username = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Users user = new Users();
-                    user.setUserId(rs.getInt("UserId"));
-                    user.setUsername(rs.getString("Username"));
-                    user.setPassword(rs.getString("Password"));
-                    user.setEmail(rs.getString("Email"));
-                    user.setFullName(rs.getString("FullName"));
-                    user.setActive(rs.getBoolean("IsActive"));
-                    Timestamp ts = rs.getTimestamp("CreatedDate");
-                    user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
-                    user.setPhone(rs.getString("Phone"));
-                    user.setImage(rs.getString("Image"));
-                    return user;
-                }
+    String sql = "SELECT * FROM Users WHERE Username = ?";
+
+    try (
+        PreparedStatement ps = connection.prepareStatement(sql)
+    ) {
+        ps.setString(1, username);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                Users user = new Users();
+                user.setUserId(rs.getInt("UserId"));
+                user.setUsername(rs.getString("Username"));
+                user.setPassword(rs.getString("Password"));
+                user.setEmail(rs.getString("Email"));
+                user.setFullName(rs.getString("FullName"));
+                user.setActive(rs.getBoolean("IsActive"));
+                Timestamp ts = rs.getTimestamp("CreatedDate");
+                user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                user.setPhone(rs.getString("Phone"));
+                user.setImage(rs.getString("Image"));
+                return user;
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
         }
-        return null;
+    } catch (SQLException ex) {
+        ex.printStackTrace();
     }
+    return null;
+}
+
 
     public int createNewUser(Users user, String hashedPassword) {
         String sql = "INSERT INTO Users (Username, Password, Email, FullName, Phone, Image, IsActive, CreatedDate) "
@@ -262,5 +267,40 @@ public class UserDAO extends DBContext {
         }
         return null;
     }
+
+public Dashboard getDashboardAdmin() {
+    Dashboard dashboard = new Dashboard();
+
+    String sql = """
+         SELECT
+                (SELECT COUNT(*) FROM users) AS totalUser,
+                (
+                    SELECT COUNT(DISTINCT ur.UserId)
+                    FROM userroles ur
+                    JOIN roles r ON ur.RoleId = r.RoleId
+                    WHERE LOWER(r.RoleName) IN ('admin','manager','staff')
+                ) AS totalEmployee,
+                (SELECT COUNT(*) FROM users WHERE IsActive = 1) AS totalActive,
+                (SELECT COUNT(*) FROM users WHERE IsActive = 0) AS totalDeActive
+        """;
+
+    try (PreparedStatement ps = connection.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        if (rs.next()) {
+            dashboard.setTotalUser(rs.getInt("totalUser"));
+            dashboard.setTotalEmployee(rs.getInt("totalEmployee"));
+            dashboard.setTotalActive(rs.getInt("totalActive"));
+            dashboard.setTotalDeActive(rs.getInt("totalDeActive"));
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return dashboard;
+}
+
+   
 
 }
