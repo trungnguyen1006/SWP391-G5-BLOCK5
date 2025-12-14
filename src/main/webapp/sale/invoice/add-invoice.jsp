@@ -167,23 +167,38 @@
             <jsp:include page="../common/footer.jsp" />
         </main>
     </div>
+    
+    <!-- Hidden machine data -->
+    <div id="machineData" style="display: none;">
+        <c:forEach var="machine" items="${availableMachines}">
+            <div class="machine-data" 
+                 data-unit-id="${machine.unitId}"
+                 data-serial="${machine.serialNumber}"
+                 data-model-name="${machine.machineModel != null ? machine.machineModel.modelName : 'N/A'}"
+                 data-model-code="${machine.machineModel != null ? machine.machineModel.modelCode : 'N/A'}"
+                 data-brand="${machine.machineModel != null ? machine.machineModel.brand : 'N/A'}">
+            </div>
+        </c:forEach>
+    </div>
+    
     <script src="../../assets/js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/feather.min.js"></script>
     <script>
         feather.replace();
 
         let itemCounter = 0;
-        const availableMachines = [
-            <c:forEach var="machine" items="${availableMachines}" varStatus="status">
-                {
-                    unitId: ${machine.unitId},
-                    serialNumber: '${machine.serialNumber}',
-                    modelName: '${machine.machineModel.modelName}',
-                    modelCode: '${machine.machineModel.modelCode}',
-                    brand: '${machine.machineModel.brand}'
-                }<c:if test="${!status.last}">,</c:if>
-            </c:forEach>
-        ];
+        const availableMachines = [];
+        
+        // Load machine data from hidden elements
+        document.querySelectorAll('.machine-data').forEach(element => {
+            availableMachines.push({
+                unitId: element.getAttribute('data-unit-id'),
+                serialNumber: element.getAttribute('data-serial'),
+                modelName: element.getAttribute('data-model-name'),
+                modelCode: element.getAttribute('data-model-code'),
+                brand: element.getAttribute('data-brand')
+            });
+        });
 
         // Load sites when customer changes
         document.getElementById('customerId').addEventListener('change', function() {
@@ -211,80 +226,88 @@
             itemCounter++;
             const container = document.getElementById('machineItemsContainer');
             
-            const itemHtml = `
-                <div class="machine-item border rounded p-3 mb-3" id="item-${itemCounter}">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0">Machine Item #${itemCounter}</h6>
-                        <button type="button" class="btn btn-sm btn-soft-danger" onclick="removeMachineItem(${itemCounter})">
-                            <i class="mdi mdi-close"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Machine <span class="text-danger">*</span></label>
-                                <select name="unitId" class="form-control machine-select" required onchange="updateMachineInfo(this, ${itemCounter})">
-                                    <option value="">Select Machine</option>
-                                    ${availableMachines.map(machine => 
-                                        `<option value="${machine.unitId}">${machine.serialNumber} - ${machine.modelName}</option>`
-                                    ).join('')}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Price</label>
-                                <input name="price" type="number" class="form-control price-input" step="0.01" min="0" onchange="updateSummary()">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Deposit</label>
-                                <input name="deposit" type="number" class="form-control deposit-input" step="0.01" min="0" onchange="updateSummary()">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Delivery Date</label>
-                                <input name="deliveryDate" type="date" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Return Due Date</label>
-                                <input name="returnDueDate" type="date" class="form-control">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Notes</label>
-                                <input name="itemNote" type="text" class="form-control" placeholder="Item notes...">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="machine-info-${itemCounter}" class="machine-info" style="display: none;">
-                        <div class="alert alert-info">
-                            <strong>Machine Details:</strong>
-                            <div id="machine-details-${itemCounter}"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'machine-item border rounded p-3 mb-3';
+            itemDiv.id = 'item-' + itemCounter;
             
-            container.insertAdjacentHTML('beforeend', itemHtml);
+            itemDiv.innerHTML = 
+                '<div class="d-flex justify-content-between align-items-center mb-3">' +
+                    '<h6 class="mb-0">Machine Item #' + itemCounter + '</h6>' +
+                    '<button type="button" class="btn btn-sm btn-soft-danger" onclick="removeMachineItem(' + itemCounter + ')">' +
+                        '<i class="mdi mdi-close"></i>' +
+                    '</button>' +
+                '</div>' +
+                
+                '<div class="row">' +
+                    '<div class="col-md-6">' +
+                        '<div class="mb-3">' +
+                            '<label class="form-label">Machine <span class="text-danger">*</span></label>' +
+                            '<select name="unitId" class="form-control machine-select" required onchange="updateMachineInfo(this, ' + itemCounter + ')">' +
+                                '<option value="">Select Machine</option>' +
+                            '</select>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="col-md-6">' +
+                        '<div class="mb-3">' +
+                            '<label class="form-label">Price</label>' +
+                            '<input name="price" type="number" class="form-control price-input" step="0.01" min="0" onchange="updateSummary()">' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<div class="row">' +
+                    '<div class="col-md-6">' +
+                        '<div class="mb-3">' +
+                            '<label class="form-label">Deposit</label>' +
+                            '<input name="deposit" type="number" class="form-control deposit-input" step="0.01" min="0" onchange="updateSummary()">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="col-md-6">' +
+                        '<div class="mb-3">' +
+                            '<label class="form-label">Delivery Date</label>' +
+                            '<input name="deliveryDate" type="date" class="form-control">' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<div class="row">' +
+                    '<div class="col-md-6">' +
+                        '<div class="mb-3">' +
+                            '<label class="form-label">Return Due Date</label>' +
+                            '<input name="returnDueDate" type="date" class="form-control">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="col-md-6">' +
+                        '<div class="mb-3">' +
+                            '<label class="form-label">Notes</label>' +
+                            '<input name="itemNote" type="text" class="form-control" placeholder="Item notes...">' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<div id="machine-info-' + itemCounter + '" class="machine-info" style="display: none;">' +
+                    '<div class="alert alert-info">' +
+                        '<strong>Machine Details:</strong>' +
+                        '<div id="machine-details-' + itemCounter + '"></div>' +
+                    '</div>' +
+                '</div>';
+            
+            container.appendChild(itemDiv);
+            
+            // Populate machine options for the new item
+            const newSelect = itemDiv.querySelector('.machine-select');
+            availableMachines.forEach(machine => {
+                const option = document.createElement('option');
+                option.value = machine.unitId;
+                option.textContent = machine.serialNumber + ' - ' + machine.modelName;
+                newSelect.appendChild(option);
+            });
+            
             updateSummary();
         }
 
         function removeMachineItem(itemId) {
-            const item = document.getElementById(`item-${itemId}`);
+            const item = document.getElementById('item-' + itemId);
             if (item) {
                 item.remove();
                 updateSummary();
@@ -294,15 +317,14 @@
         function updateMachineInfo(selectElement, itemId) {
             const unitId = selectElement.value;
             const machine = availableMachines.find(m => m.unitId == unitId);
-            const infoDiv = document.getElementById(`machine-info-${itemId}`);
-            const detailsDiv = document.getElementById(`machine-details-${itemId}`);
+            const infoDiv = document.getElementById('machine-info-' + itemId);
+            const detailsDiv = document.getElementById('machine-details-' + itemId);
             
             if (machine) {
-                detailsDiv.innerHTML = `
-                    Serial: ${machine.serialNumber}<br>
-                    Model: ${machine.modelName} (${machine.modelCode})<br>
-                    Brand: ${machine.brand}
-                `;
+                detailsDiv.innerHTML = 
+                    'Serial: ' + machine.serialNumber + '<br>' +
+                    'Model: ' + machine.modelName + ' (' + machine.modelCode + ')<br>' +
+                    'Brand: ' + machine.brand;
                 infoDiv.style.display = 'block';
             } else {
                 infoDiv.style.display = 'none';
