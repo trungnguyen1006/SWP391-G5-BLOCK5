@@ -16,10 +16,10 @@
 
 <body>
     <div class="page-wrapper doctris-theme toggled">
-        <jsp:include page="../common/sidebar.jsp" />
+    
 
         <main class="page-content bg-light">
-            <jsp:include page="../common/header.jsp" />
+       
 
             <div class="container-fluid">
                 <div class="layout-specing">
@@ -113,7 +113,7 @@
                                                         <td class="p-3">
                                                             <c:choose>
                                                                 <c:when test="${not empty contract.startDate}">
-                                                                    <fmt:formatDate value="${contract.startDate}" pattern="dd/MM/yyyy" />
+                                                                    <fmt:formatDate value="${contract.startDateAsDate}" pattern="dd/MM/yyyy" />
                                                                 </c:when>
                                                                 <c:otherwise>
                                                                     <span class="text-muted">-</span>
@@ -123,7 +123,7 @@
                                                         <td class="p-3">
                                                             <c:choose>
                                                                 <c:when test="${not empty contract.endDate}">
-                                                                    <fmt:formatDate value="${contract.endDate}" pattern="dd/MM/yyyy" />
+                                                                    <fmt:formatDate value="${contract.endDateAsDate}" pattern="dd/MM/yyyy" />
                                                                 </c:when>
                                                                 <c:otherwise>
                                                                     <span class="text-muted">-</span>
@@ -131,7 +131,8 @@
                                                             </c:choose>
                                                         </td>
                                                         <td class="p-3">
-                                                            <fmt:formatDate value="${contract.createdDate}" pattern="dd/MM/yyyy HH:mm" />
+                                                          <fmt:formatDate value="${contract.createdDateAsDate}" pattern="dd/MM/yyyy HH:mm" />
+
                                                         </td>
                                                         <td class="p-3">
                                                             <a href="${pageContext.request.contextPath}/sale/invoice-detail?id=${contract.contractId}" 
@@ -187,7 +188,7 @@
                 </div>
             </div>
 
-            <jsp:include page="../common/footer.jsp" />
+
         </main>
     </div>
 

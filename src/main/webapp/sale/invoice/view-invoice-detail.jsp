@@ -24,10 +24,10 @@
 
 <body>
     <div class="page-wrapper doctris-theme toggled">
-        <jsp:include page="../common/sidebar.jsp" />
+   
 
         <main class="page-content bg-light">
-            <jsp:include page="../common/header.jsp" />
+     
 
             <div class="container-fluid">
                 <div class="layout-specing">
@@ -243,7 +243,7 @@
                 </div>
             </div>
 
-            <jsp:include page="../common/footer.jsp" />
+
         </main>
     </div>
 

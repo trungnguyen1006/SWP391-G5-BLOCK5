@@ -1,11 +1,14 @@
 package model;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.sql.Timestamp;
 
 public class Contract {
+
     private int contractId;
     private String contractCode;
     private int customerId;
@@ -19,7 +22,7 @@ public class Contract {
     private String note;
     private int createdBy;
     private LocalDateTime createdDate;
-    
+
     // Additional fields for display
     private String customerName;
     private String siteName;
@@ -29,7 +32,8 @@ public class Contract {
     private BigDecimal totalAmount;
     private BigDecimal totalDeposit;
 
-    public Contract() {}
+    public Contract() {
+    }
 
     // Getters and Setters
     public int getContractId() {
@@ -191,4 +195,21 @@ public class Contract {
     public void setTotalDeposit(BigDecimal totalDeposit) {
         this.totalDeposit = totalDeposit;
     }
+
+    public java.sql.Date getStartDateAsDate() {
+        return startDate == null ? null : java.sql.Date.valueOf(startDate);
+    }
+
+    public java.sql.Date getEndDateAsDate() {
+        return endDate == null ? null : java.sql.Date.valueOf(endDate);
+    }
+
+    public java.sql.Date getSignedDateAsDate() {
+        return signedDate == null ? null : java.sql.Date.valueOf(signedDate);
+    }
+
+    public java.util.Date getCreatedDateAsDate() {
+        return createdDate == null ? null : Timestamp.valueOf(createdDate);
+    }
+
 }
