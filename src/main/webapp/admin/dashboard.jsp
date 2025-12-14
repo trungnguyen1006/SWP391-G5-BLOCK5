@@ -9,7 +9,6 @@
     <title>Admin Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" />
     <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" />
@@ -93,6 +92,118 @@
                                 <div class="flex-1 ms-2">
                                     <h5 class="mb-0">${dashboard.totalDeActive}</h5>
                                     <p class="text-muted mb-0">Deactive Accounts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6 mt-4">
+                        <div class="card features feature-primary rounded border-0 shadow p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-center rounded-md">
+                                    <i class="uil uil-building h3 mb-0"></i>
+                                </div>
+                                <div class="flex-1 ms-2">
+                                    <h5 class="mb-0">${dashboard.totalCustomer}</h5>
+                                    <p class="text-muted mb-0">Total Customers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6 mt-4">
+                        <div class="card features feature-primary rounded border-0 shadow p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-center rounded-md">
+                                    <i class="uil uil-file-contract h3 mb-0"></i>
+                                </div>
+                                <div class="flex-1 ms-2">
+                                    <h5 class="mb-0">${dashboard.totalContract}</h5>
+                                    <p class="text-muted mb-0">Total Contracts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6 mt-4">
+                        <div class="card features feature-primary rounded border-0 shadow p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-center rounded-md">
+                                    <i class="uil uil-check-square h3 mb-0"></i>
+                                </div>
+                                <div class="flex-1 ms-2">
+                                    <h5 class="mb-0">${dashboard.totalContractSigned}</h5>
+                                    <p class="text-muted mb-0">Signed Contracts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6 mt-4">
+                        <div class="card features feature-primary rounded border-0 shadow p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-center rounded-md">
+                                    <i class="uil uil-play-circle h3 mb-0"></i>
+                                </div>
+                                <div class="flex-1 ms-2">
+                                    <h5 class="mb-0">${dashboard.totalContractActive}</h5>
+                                    <p class="text-muted mb-0">Active Contracts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6 mt-4">
+                        <div class="card features feature-primary rounded border-0 shadow p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-center rounded-md">
+                                    <i class="uil uil-ticket h3 mb-0"></i>
+                                </div>
+                                <div class="flex-1 ms-2">
+                                    <h5 class="mb-0">${dashboard.totalTicket}</h5>
+                                    <p class="text-muted mb-0">Total Tickets</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6 mt-4">
+                        <div class="card features feature-primary rounded border-0 shadow p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-center rounded-md">
+                                    <i class="uil uil-check-circle h3 mb-0"></i>
+                                </div>
+                                <div class="flex-1 ms-2">
+                                    <h5 class="mb-0">${dashboard.totalTicketApproved}</h5>
+                                    <p class="text-muted mb-0">Approved Tickets</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6 mt-4">
+                        <div class="card features feature-primary rounded border-0 shadow p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-center rounded-md">
+                                    <i class="uil uil-times-circle h3 mb-0"></i>
+                                </div>
+                                <div class="flex-1 ms-2">
+                                    <h5 class="mb-0">${dashboard.totalTicketRejected}</h5>
+                                    <p class="text-muted mb-0">Rejected Tickets</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6 mt-4">
+                        <div class="card features feature-primary rounded border-0 shadow p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon text-center rounded-md">
+                                    <i class="uil uil-envelope-open h3 mb-0"></i>
+                                </div>
+                                <div class="flex-1 ms-2">
+                                    <h5 class="mb-0">${dashboard.totalTicketOpen}</h5>
+                                    <p class="text-muted mb-0">Open Tickets</p>
                                 </div>
                             </div>
                         </div>

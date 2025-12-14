@@ -1,27 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author Administrator
- */
 public class Dashboard {
+
     private int totalUser;
     private int totalEmployee;
     private int totalActive;
     private int totalDeActive;
+    private int totalCustomer;
+    private int totalContract;
+    private int totalContractSigned;
+    private int totalContractActive;
+    private int totalTicket;
+    private int totalTicketApproved;
+    private int totalTicketRejected;
+    private int totalTicketOpen;
 
     public Dashboard() {
-    }
-    
-    public Dashboard(int totalUser, int totalEmployee, int totalActive, int totalDeActive) {
-        this.totalUser = totalUser;
-        this.totalEmployee = totalEmployee;
-        this.totalActive = totalActive;
-        this.totalDeActive = totalDeActive;
     }
 
     public int getTotalUser() {
@@ -55,8 +49,68 @@ public class Dashboard {
     public void setTotalDeActive(int totalDeActive) {
         this.totalDeActive = totalDeActive;
     }
-    
-    
-    
-    
+
+    public int getTotalCustomer() {
+        return totalCustomer;
+    }
+
+    public void setTotalCustomer(int totalCustomer) {
+        this.totalCustomer = totalCustomer;
+    }
+
+    public int getTotalContract() {
+        return totalContract;
+    }
+
+    public void setTotalContract(int totalContract) {
+        this.totalContract = totalContract;
+    }
+
+    public int getTotalContractSigned() {
+        return totalContractSigned;
+    }
+
+    public void setTotalContractSigned(int totalContractSigned) {
+        this.totalContractSigned = totalContractSigned;
+    }
+
+    public int getTotalContractActive() {
+        return totalContractActive;
+    }
+
+    public void setTotalContractActive(int totalContractActive) {
+        this.totalContractActive = totalContractActive;
+    }
+
+    public int getTotalTicket() {
+        return totalTicket;
+    }
+
+    public void setTotalTicket(int totalTicket) {
+        this.totalTicket = totalTicket;
+    }
+
+    public int getTotalTicketApproved() {
+        return totalTicketApproved;
+    }
+
+    public void setTotalTicketApproved(int totalTicketApproved) {
+        this.totalTicketApproved = totalTicketApproved;
+    }
+
+    public int getTotalTicketRejected() {
+        return totalTicketRejected;
+    }
+
+    public void setTotalTicketRejected(int totalTicketRejected) {
+        this.totalTicketRejected = totalTicketRejected;
+    }
+
+    public int getTotalTicketOpen() {
+        return totalTicketOpen;
+    }
+
+    public void setTotalTicketOpen(int totalTicketOpen) {
+        this.totalTicketOpen = totalTicketOpen;
+    }
 }
