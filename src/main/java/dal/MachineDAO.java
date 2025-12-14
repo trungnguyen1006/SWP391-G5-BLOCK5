@@ -258,6 +258,72 @@ public class MachineDAO extends DBContext {
         return false;
     }
 
+    public boolean isSerialNumberExistsForOtherUnit(String serialNumber, int unitId) {
+        String sql = "SELECT COUNT(*) FROM MachineUnits WHERE SerialNumber = ? AND UnitId != ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, serialNumber);
+            ps.setInt(2, unitId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    public MachineUnit getMachineUnitById(int unitId) {
+        String sql = """
+            SELECT u.*, m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs,
+                   w.WarehouseName, s.SiteName
+            FROM MachineUnits u
+            LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
+            LEFT JOIN Warehouses w ON u.CurrentWarehouseId = w.WarehouseId
+            LEFT JOIN Sites s ON u.CurrentSiteId = s.SiteId
+            WHERE u.UnitId = ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, unitId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapMachineUnit(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updateMachineUnit(MachineUnit unit) {
+        String sql = "UPDATE MachineUnits SET ModelId = ?, SerialNumber = ?, CurrentStatus = ?, CurrentWarehouseId = ?, CurrentSiteId = ? WHERE UnitId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, unit.getModelId());
+            ps.setString(2, unit.getSerialNumber());
+            ps.setString(3, unit.getCurrentStatus());
+            if (unit.getCurrentWarehouseId() != null) {
+                ps.setInt(4, unit.getCurrentWarehouseId());
+            } else {
+                ps.setNull(4, Types.INTEGER);
+            }
+            if (unit.getCurrentSiteId() != null) {
+                ps.setInt(5, unit.getCurrentSiteId());
+            } else {
+                ps.setNull(5, Types.INTEGER);
+            }
+            ps.setInt(6, unit.getUnitId());
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+
+
     private MachineUnit mapMachineUnit(ResultSet rs) throws SQLException {
         MachineUnit unit = new MachineUnit();
         unit.setUnitId(rs.getInt("UnitId"));

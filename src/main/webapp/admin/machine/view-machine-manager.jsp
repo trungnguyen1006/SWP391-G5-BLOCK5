@@ -46,6 +46,15 @@
                         </div>
                     </c:if>
 
+                    <c:if test="${param.updated == 'true'}">
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <strong>Success!</strong> Machine has been updated successfully.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </c:if>
+
+
+
                     <!-- Statistics Cards -->
                     <div class="row mt-3">
                         <div class="col-xl-3 col-lg-6 col-md-6 mt-4">
@@ -186,11 +195,11 @@
                                                         </td>
                                                         <td class="p-3">
                                                             <button type="button" class="btn btn-icon btn-pills btn-soft-primary btn-sm" 
-                                                                    data-bs-toggle="modal" data-bs-target="#machineDetailModal${unit.unitId}">
+                                                                    data-bs-toggle="modal" data-bs-target="#machineDetailModal${unit.unitId}" title="View Details">
                                                                 <i class="mdi mdi-eye"></i>
                                                             </button>
-                                                            <a href="${pageContext.request.contextPath}/admin/edit-machine?id=${unit.unitId}" 
-                                                               class="btn btn-icon btn-pills btn-soft-success btn-sm">
+                                                            <a href="${pageContext.request.contextPath}/admin/update-machine?id=${unit.unitId}" 
+                                                               class="btn btn-icon btn-pills btn-soft-success btn-sm" title="Edit">
                                                                 <i class="mdi mdi-pencil"></i>
                                                             </a>
                                                         </td>
