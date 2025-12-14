@@ -40,15 +40,14 @@
                         </div>
                     </c:if>
 
-                    <div class="row">
+                    <div class="row justify-content-center">
                         <!-- Single Machine Form -->
-                        <div class="col-lg-6 mt-4">
+                        <div class="col-lg-8 mt-4">
                             <div class="card border-0 rounded shadow">
                                 <div class="card-body">
-                                    <h5 class="text-md-start text-center mb-4">Add Single Machine</h5>
+                                    <h5 class="text-md-start text-center mb-4">Add New Machine</h5>
 
                                     <form action="${pageContext.request.contextPath}/admin/add-machine" method="POST" id="addSingleForm">
-                                        <input type="hidden" name="action" value="addSingle">
                                         
                                         <div class="row">
                                             <div class="col-12">
@@ -63,7 +62,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12">
+                                            <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Serial Number <span class="text-danger">*</span></label>
                                                     <input name="serialNumber" type="text" class="form-control" placeholder="Enter serial number" required>
@@ -74,20 +73,19 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Status</label>
                                                     <select name="status" class="form-control">
-                                                        <option value="IN_STOCK">In Stock</option>
-                                                        <option value="ALLOCATED">Allocated</option>
-                                                        <option value="ON_SITE">On Site</option>
-                                                        <option value="MAINTENANCE">Maintenance</option>
-                                                        <option value="BROKEN">Broken</option>
+                                                        <option value="Available">Available</option>
+                                                        <option value="Rented">Rented</option>
+                                                        <option value="Maintenance">Maintenance</option>
+                                                        <option value="Broken">Broken</option>
                                                     </select>
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-6">
+                                            <div class="col-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Warehouse</label>
                                                     <select name="warehouseId" class="form-control">
-                                                        <option value="">Select Warehouse</option>
+                                                        <option value="">Select Warehouse (Optional)</option>
                                                         <c:forEach var="warehouse" items="${warehouses}">
                                                             <option value="${warehouse.warehouseId}">${warehouse.warehouseName}</option>
                                                         </c:forEach>
@@ -96,65 +94,27 @@
                                             </div>
 
                                             <div class="col-12">
-                                                <button type="submit" class="btn btn-primary">Add Machine</button>
-                                                <a href="${pageContext.request.contextPath}/admin/machines" class="btn btn-soft-primary ms-2">Cancel</a>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Excel Import Form -->
-                        <div class="col-lg-6 mt-4">
-                            <div class="card border-0 rounded shadow">
-                                <div class="card-body">
-                                    <h5 class="text-md-start text-center mb-4">Import from Excel</h5>
-
-                                    <form action="${pageContext.request.contextPath}/admin/add-machine" method="POST" enctype="multipart/form-data" id="importExcelForm">
-                                        <input type="hidden" name="action" value="importExcel">
-                                        
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Excel File <span class="text-danger">*</span></label>
-                                                    <input name="excelFile" type="file" class="form-control" accept=".xlsx,.xls" required>
-                                                    <small class="text-muted">Only .xlsx and .xls files are supported</small>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-12">
                                                 <div class="alert alert-info">
-                                                    <h6>Excel Format Requirements:</h6>
+                                                    <h6 class="mb-2">Machine Information:</h6>
                                                     <ul class="mb-0">
-                                                        <li><strong>Column A:</strong> Model ID (required)</li>
-                                                        <li><strong>Column B:</strong> Serial Number (required)</li>
-                                                        <li><strong>Column C:</strong> Status (optional, default: IN_STOCK)</li>
-                                                        <li><strong>Column D:</strong> Warehouse ID (optional)</li>
+                                                        <li><strong>Model:</strong> Select the machine model from the dropdown</li>
+                                                        <li><strong>Serial Number:</strong> Must be unique for each machine</li>
+                                                        <li><strong>Status:</strong> Current operational status of the machine</li>
+                                                        <li><strong>Warehouse:</strong> Optional - where the machine is currently stored</li>
                                                     </ul>
-                                                    <p class="mt-2 mb-0"><strong>Note:</strong> First row should contain headers and will be skipped.</p>
                                                 </div>
                                             </div>
 
                                             <div class="col-12">
-                                                <button type="submit" class="btn btn-success">
-                                                    <i class="mdi mdi-upload me-1"></i> Import Excel
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="mdi mdi-plus me-1"></i>Add Machine
                                                 </button>
-                                                <a href="${pageContext.request.contextPath}/admin/machines" class="btn btn-soft-primary ms-2">Cancel</a>
+                                                <a href="${pageContext.request.contextPath}/admin/machines" class="btn btn-soft-primary ms-2">
+                                                    <i class="mdi mdi-arrow-left me-1"></i>Back to List
+                                                </a>
                                             </div>
                                         </div>
                                     </form>
-                                </div>
-                            </div>
-
-                            <!-- Download Template -->
-                            <div class="card border-0 rounded shadow mt-4">
-                                <div class="card-body">
-                                    <h6 class="mb-3">Download Template</h6>
-                                    <p class="text-muted mb-3">Download the Excel template to ensure correct format for importing machines.</p>
-                                    <a href="${pageContext.request.contextPath}/admin/download-machine-template" class="btn btn-outline-primary btn-sm">
-                                        <i class="mdi mdi-download me-1"></i> Download Template
-                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -171,30 +131,37 @@
     <script>
         feather.replace();
 
-        // Form validation
+        // Form validation and enhancement
         document.getElementById('addSingleForm').addEventListener('submit', function(e) {
             const serialNumber = document.querySelector('input[name="serialNumber"]').value.trim();
+            const modelId = document.querySelector('select[name="modelId"]').value;
+            
+            if (!modelId) {
+                e.preventDefault();
+                alert('Please select a machine model');
+                return false;
+            }
+            
             if (!serialNumber) {
                 e.preventDefault();
                 alert('Serial Number is required');
                 return false;
             }
+            
+            // Convert serial number to uppercase for consistency
+            document.querySelector('input[name="serialNumber"]').value = serialNumber.toUpperCase();
         });
 
-        document.getElementById('importExcelForm').addEventListener('submit', function(e) {
-            const fileInput = document.querySelector('input[name="excelFile"]');
-            if (!fileInput.files.length) {
-                e.preventDefault();
-                alert('Please select an Excel file');
-                return false;
-            }
-            
-            const fileName = fileInput.files[0].name;
-            const fileExtension = fileName.split('.').pop().toLowerCase();
-            if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
-                e.preventDefault();
-                alert('Please select a valid Excel file (.xlsx or .xls)');
-                return false;
+        // Auto-uppercase serial number as user types
+        document.querySelector('input[name="serialNumber"]').addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        // Show model details when selected
+        document.querySelector('select[name="modelId"]').addEventListener('change', function(e) {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            if (selectedOption.value) {
+                console.log('Selected model:', selectedOption.text);
             }
         });
     </script>
