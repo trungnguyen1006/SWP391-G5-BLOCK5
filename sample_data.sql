@@ -1,128 +1,302 @@
 /* =========================================================
-SAMPLE DATA FOR CMS SYSTEM
+SAMPLE DATA (idempotent-ish): Roles/Permissions/Users/...
+Chạy sau khi CREATE TABLE xong
 ========================================================= */
 
--- Insert Permissions
-INSERT INTO Permissions (PermissionCode, PermissionName) VALUES
-('USER_VIEW', 'View Users'),
-('USER_ADD', 'Add User'),
-('USER_EDIT', 'Edit User'),
-('USER_DELETE', 'Delete User'),
-('MACHINE_VIEW', 'View Machines'),
-('MACHINE_ADD', 'Add Machine'),
-('MACHINE_EDIT', 'Edit Machine'),
-('MACHINE_DELETE', 'Delete Machine'),
-('CONTRACT_VIEW', 'View Contracts'),
-('CONTRACT_ADD', 'Add Contract'),
-('CONTRACT_EDIT', 'Edit Contract'),
-('CONTRACT_APPROVE', 'Approve Contract'),
-('SUPPORT_VIEW', 'View Support Requests'),
-('SUPPORT_HANDLE', 'Handle Support Requests'),
-('MAINTENANCE_VIEW', 'View Maintenance'),
-('MAINTENANCE_HANDLE', 'Handle Maintenance'),
-('REPORT_VIEW', 'View Reports'),
-('AUDIT_VIEW', 'View Audit Logs');
+START TRANSACTION;
 
--- Assign permissions to roles (assuming RoleId 1=Admin, 2=Manager, 3=Employee, 4=Customer)
--- Admin gets all permissions
-INSERT INTO RolePermissions (RoleId, PermissionId) 
-SELECT 1, PermissionId FROM Permissions;
+-- 1) Roles
+INSERT INTO Roles (RoleName, IsActive) VALUES
+                                           ('ADMIN', 1),
+                                           ('MANAGER', 1),
+                                           ('SALE', 1),
+                                           ('SUPPORT', 1),
+                                           ('CUSTOMER', 1)
+    ON DUPLICATE KEY UPDATE IsActive = VALUES(IsActive);
 
--- Manager gets most permissions except user management
-INSERT INTO RolePermissions (RoleId, PermissionId) 
-SELECT 2, PermissionId FROM Permissions 
-WHERE PermissionCode NOT IN ('USER_ADD', 'USER_DELETE', 'AUDIT_VIEW');
+-- 2) Permissions (bạn có thể thêm/bớt tùy hệ thống)
+INSERT INTO Permissions (PermissionCode, PermissionName, IsActive) VALUES
+                                                                       ('DASHBOARD_VIEW', 'View dashboard', 1),
 
--- Employee gets basic permissions
-INSERT INTO RolePermissions (RoleId, PermissionId) 
-SELECT 3, PermissionId FROM Permissions 
-WHERE PermissionCode IN ('MACHINE_VIEW', 'CONTRACT_VIEW', 'SUPPORT_VIEW', 'SUPPORT_HANDLE', 'MAINTENANCE_VIEW', 'MAINTENANCE_HANDLE');
+                                                                       ('MACHINE_VIEW', 'View machines', 1),
+                                                                       ('MACHINE_ADD', 'Add machine', 1),
+                                                                       ('MACHINE_UPDATE', 'Update machine', 1),
+                                                                       ('MACHINE_DELETE', 'Delete machine', 1),
 
--- Customer gets minimal permissions
-INSERT INTO RolePermissions (RoleId, PermissionId) 
-SELECT 4, PermissionId FROM Permissions 
-WHERE PermissionCode IN ('SUPPORT_VIEW');
+                                                                       ('CONTRACT_VIEW', 'View contracts', 1),
+                                                                       ('CONTRACT_CREATE', 'Create contract', 1),
+                                                                       ('CONTRACT_UPDATE', 'Update contract', 1),
+                                                                       ('CONTRACT_APPROVE', 'Approve contract', 1),
 
--- Insert Warehouses
-INSERT INTO Warehouses (WarehouseCode, WarehouseName, Address) VALUES
-('WH001', 'Main Warehouse', '123 Industrial Street, District 1, Ho Chi Minh City'),
-('WH002', 'North Warehouse', '456 Factory Road, Hanoi'),
-('WH003', 'Central Warehouse', '789 Storage Ave, Da Nang');
+                                                                       ('STOCK_VIEW', 'View stock transactions', 1),
+                                                                       ('STOCK_IMPORT', 'Import stock', 1),
+                                                                       ('STOCK_EXPORT', 'Export stock', 1),
 
--- Insert Customers
-INSERT INTO Customers (CustomerCode, CustomerName, Address, ContactName, ContactPhone, ContactEmail) VALUES
-('CUST001', 'ABC Construction Co.', '100 Construction St, District 3, HCMC', 'Nguyen Van A', '0901234567', 'nguyenvana@abc.com'),
-('CUST002', 'XYZ Engineering Ltd.', '200 Engineering Rd, Hanoi', 'Tran Thi B', '0912345678', 'tranthib@xyz.com'),
-('CUST003', 'DEF Infrastructure', '300 Infrastructure Blvd, Da Nang', 'Le Van C', '0923456789', 'levanc@def.com');
+                                                                       ('SUPPORT_VIEW', 'View support requests', 1),
+                                                                       ('SUPPORT_CREATE', 'Create support request', 1),
+                                                                       ('SUPPORT_ASSIGN', 'Assign support request', 1),
 
--- Insert Sites
-INSERT INTO Sites (SiteCode, SiteName, Address, CustomerId) VALUES
-('SITE001', 'ABC Tower Project', '500 Nguyen Hue, District 1, HCMC', 1),
-('SITE002', 'XYZ Bridge Construction', 'Highway 1A, Hanoi', 2),
-('SITE003', 'DEF Shopping Mall', 'Beach Road, Da Nang', 3);
+                                                                       ('MAINTENANCE_VIEW', 'View maintenance tickets', 1),
+                                                                       ('MAINTENANCE_CREATE', 'Create maintenance ticket', 1),
+                                                                       ('MAINTENANCE_UPDATE', 'Update maintenance ticket', 1),
 
--- Insert Machine Models
-INSERT INTO MachineModels (ModelCode, ModelName, Brand, Category, Specs) VALUES
-('EXC001', 'Excavator CAT 320D', 'Caterpillar', 'Excavator', '{"weight": "20000kg", "engine": "C6.6", "bucket_capacity": "1.2m3"}'),
-('CRA001', 'Mobile Crane XCMG QY50K', 'XCMG', 'Crane', '{"max_lift": "50000kg", "boom_length": "60m", "engine": "WP10.340E32"}'),
-('BUL001', 'Bulldozer CAT D6T', 'Caterpillar', 'Bulldozer', '{"weight": "18500kg", "blade_capacity": "4.2m3", "engine": "C9"}'),
-('LOA001', 'Wheel Loader CAT 950M', 'Caterpillar', 'Loader', '{"weight": "17000kg", "bucket_capacity": "3.0m3", "engine": "C7.1"}');
+                                                                       ('NOTIFY_VIEW', 'View notifications', 1),
+                                                                       ('AUDIT_VIEW', 'View audit logs', 1)
+    ON DUPLICATE KEY UPDATE
+                         PermissionName = VALUES(PermissionName),
+                         IsActive = VALUES(IsActive);
 
--- Insert Machine Units
-INSERT INTO MachineUnits (ModelId, SerialNumber, CurrentStatus, CurrentWarehouseId) VALUES
-(1, 'EXC001-001', 'IN_STOCK', 1),
-(1, 'EXC001-002', 'IN_STOCK', 1),
-(1, 'EXC001-003', 'IN_STOCK', 2),
-(2, 'CRA001-001', 'IN_STOCK', 1),
-(2, 'CRA001-002', 'IN_STOCK', 2),
-(3, 'BUL001-001', 'IN_STOCK', 1),
-(3, 'BUL001-002', 'IN_STOCK', 3),
-(4, 'LOA001-001', 'IN_STOCK', 1),
-(4, 'LOA001-002', 'IN_STOCK', 2),
-(4, 'LOA001-003', 'IN_STOCK', 3);
+-- 3) RolePermissions (map theo RoleName + PermissionCode, KHÔNG dùng id cứng)
+-- ADMIN: full (demo)
+INSERT IGNORE INTO RolePermissions (RoleId, PermissionId)
+SELECT r.RoleId, p.PermissionId
+FROM Roles r
+         JOIN Permissions p
+WHERE r.RoleName = 'ADMIN';
 
--- Insert Employees (assuming some users are employees)
-INSERT INTO Employees (UserId, EmployeeCode, Department, Title) VALUES
-(1, 'EMP001', 'Administration', 'System Administrator'),
-(2, 'EMP002', 'Sales', 'Sales Manager'),
-(3, 'EMP003', 'Technical', 'Technical Support'),
-(4, 'EMP004', 'Operations', 'Operations Manager');
+-- MANAGER
+INSERT IGNORE INTO RolePermissions (RoleId, PermissionId)
+SELECT r.RoleId, p.PermissionId
+FROM Roles r
+         JOIN Permissions p
+WHERE r.RoleName = 'MANAGER'
+  AND p.PermissionCode IN ('DASHBOARD_VIEW','MACHINE_VIEW','CONTRACT_VIEW','CONTRACT_APPROVE','SUPPORT_VIEW','MAINTENANCE_VIEW','AUDIT_VIEW','NOTIFY_VIEW');
 
--- Insert sample Contracts
-INSERT INTO Contracts (ContractCode, CustomerId, SiteId, SaleEmployeeId, ManagerEmployeeId, Status, CreatedBy) VALUES
-('CON001', 1, 1, 2, 4, 'DRAFT', 2),
-('CON002', 2, 2, 2, 4, 'APPROVED', 2),
-('CON003', 3, 3, 2, 4, 'ACTIVE', 2);
+-- SALE
+INSERT IGNORE INTO RolePermissions (RoleId, PermissionId)
+SELECT r.RoleId, p.PermissionId
+FROM Roles r
+         JOIN Permissions p
+WHERE r.RoleName = 'SALE'
+  AND p.PermissionCode IN ('DASHBOARD_VIEW','CONTRACT_VIEW','CONTRACT_CREATE','CONTRACT_UPDATE','MACHINE_VIEW','STOCK_VIEW','NOTIFY_VIEW');
 
--- Insert Contract Items
-INSERT INTO ContractItems (ContractId, UnitId, Price, Deposit) VALUES
-(1, 1, 50000000.00, 10000000.00),
-(1, 4, 30000000.00, 6000000.00),
-(2, 2, 50000000.00, 10000000.00),
-(2, 5, 80000000.00, 16000000.00),
-(3, 3, 50000000.00, 10000000.00),
-(3, 6, 45000000.00, 9000000.00);
+-- SUPPORT
+INSERT IGNORE INTO RolePermissions (RoleId, PermissionId)
+SELECT r.RoleId, p.PermissionId
+FROM Roles r
+         JOIN Permissions p
+WHERE r.RoleName = 'SUPPORT'
+  AND p.PermissionCode IN ('DASHBOARD_VIEW','SUPPORT_VIEW','SUPPORT_ASSIGN','MAINTENANCE_VIEW','MAINTENANCE_CREATE','MAINTENANCE_UPDATE','MACHINE_VIEW','NOTIFY_VIEW');
 
--- Insert sample Support Requests
-INSERT INTO SupportRequests (RequestCode, CustomerId, UnitId, ContractId, Title, Content, CreatedByUserId) VALUES
-('REQ001', 1, 1, 1, 'Excavator hydraulic issue', 'The hydraulic system is not working properly', 1),
-('REQ002', 2, 2, 2, 'Crane boom malfunction', 'The boom is not extending correctly', 1),
-('REQ003', 3, 3, 3, 'Bulldozer engine problem', 'Engine is overheating frequently', 1);
+-- CUSTOMER
+INSERT IGNORE INTO RolePermissions (RoleId, PermissionId)
+SELECT r.RoleId, p.PermissionId
+FROM Roles r
+         JOIN Permissions p
+WHERE r.RoleName = 'CUSTOMER'
+  AND p.PermissionCode IN ('SUPPORT_CREATE','NOTIFY_VIEW');
 
--- Insert sample Maintenance Tickets
-INSERT INTO MaintenanceTickets (TicketCode, UnitId, RequestId, Description, CreatedByEmployeeId) VALUES
-('MT001', 1, 1, 'Check and repair hydraulic system', 3),
-('MT002', 2, 2, 'Inspect and fix boom extension mechanism', 3),
-('MT003', 3, 3, 'Diagnose engine overheating issue', 3);
+-- 4) Users (password chỉ là demo; thực tế phải hash)
+INSERT INTO Users (Username, Password, Email, FullName, Phone, Image, IsActive)
+VALUES
+    ('admin',   '123456', 'admin@cms.local',   'System Admin',   '0900000001', NULL, 1),
+    ('manager', '123456', 'manager@cms.local', 'Branch Manager', '0900000002', NULL, 1),
+    ('sale01',  '123456', 'sale01@cms.local',  'Sales Staff 01', '0900000003', NULL, 1),
+    ('support01','123456','support01@cms.local','Support Staff 01','0900000004',NULL, 1),
+    ('cust01',  '123456', 'cust01@cms.local',  'Customer A',     '0900000101', NULL, 1)
+    ON DUPLICATE KEY UPDATE
+                         FullName = VALUES(FullName),
+                         Phone = VALUES(Phone),
+                         IsActive = VALUES(IsActive);
 
--- Insert sample Notifications
-INSERT INTO Notifications (ToUserId, Title, Content, SentBy) VALUES
-(1, 'New Support Request', 'A new support request REQ001 has been created', 2),
-(2, 'Contract Approved', 'Contract CON002 has been approved', 4),
-(3, 'Maintenance Assigned', 'Maintenance ticket MT001 has been assigned to you', 4);
+-- 5) UserRoles (assign role theo RoleName)
+INSERT IGNORE INTO UserRoles (UserId, RoleId)
+SELECT u.UserId, r.RoleId FROM Users u JOIN Roles r
+WHERE u.Username='admin' AND r.RoleName='ADMIN';
 
--- Insert sample Audit Logs
-INSERT INTO AuditLogs (UserId, Action, EntityName, EntityId, Detail) VALUES
-(1, 'CONTRACT_CREATE', 'Contracts', '1', 'Created new contract CON001'),
-(2, 'MACHINE_UPDATE', 'MachineUnits', '1', 'Updated machine status to ALLOCATED'),
-(4, 'CONTRACT_APPROVE', 'Contracts', '2', 'Approved contract CON002');
+INSERT IGNORE INTO UserRoles (UserId, RoleId)
+SELECT u.UserId, r.RoleId FROM Users u JOIN Roles r
+WHERE u.Username='manager' AND r.RoleName='MANAGER';
+
+INSERT IGNORE INTO UserRoles (UserId, RoleId)
+SELECT u.UserId, r.RoleId FROM Users u JOIN Roles r
+WHERE u.Username='sale01' AND r.RoleName='SALE';
+
+INSERT IGNORE INTO UserRoles (UserId, RoleId)
+SELECT u.UserId, r.RoleId FROM Users u JOIN Roles r
+WHERE u.Username='support01' AND r.RoleName='SUPPORT';
+
+INSERT IGNORE INTO UserRoles (UserId, RoleId)
+SELECT u.UserId, r.RoleId FROM Users u JOIN Roles r
+WHERE u.Username='cust01' AND r.RoleName='CUSTOMER';
+
+-- 6) Employees (admin/manager/sale/support)
+INSERT INTO Employees (UserId, EmployeeCode, Department, Title, IsActive)
+SELECT u.UserId, 'EMP-ADM-001', 'IT', 'Admin', 1 FROM Users u
+WHERE u.Username='admin'
+    ON DUPLICATE KEY UPDATE Department=VALUES(Department), Title=VALUES(Title), IsActive=VALUES(IsActive);
+
+INSERT INTO Employees (UserId, EmployeeCode, Department, Title, IsActive)
+SELECT u.UserId, 'EMP-MGR-001', 'Management', 'Manager', 1 FROM Users u
+WHERE u.Username='manager'
+    ON DUPLICATE KEY UPDATE Department=VALUES(Department), Title=VALUES(Title), IsActive=VALUES(IsActive);
+
+INSERT INTO Employees (UserId, EmployeeCode, Department, Title, IsActive)
+SELECT u.UserId, 'EMP-SAL-001', 'Sales', 'Sales', 1 FROM Users u
+WHERE u.Username='sale01'
+    ON DUPLICATE KEY UPDATE Department=VALUES(Department), Title=VALUES(Title), IsActive=VALUES(IsActive);
+
+INSERT INTO Employees (UserId, EmployeeCode, Department, Title, IsActive)
+SELECT u.UserId, 'EMP-SUP-001', 'Support', 'Support', 1 FROM Users u
+WHERE u.Username='support01'
+    ON DUPLICATE KEY UPDATE Department=VALUES(Department), Title=VALUES(Title), IsActive=VALUES(IsActive);
+
+-- 7) Customers (gắn với user cust01)
+INSERT INTO Customers (UserId, CustomerCode, CustomerName, Address, ContactName, ContactPhone, ContactEmail, IsActive)
+SELECT u.UserId, 'CUST-001', 'Customer A Co.,Ltd', 'Hanoi, Vietnam', 'Customer A', '0900000101', 'cust01@cms.local', 1
+FROM Users u WHERE u.Username='cust01'
+    ON DUPLICATE KEY UPDATE CustomerName=VALUES(CustomerName), Address=VALUES(Address), IsActive=VALUES(IsActive);
+
+-- 8) Warehouses
+INSERT INTO Warehouses (WarehouseCode, WarehouseName, Address, IsActive) VALUES
+                                                                             ('WH-001', 'Main Warehouse', 'Hanoi', 1),
+                                                                             ('WH-002', 'Spare Warehouse', 'HCM', 1)
+    ON DUPLICATE KEY UPDATE WarehouseName=VALUES(WarehouseName), Address=VALUES(Address), IsActive=VALUES(IsActive);
+
+-- 9) Sites (công trình) thuộc Customer A
+INSERT INTO Sites (SiteCode, SiteName, Address, CustomerId, IsActive)
+SELECT 'SITE-001', 'Site A1', 'Hanoi - District 1', c.CustomerId, 1
+FROM Customers c WHERE c.CustomerCode='CUST-001'
+    ON DUPLICATE KEY UPDATE SiteName=VALUES(SiteName), Address=VALUES(Address), IsActive=VALUES(IsActive);
+
+-- 10) MachineModels
+INSERT INTO MachineModels (ModelCode, ModelName, Brand, Category, Specs, IsActive)
+VALUES
+    ('MDL-EXC-01', 'Excavator Model X', 'CAT', 'EXCAVATOR', JSON_OBJECT('power','110kW','weight','20t'), 1),
+    ('MDL-GEN-01', 'Generator Model G', 'Honda', 'GENERATOR', JSON_OBJECT('power','5kW','fuel','gasoline'), 1)
+    ON DUPLICATE KEY UPDATE ModelName=VALUES(ModelName), Brand=VALUES(Brand), Category=VALUES(Category), Specs=VALUES(Specs), IsActive=VALUES(IsActive);
+
+-- 11) MachineUnits (đặt ở WH-001)
+INSERT INTO MachineUnits (ModelId, SerialNumber, CurrentStatus, CurrentWarehouseId, CurrentSiteId, IsActive)
+SELECT m.ModelId, 'SN-EXC-0001', 'IN_STOCK', w.WarehouseId, NULL, 1
+FROM MachineModels m, Warehouses w
+WHERE m.ModelCode='MDL-EXC-01' AND w.WarehouseCode='WH-001'
+    ON DUPLICATE KEY UPDATE CurrentStatus=VALUES(CurrentStatus), CurrentWarehouseId=VALUES(CurrentWarehouseId), IsActive=VALUES(IsActive);
+
+INSERT INTO MachineUnits (ModelId, SerialNumber, CurrentStatus, CurrentWarehouseId, CurrentSiteId, IsActive)
+SELECT m.ModelId, 'SN-GEN-0001', 'IN_STOCK', w.WarehouseId, NULL, 1
+FROM MachineModels m, Warehouses w
+WHERE m.ModelCode='MDL-GEN-01' AND w.WarehouseCode='WH-001'
+    ON DUPLICATE KEY UPDATE CurrentStatus=VALUES(CurrentStatus), CurrentWarehouseId=VALUES(CurrentWarehouseId), IsActive=VALUES(IsActive);
+
+-- 12) Contract (Customer A, Site A1, Sale = sale01, Manager = manager, CreatedBy = admin)
+INSERT INTO Contracts (
+    ContractCode, CustomerId, SiteId, SaleEmployeeId, ManagerEmployeeId,
+    SignedDate, StartDate, EndDate, Status, Note, CreatedBy
+)
+SELECT
+    'CT-001',
+    c.CustomerId,
+    s.SiteId,
+    eSale.EmployeeId,
+    eMgr.EmployeeId,
+    CURDATE(), CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY),
+    'PENDING_APPROVAL',
+    'Demo contract',
+    uAdmin.UserId
+FROM Customers c
+         JOIN Sites s ON s.SiteCode='SITE-001' AND s.CustomerId=c.CustomerId
+         JOIN Users uSale ON uSale.Username='sale01'
+         JOIN Employees eSale ON eSale.UserId=uSale.UserId
+         JOIN Users uMgr ON uMgr.Username='manager'
+         JOIN Employees eMgr ON eMgr.UserId=uMgr.UserId
+         JOIN Users uAdmin ON uAdmin.Username='admin'
+WHERE c.CustomerCode='CUST-001'
+    ON DUPLICATE KEY UPDATE Status=VALUES(Status), Note=VALUES(Note);
+
+-- 13) ContractItems (gắn serial)
+INSERT IGNORE INTO ContractItems (ContractId, UnitId, DeliveryDate, ReturnDueDate, Price, Deposit, Note)
+SELECT c.ContractId, u.UnitId, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), 15000000, 2000000, 'Demo item'
+FROM Contracts c
+         JOIN MachineUnits u ON u.SerialNumber='SN-EXC-0001'
+WHERE c.ContractCode='CT-001';
+
+-- 14) ContractApprovals (SUBMIT)
+INSERT IGNORE INTO ContractApprovals (ContractId, ManagerEmployeeId, Action, Comment)
+SELECT c.ContractId, eMgr.EmployeeId, 'SUBMIT', 'Submitted for approval'
+FROM Contracts c
+         JOIN Users uMgr ON uMgr.Username='manager'
+         JOIN Employees eMgr ON eMgr.UserId=uMgr.UserId
+WHERE c.ContractCode='CT-001';
+
+-- 15) StockTransactions (EXPORT từ WH-001 ra SITE-001 theo contract)
+INSERT INTO StockTransactions (
+    TransactionCode, TransactionType, FromWarehouseId, ToSiteId, RelatedContractId, Note, CreatedBy
+)
+SELECT
+    'TX-001',
+    'EXPORT',
+    w.WarehouseId,
+    s.SiteId,
+    c.ContractId,
+    'Export machine to site for contract',
+    uAdmin.UserId
+FROM Warehouses w
+         JOIN Sites s ON s.SiteCode='SITE-001'
+         JOIN Contracts c ON c.ContractCode='CT-001'
+         JOIN Users uAdmin ON uAdmin.Username='admin'
+WHERE w.WarehouseCode='WH-001'
+    ON DUPLICATE KEY UPDATE Note=VALUES(Note);
+
+INSERT IGNORE INTO StockTransactionItems (TransactionId, UnitId)
+SELECT tx.TransactionId, mu.UnitId
+FROM StockTransactions tx
+         JOIN MachineUnits mu ON mu.SerialNumber='SN-EXC-0001'
+WHERE tx.TransactionCode='TX-001';
+
+-- 16) SupportRequest (customer tạo, assigned support01)
+INSERT INTO SupportRequests (
+    RequestCode, CustomerId, UnitId, ContractId, SiteId, Title, Content,
+    Status, AssignedToEmployeeId, CreatedByUserId
+)
+SELECT
+    'SR-001',
+    c.CustomerId,
+    mu.UnitId,
+    ct.ContractId,
+    s.SiteId,
+    'Machine noise issue',
+    'Customer reported abnormal noise.',
+    'NEW',
+    eSup.EmployeeId,
+    uCust.UserId
+FROM Customers c
+         JOIN Users uCust ON uCust.Username='cust01'
+         JOIN MachineUnits mu ON mu.SerialNumber='SN-EXC-0001'
+         JOIN Contracts ct ON ct.ContractCode='CT-001'
+         JOIN Sites s ON s.SiteCode='SITE-001'
+         JOIN Users uSup ON uSup.Username='support01'
+         JOIN Employees eSup ON eSup.UserId=uSup.UserId
+WHERE c.CustomerCode='CUST-001'
+    ON DUPLICATE KEY UPDATE Status=VALUES(Status), Title=VALUES(Title);
+
+-- 17) MaintenanceTicket (support tạo)
+INSERT INTO MaintenanceTickets (
+    TicketCode, UnitId, RequestId, Status, Description, CreatedByEmployeeId
+)
+SELECT
+    'MT-001',
+    mu.UnitId,
+    sr.RequestId,
+    'OPEN',
+    'Check machine noise and perform diagnosis.',
+    eSup.EmployeeId
+FROM MachineUnits mu
+         JOIN SupportRequests sr ON sr.RequestCode='SR-001'
+         JOIN Users uSup ON uSup.Username='support01'
+         JOIN Employees eSup ON eSup.UserId=uSup.UserId
+WHERE mu.SerialNumber='SN-EXC-0001'
+    ON DUPLICATE KEY UPDATE Status=VALUES(Status), Description=VALUES(Description);
+
+-- 18) Notification + Audit log (demo)
+INSERT INTO Notifications (ToUserId, Title, Content, IsRead, SentBy)
+SELECT uMgr.UserId, 'Contract pending approval', 'Contract CT-001 is waiting for your approval.', 0, uAdmin.UserId
+FROM Users uMgr, Users uAdmin
+WHERE uMgr.Username='manager' AND uAdmin.Username='admin';
+
+INSERT INTO AuditLogs (UserId, Action, EntityName, EntityId, Detail)
+SELECT uAdmin.UserId, 'CONTRACT_CREATE', 'Contracts', 'CT-001', 'Created demo contract CT-001'
+FROM Users uAdmin
+WHERE uAdmin.Username='admin';
+
+COMMIT;
