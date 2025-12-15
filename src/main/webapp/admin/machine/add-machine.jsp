@@ -10,6 +10,8 @@
     
     <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="../../assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
+    <link href="../../assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+    <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css" rel="stylesheet">
     <link href="../../assets/css/style.min.css" rel="stylesheet" type="text/css" />
 </head>
 
@@ -94,18 +96,6 @@
                                             </div>
 
                                             <div class="col-12">
-                                                <div class="alert alert-info">
-                                                    <h6 class="mb-2">Machine Information:</h6>
-                                                    <ul class="mb-0">
-                                                        <li><strong>Model:</strong> Select the machine model from the dropdown</li>
-                                                        <li><strong>Serial Number:</strong> Must be unique for each machine</li>
-                                                        <li><strong>Status:</strong> Current operational status of the machine</li>
-                                                        <li><strong>Warehouse:</strong> Optional - where the machine is currently stored</li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-12">
                                                 <button type="submit" class="btn btn-primary">
                                                     <i class="mdi mdi-plus me-1"></i>Add Machine
                                                 </button>
@@ -127,7 +117,9 @@
     </div>
 
     <script src="../../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/simplebar.min.js"></script>
     <script src="../../assets/js/feather.min.js"></script>
+    <script src="../../assets/js/app.js"></script>
     <script>
         feather.replace();
 

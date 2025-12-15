@@ -8,17 +8,20 @@
     <title>Create New Invoice</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="../../assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
-    <link href="../../assets/css/style.min.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+    <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
     <div class="page-wrapper doctris-theme toggled">
-
+        <jsp:include page="../../admin/common/sidebar.jsp" />
 
         <main class="page-content bg-light">
-  
+            <jsp:include page="../../admin/common/header.jsp" />
 
             <div class="container-fluid">
                 <div class="layout-specing">
@@ -67,6 +70,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
@@ -164,10 +168,10 @@
                 </div>
             </div>
 
-         
+            <jsp:include page="../../admin/common/footer.jsp" />
         </main>
     </div>
-    
+
     <!-- Hidden machine data -->
     <div id="machineData" style="display: none;">
         <c:forEach var="machine" items="${availableMachines}">
@@ -180,9 +184,11 @@
             </div>
         </c:forEach>
     </div>
-    
-    <script src="../../assets/js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/js/feather.min.js"></script>
+
+    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
     <script>
         feather.replace();
 

@@ -8,9 +8,12 @@
     <title>Machine Management</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="../../assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
-    <link href="../../assets/css/style.min.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
+    <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+    <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -18,7 +21,7 @@
         <jsp:include page="../common/sidebar.jsp" />
 
         <main class="page-content bg-light">
-            <jsp:include page="../common/header.jsp" />
+            <jsp:include page="../../admin/common/header.jsp" />
 
             <div class="container-fluid">
                 <div class="layout-specing">
@@ -142,8 +145,6 @@
                                                 <tr>
                                                     <th class="border-bottom p-3">Serial Number</th>
                                                     <th class="border-bottom p-3">Model</th>
-                                                    <th class="border-bottom p-3">Brand</th>
-                                                    <th class="border-bottom p-3">Category</th>
                                                     <th class="border-bottom p-3">Status</th>
                                                     <th class="border-bottom p-3">Location</th>
                                                     <th class="border-bottom p-3">Actions</th>
@@ -157,10 +158,7 @@
                                                         </td>
                                                         <td class="p-3">
                                                             ${unit.machineModel.modelName}
-                                                            <br><small class="text-muted">${unit.machineModel.modelCode}</small>
                                                         </td>
-                                                        <td class="p-3">${unit.machineModel.brand}</td>
-                                                        <td class="p-3">${unit.machineModel.category}</td>
                                                         <td class="p-3">
                                                             <c:choose>
                                                                 <c:when test="${unit.currentStatus == 'IN_STOCK'}">
@@ -204,67 +202,6 @@
                                                             </a>
                                                         </td>
                                                     </tr>
-
-                                                    <!-- Machine Detail Modal -->
-                                                    <div class="modal fade" id="machineDetailModal${unit.unitId}" tabindex="-1" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">Machine Details - ${unit.serialNumber}</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <h6>Basic Information</h6>
-                                                                            <table class="table table-borderless">
-                                                                                <tr>
-                                                                                    <td><strong>Serial Number:</strong></td>
-                                                                                    <td>${unit.serialNumber}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td><strong>Model:</strong></td>
-                                                                                    <td>${unit.machineModel.modelName}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td><strong>Model Code:</strong></td>
-                                                                                    <td>${unit.machineModel.modelCode}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td><strong>Brand:</strong></td>
-                                                                                    <td>${unit.machineModel.brand}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td><strong>Category:</strong></td>
-                                                                                    <td>${unit.machineModel.category}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td><strong>Status:</strong></td>
-                                                                                    <td>${unit.currentStatus}</td>
-                                                                                </tr>
-                                                                            </table>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <h6>Specifications</h6>
-                                                                            <div class="text-muted">
-                                                                                <c:choose>
-                                                                                    <c:when test="${not empty unit.machineModel.specs}">
-                                                                                        ${unit.machineModel.specs}
-                                                                                    </c:when>
-                                                                                    <c:otherwise>
-                                                                                        No specifications available
-                                                                                    </c:otherwise>
-                                                                                </c:choose>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </c:forEach>
                                             </tbody>
                                         </table>
@@ -302,12 +239,114 @@
                 </div>
             </div>
 
-            <jsp:include page="../common/footer.jsp" />
+            <!-- Machine Detail Modals -->
+            <c:forEach var="unit" items="${machineUnits}">
+                <div class="modal fade" id="machineDetailModal${unit.unitId}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Machine Details - ${unit.serialNumber}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="mb-3">Basic Information</h6>
+                                        <table class="table table-borderless table-sm">
+                                            <tr>
+                                                <td><strong>Serial Number:</strong></td>
+                                                <td>${unit.serialNumber}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Model:</strong></td>
+                                                <td>${unit.machineModel.modelName}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Model Code:</strong></td>
+                                                <td>${unit.machineModel.modelCode}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Brand:</strong></td>
+                                                <td>${unit.machineModel.brand}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Category:</strong></td>
+                                                <td>${unit.machineModel.category}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Status:</strong></td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${unit.currentStatus == 'IN_STOCK'}">
+                                                            <span class="badge bg-soft-success">In Stock</span>
+                                                        </c:when>
+                                                        <c:when test="${unit.currentStatus == 'ON_SITE'}">
+                                                            <span class="badge bg-soft-warning">On Site</span>
+                                                        </c:when>
+                                                        <c:when test="${unit.currentStatus == 'MAINTENANCE'}">
+                                                            <span class="badge bg-soft-danger">Maintenance</span>
+                                                        </c:when>
+                                                        <c:when test="${unit.currentStatus == 'ALLOCATED'}">
+                                                            <span class="badge bg-soft-info">Allocated</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="badge bg-soft-secondary">${unit.currentStatus}</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="mb-3">Location & Specifications</h6>
+                                        <table class="table table-borderless table-sm">
+                                            <tr>
+                                                <td><strong>Location:</strong></td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${not empty unit.warehouseName}">
+                                                            <i class="mdi mdi-warehouse text-muted me-1"></i>${unit.warehouseName}
+                                                        </c:when>
+                                                        <c:when test="${not empty unit.siteName}">
+                                                            <i class="mdi mdi-map-marker text-muted me-1"></i>${unit.siteName}
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="text-muted">-</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <h6 class="mb-2 mt-3">Specifications</h6>
+                                        <div class="text-muted small">
+                                            <c:choose>
+                                                <c:when test="${not empty unit.machineModel.specs}">
+                                                    ${unit.machineModel.specs}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    No specifications available
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+
+            <jsp:include page="../../admin/common/footer.jsp" />
         </main>
     </div>
 
-    <script src="../../assets/js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/js/feather.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
     <script>
         feather.replace();
     </script>
