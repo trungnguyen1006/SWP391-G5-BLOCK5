@@ -322,7 +322,16 @@ public class MachineDAO extends DBContext {
         }
     }
 
-
+    public boolean deleteMachineUnit(int unitId) {
+        String sql = "UPDATE MachineUnits SET IsActive = 0 WHERE UnitId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, unitId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 
     private MachineUnit mapMachineUnit(ResultSet rs) throws SQLException {
         MachineUnit unit = new MachineUnit();

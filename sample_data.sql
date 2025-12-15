@@ -27,7 +27,18 @@ VALUES
                          Phone = VALUES(Phone),
                          IsActive = VALUES(IsActive);
 
--- 3) UserRoles (assign role theo RoleName)
+-- 3) Employees (gắn với user sale01 và manager)
+INSERT INTO Employees (UserId, EmployeeCode, EmployeeName, Department, Position, IsActive)
+SELECT u.UserId, 'EMP-001', 'Sales Staff 01', 'Sales', 'Sales Executive', 1
+FROM Users u WHERE u.Username='sale01'
+    ON DUPLICATE KEY UPDATE EmployeeName=VALUES(EmployeeName), Department=VALUES(Department), Position=VALUES(Position), IsActive=VALUES(IsActive);
+
+INSERT INTO Employees (UserId, EmployeeCode, EmployeeName, Department, Position, IsActive)
+SELECT u.UserId, 'EMP-002', 'Branch Manager', 'Management', 'Manager', 1
+FROM Users u WHERE u.Username='manager'
+    ON DUPLICATE KEY UPDATE EmployeeName=VALUES(EmployeeName), Department=VALUES(Department), Position=VALUES(Position), IsActive=VALUES(IsActive);
+
+-- 4) UserRoles (assign role theo RoleName)
 INSERT IGNORE INTO UserRoles (UserId, RoleId)
 SELECT u.UserId, r.RoleId FROM Users u JOIN Roles r
 WHERE u.Username='admin' AND r.RoleName='ADMIN';
@@ -87,7 +98,7 @@ FROM MachineModels m, Warehouses w
 WHERE m.ModelCode='MDL-GEN-01' AND w.WarehouseCode='WH-001'
     ON DUPLICATE KEY UPDATE CurrentStatus=VALUES(CurrentStatus), CurrentWarehouseId=VALUES(CurrentWarehouseId), IsActive=VALUES(IsActive);
 
--- 10) Contract (Customer A, Site A1, CreatedBy = admin)
+-- 10) Contract (Customer A, Site A1, CreatedBy = admin, SaleEmployee = sale01, ManagerEmployee = manager)
 INSERT INTO Contracts (
     ContractCode, CustomerId, SiteId, SaleEmployeeId, ManagerEmployeeId,
     SignedDate, StartDate, EndDate, Status, Note, CreatedBy
@@ -96,8 +107,8 @@ SELECT
     'CT-001',
     c.CustomerId,
     s.SiteId,
-    NULL,
-    NULL,
+    eSale.EmployeeId,
+    eManager.EmployeeId,
     CURDATE(), CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY),
     'DRAFT',
     'Demo contract',
@@ -105,6 +116,8 @@ SELECT
 FROM Customers c
          JOIN Sites s ON s.SiteCode='SITE-001' AND s.CustomerId=c.CustomerId
          JOIN Users uAdmin ON uAdmin.Username='admin'
+         JOIN Employees eSale ON eSale.EmployeeCode='EMP-001'
+         JOIN Employees eManager ON eManager.EmployeeCode='EMP-002'
 WHERE c.CustomerCode='CUST-001'
     ON DUPLICATE KEY UPDATE Status=VALUES(Status), Note=VALUES(Note);
 

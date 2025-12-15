@@ -27,13 +27,20 @@
 
 <body>
     <div class="page-wrapper doctris-theme toggled">
-        <jsp:include page="../../admin/common/sidebar.jsp" />
+        <jsp:include page="../common/sidebar.jsp" />
 
         <main class="page-content bg-light">
-            <jsp:include page="../../admin/common/header.jsp" />
+            <jsp:include page="../common/header.jsp" />
 
             <div class="container-fluid">
                 <div class="layout-specing">
+                    <c:if test="${contract == null}">
+                        <div class="alert alert-danger">
+                            Invoice not found. <a href="${pageContext.request.contextPath}/sale/invoices">Back to list</a>
+                        </div>
+                    </c:if>
+                    
+                    <c:if test="${contract != null}">
                     <div class="d-md-flex justify-content-between no-print">
                         <h5 class="mb-0">Invoice Detail - ${contract.contractCode}</h5>
                         <nav aria-label="breadcrumb" class="d-inline-block mt-4 mt-sm-0">
@@ -73,7 +80,7 @@
                                             <h3 class="mb-3">INVOICE</h3>
                                             <h5 class="text-primary">${contract.contractCode}</h5>
                                             <p class="text-muted mb-0">
-                                                Created: <fmt:formatDate value="${contract.createdDate}" pattern="dd/MM/yyyy HH:mm" />
+                                                Created: <fmt:formatDate value="${contract.createdDateAsDate}" pattern="dd/MM/yyyy HH:mm" />
                                             </p>
                                         </div>
                                         <div class="col-md-6 text-md-end">
@@ -120,8 +127,8 @@
                                                     <td><strong>Start Date:</strong></td>
                                                     <td>
                                                         <c:choose>
-                                                            <c:when test="${not empty contract.startDate}">
-                                                                <fmt:formatDate value="${contract.startDate}" pattern="dd/MM/yyyy" />
+                                                            <c:when test="${not empty contract.startDateAsDate}">
+                                                                <fmt:formatDate value="${contract.startDateAsDate}" pattern="dd/MM/yyyy" />
                                                             </c:when>
                                                             <c:otherwise>-</c:otherwise>
                                                         </c:choose>
@@ -131,8 +138,8 @@
                                                     <td><strong>End Date:</strong></td>
                                                     <td>
                                                         <c:choose>
-                                                            <c:when test="${not empty contract.endDate}">
-                                                                <fmt:formatDate value="${contract.endDate}" pattern="dd/MM/yyyy" />
+                                                            <c:when test="${not empty contract.endDateAsDate}">
+                                                                <fmt:formatDate value="${contract.endDateAsDate}" pattern="dd/MM/yyyy" />
                                                             </c:when>
                                                             <c:otherwise>-</c:otherwise>
                                                         </c:choose>
@@ -173,20 +180,10 @@
                                                                 </td>
                                                                 <td>${item.brand}</td>
                                                                 <td>
-                                                                    <c:choose>
-                                                                        <c:when test="${not empty item.deliveryDate}">
-                                                                            <fmt:formatDate value="${item.deliveryDate}" pattern="dd/MM/yyyy" />
-                                                                        </c:when>
-                                                                        <c:otherwise>-</c:otherwise>
-                                                                    </c:choose>
+                                                                    ${not empty item.deliveryDate ? item.deliveryDate : '-'}
                                                                 </td>
                                                                 <td>
-                                                                    <c:choose>
-                                                                        <c:when test="${not empty item.returnDueDate}">
-                                                                            <fmt:formatDate value="${item.returnDueDate}" pattern="dd/MM/yyyy" />
-                                                                        </c:when>
-                                                                        <c:otherwise>-</c:otherwise>
-                                                                    </c:choose>
+                                                                    ${not empty item.returnDueDate ? item.returnDueDate : '-'}
                                                                 </td>
                                                                 <td class="text-end">
                                                                     <c:choose>
@@ -243,10 +240,11 @@
                             </div>
                         </div>
                     </div>
+                    </c:if>
                 </div>
             </div>
 
-        <jsp:include page="../../admin/common/footer.jsp" />
+            <jsp:include page="../common/footer.jsp" />
         </main>
     </div>
 

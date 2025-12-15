@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @WebServlet(name = "ViewInvoiceDetailServlet", urlPatterns = {"/sale/invoice-detail"})
 public class ViewInvoiceDetailServlet extends HttpServlet {
 
-    private static final String INVOICE_DETAIL_PAGE = "invoice/view-invoice-detail.jsp";
+    private static final String INVOICE_DETAIL_PAGE = "/sale/invoice/view-invoice-detail.jsp";
     private final ContractDAO contractDAO = new ContractDAO();
 
     @Override
@@ -33,7 +33,10 @@ public class ViewInvoiceDetailServlet extends HttpServlet {
             int contractId = Integer.parseInt(contractIdParam);
             Contract contract = contractDAO.getContractById(contractId);
             
+            System.out.println("DEBUG: contractId=" + contractId + ", contract=" + contract);
+            
             if (contract == null) {
+                System.out.println("DEBUG: Contract not found, redirecting to invoices list");
                 response.sendRedirect(request.getContextPath() + "/sale/invoices");
                 return;
             }

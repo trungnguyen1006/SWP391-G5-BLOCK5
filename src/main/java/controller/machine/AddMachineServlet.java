@@ -70,7 +70,7 @@ public class AddMachineServlet extends HttpServlet {
             MachineUnit unit = new MachineUnit();
             unit.setModelId(modelId);
             unit.setSerialNumber(serialNumber.trim());
-            unit.setCurrentStatus(status != null ? status : "Available");
+            unit.setCurrentStatus(status != null ? status : "IN_STOCK");
             
             if (warehouseIdParam != null && !warehouseIdParam.isEmpty()) {
                 unit.setCurrentWarehouseId(Integer.parseInt(warehouseIdParam));

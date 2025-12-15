@@ -75,10 +75,11 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Status</label>
                                                     <select name="status" class="form-control">
-                                                        <option value="Available">Available</option>
-                                                        <option value="Rented">Rented</option>
-                                                        <option value="Maintenance">Maintenance</option>
-                                                        <option value="Broken">Broken</option>
+                                                        <option value="IN_STOCK">In Stock</option>
+                                                        <option value="ALLOCATED">Allocated</option>
+                                                        <option value="ON_SITE">On Site</option>
+                                                        <option value="MAINTENANCE">Maintenance</option>
+                                                        <option value="BROKEN">Broken</option>
                                                     </select>
                                                 </div>
                                             </div>

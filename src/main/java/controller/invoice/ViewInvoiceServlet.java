@@ -16,7 +16,7 @@ import java.util.List;
 @WebServlet(name = "ViewInvoiceServlet", urlPatterns = {"/sale/invoices"})
 public class ViewInvoiceServlet extends HttpServlet {
 
-    private static final String INVOICE_LIST_PAGE = "invoice/view-invoice-list.jsp";
+    private static final String INVOICE_LIST_PAGE = "/sale/invoice/view-invoice-list.jsp";
     private static final int PAGE_SIZE = 10;
     private final ContractDAO contractDAO = new ContractDAO();
 

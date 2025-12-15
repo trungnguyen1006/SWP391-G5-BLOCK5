@@ -56,7 +56,12 @@
                         </div>
                     </c:if>
 
-
+                    <c:if test="${param.deleted == 'true'}">
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <strong>Success!</strong> Machine has been deleted successfully.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </c:if>
 
                     <!-- Statistics Cards -->
                     <div class="row mt-3">
@@ -199,6 +204,11 @@
                                                             <a href="${pageContext.request.contextPath}/admin/update-machine?id=${unit.unitId}" 
                                                                class="btn btn-icon btn-pills btn-soft-success btn-sm" title="Edit">
                                                                 <i class="mdi mdi-pencil"></i>
+                                                            </a>
+                                                            <a href="${pageContext.request.contextPath}/admin/delete-machine?id=${unit.unitId}" 
+                                                               class="btn btn-icon btn-pills btn-soft-danger btn-sm" title="Delete" 
+                                                               onclick="return confirm('Are you sure you want to delete this machine?');">
+                                                                <i class="mdi mdi-delete"></i>
                                                             </a>
                                                         </td>
                                                     </tr>

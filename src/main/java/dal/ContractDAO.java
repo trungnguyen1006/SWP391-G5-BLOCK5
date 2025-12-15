@@ -108,15 +108,10 @@ public class ContractDAO extends DBContext {
     public Contract getContractById(int contractId) {
         String sql = """
             SELECT c.*, cust.CustomerName, cust.Address as CustomerAddress, cust.ContactName, cust.ContactPhone, cust.ContactEmail,
-                   s.SiteName, s.Address as SiteAddress,
-                   u1.FullName as SaleEmployeeName, u2.FullName as ManagerEmployeeName
+                   s.SiteName, s.Address as SiteAddress
             FROM Contracts c
             LEFT JOIN Customers cust ON c.CustomerId = cust.CustomerId
             LEFT JOIN Sites s ON c.SiteId = s.SiteId
-            LEFT JOIN Employees e1 ON c.SaleEmployeeId = e1.EmployeeId
-            LEFT JOIN Users u1 ON e1.UserId = u1.UserId
-            LEFT JOIN Employees e2 ON c.ManagerEmployeeId = e2.EmployeeId
-            LEFT JOIN Users u2 ON e2.UserId = u2.UserId
             WHERE c.ContractId = ?
             """;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -124,12 +119,16 @@ public class ContractDAO extends DBContext {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     Contract contract = mapContract(rs);
+                    System.out.println("DEBUG DAO: Found contract: " + contract.getContractCode());
                     // Load contract items
                     contract.setContractItems(getContractItems(contractId));
                     return contract;
+                } else {
+                    System.out.println("DEBUG DAO: No contract found for ID: " + contractId);
                 }
             }
         } catch (SQLException ex) {
+            System.out.println("DEBUG DAO: SQL Error: " + ex.getMessage());
             ex.printStackTrace();
         }
         return null;
@@ -383,8 +382,19 @@ public class ContractDAO extends DBContext {
         // Additional fields
         contract.setCustomerName(rs.getString("CustomerName"));
         contract.setSiteName(rs.getString("SiteName"));
-        contract.setSaleEmployeeName(rs.getString("SaleEmployeeName"));
-        contract.setManagerEmployeeName(rs.getString("ManagerEmployeeName"));
+        
+        // Handle optional columns that may not exist in all queries
+        try {
+            contract.setSaleEmployeeName(rs.getString("SaleEmployeeName"));
+        } catch (SQLException e) {
+            contract.setSaleEmployeeName(null);
+        }
+        
+        try {
+            contract.setManagerEmployeeName(rs.getString("ManagerEmployeeName"));
+        } catch (SQLException e) {
+            contract.setManagerEmployeeName(null);
+        }
         
         return contract;
     }

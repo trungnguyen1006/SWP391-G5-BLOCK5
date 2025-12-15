@@ -138,20 +138,9 @@
 
                                                             </td>
                                                             <td class="p-3">
-                                                                <a href="${pageContext.request.contextPath}/sale/invoice-detail?id=${contract.contractId}" 
-                                                                   class="btn btn-icon btn-pills btn-soft-primary btn-sm" title="View Details">
-                                                                    <i class="mdi mdi-eye"></i>
+                                                                <a href="${pageContext.request.contextPath}/sale/invoice-detail?id=${contract.contractId}" style="cursor: pointer;">
+                                                                    <i class="mdi mdi-eye" title="View Details"></i>
                                                                 </a>
-                                                                <c:if test="${contract.status == 'DRAFT'}">
-                                                                    <a href="${pageContext.request.contextPath}/sale/edit-invoice?id=${contract.contractId}" 
-                                                                       class="btn btn-icon btn-pills btn-soft-success btn-sm" title="Edit">
-                                                                        <i class="mdi mdi-pencil"></i>
-                                                                    </a>
-                                                                </c:if>
-                                                                <button type="button" class="btn btn-icon btn-pills btn-soft-info btn-sm" 
-                                                                        onclick="printInvoice(${contract.contractId})" title="Print">
-                                                                    <i class="mdi mdi-printer"></i>
-                                                                </button>
                                                             </td>
                                                         </tr>
                                                     </c:forEach>

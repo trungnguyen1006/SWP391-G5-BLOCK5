@@ -107,7 +107,22 @@ CREATE TABLE MachineUnits (
 
 
 /* =========================================================
-5) Contracts + Items by Serial + Approvals + Status History
+5) Employees - Sales and Manager staff
+========================================================= */
+CREATE TABLE Employees (
+                           EmployeeId INT AUTO_INCREMENT PRIMARY KEY,
+                           UserId INT NOT NULL UNIQUE,
+                           EmployeeCode VARCHAR(50) UNIQUE NOT NULL,
+                           EmployeeName VARCHAR(200) NOT NULL,
+                           Department VARCHAR(100) NULL,
+                           Position VARCHAR(100) NULL,
+                           IsActive TINYINT(1) DEFAULT 1,
+                           CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+                           CONSTRAINT FK_Employees_User FOREIGN KEY (UserId) REFERENCES Users(UserId)
+) ENGINE=InnoDB;
+
+/* =========================================================
+6) Contracts + Items by Serial + Approvals + Status History
 ========================================================= */
 CREATE TABLE Contracts (
                            ContractId INT AUTO_INCREMENT PRIMARY KEY,
