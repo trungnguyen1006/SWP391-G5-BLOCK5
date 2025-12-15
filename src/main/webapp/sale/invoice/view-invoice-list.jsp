@@ -58,6 +58,20 @@
                                 <div class="card border-0 rounded shadow">
                                     <div class="card-body">
                                         <div class="table-responsive">
+                                            <c:if test="${not empty sessionScope.deleteSuccess}">
+                                                <div class="alert alert-success">
+                                                    ${sessionScope.deleteSuccess}
+                                                </div>
+                                                <c:remove var="deleteSuccess" scope="session"/>
+                                            </c:if>
+
+                                            <c:if test="${not empty sessionScope.deleteError}">
+                                                <div class="alert alert-danger">
+                                                    ${sessionScope.deleteError}
+                                                </div>
+                                                <c:remove var="deleteError" scope="session"/>
+                                            </c:if>
+
                                             <table class="table table-center bg-white mb-0">
                                                 <thead>
                                                     <tr>
@@ -141,7 +155,16 @@
                                                                 <a href="${pageContext.request.contextPath}/sale/invoice-detail?id=${contract.contractId}" style="cursor: pointer;">
                                                                     <i class="mdi mdi-eye" title="View Details"></i>
                                                                 </a>
+                                                                <a href="${pageContext.request.contextPath}/sale/delete-contract
+                                                                   ?contractId=${contract.contractId}
+                                                                   &warehouseId=1"
+                                                                   onclick="return confirm('Are you sure you want to cancel this contract?');"
+                                                                   class="ms-2 text-danger">
+
+                                                                    <i class="mdi mdi-delete" title="Cancel Contract"></i>
+                                                                </a>
                                                             </td>
+
                                                         </tr>
                                                     </c:forEach>
                                                 </tbody>
@@ -189,19 +212,19 @@
         <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
         <script>
-            feather.replace();
+                                                                       feather.replace();
 
-            function printInvoice(contractId) {
-                window.open('${pageContext.request.contextPath}/sale/print-invoice?id=' + contractId, '_blank');
-            }
+                                                                       function printInvoice(contractId) {
+                                                                           window.open('${pageContext.request.contextPath}/sale/print-invoice?id=' + contractId, '_blank');
+                                                                       }
 
-            // Print button handler
-            document.querySelectorAll('.print-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const contractId = this.getAttribute('data-contract-id');
-                    printInvoice(contractId);
-                });
-            });
+                                                                       // Print button handler
+                                                                       document.querySelectorAll('.print-btn').forEach(btn => {
+                                                                           btn.addEventListener('click', function () {
+                                                                               const contractId = this.getAttribute('data-contract-id');
+                                                                               printInvoice(contractId);
+                                                                           });
+                                                                       });
         </script>
     </body>
 </html>
