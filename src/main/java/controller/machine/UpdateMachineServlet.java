@@ -50,6 +50,9 @@ public class UpdateMachineServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
         }
     }
 
@@ -124,7 +127,11 @@ public class UpdateMachineServlet extends HttpServlet {
             }
 
         } catch (NumberFormatException e) {
-            request.setAttribute("errorMessage", "Invalid input format.");
+            request.setAttribute("errorMessage", "Invalid input format: " + e.getMessage());
+            request.getRequestDispatcher(UPDATE_MACHINE_PAGE).forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "An error occurred: " + e.getMessage());
             request.getRequestDispatcher(UPDATE_MACHINE_PAGE).forward(request, response);
         }
     }

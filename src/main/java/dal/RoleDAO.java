@@ -223,4 +223,16 @@ public class RoleDAO extends DBContext {
         return users;
     }
 
+    public boolean addRole(Roles role) {
+        String sql = "INSERT INTO Roles (RoleName, IsActive) VALUES (?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, role.getRoleName());
+            ps.setBoolean(2, role.isActive());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
 }   
