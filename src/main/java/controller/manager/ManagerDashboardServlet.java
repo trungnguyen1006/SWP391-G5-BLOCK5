@@ -13,7 +13,7 @@ import java.io.IOException;
 @WebServlet(name = "ManagerDashboardServlet", urlPatterns = {"/mgr/dashboard"})
 public class ManagerDashboardServlet extends HttpServlet {
 
-    private static final String DASHBOARD_PAGE = "/manager/dashboard.jsp";
+    private static final String DASHBOARD_PAGE = "/mgr/dashboard.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

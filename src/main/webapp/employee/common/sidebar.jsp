@@ -17,8 +17,8 @@
                 <a href="javascript:void(0)"><i class="uil uil-file-contract me-2 d-inline-block"></i>Contract Management</a>
                 <div class="sidebar-submenu">
                     <ul>
-                        <li><a href="${pageContext.request.contextPath}/employee/invoices">Contract List</a></li>
-                        <li><a href="${pageContext.request.contextPath}/employee/add-invoice">Create Contract</a></li>
+                        <li><a href="${pageContext.request.contextPath}/employee/contracts">Contract List</a></li>
+                        <li><a href="${pageContext.request.contextPath}/employee/add-contract">Create Contract</a></li>
                     </ul>
                 </div>
             </li>

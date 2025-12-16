@@ -49,7 +49,7 @@
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/mgr/machines">Machine List</a></li>
                         <li><a href="${pageContext.request.contextPath}/mgr/add-machine">Add Machine</a></li>
-                        <li><a href="${pageContext.request.contextPath}/mgr/machine-models">Machine Models</a></li>
+                        <li><a href="${pageContext.request.contextPath}/mgr/add-machine-model">Add Machine Model</a></li>
                     </ul>
                 </div>
             </li>

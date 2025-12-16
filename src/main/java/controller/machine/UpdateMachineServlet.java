@@ -13,11 +13,11 @@ import model.Warehouse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "UpdateMachineServlet", urlPatterns = {"/admin/update-machine"})
+@WebServlet(name = "UpdateMachineServlet", urlPatterns = {"/mgr/update-machine"})
 public class UpdateMachineServlet extends HttpServlet {
 
-    private static final String UPDATE_MACHINE_PAGE = "machine/update-machine.jsp";
-    private static final String MACHINE_LIST_URL = "machines";
+    private static final String UPDATE_MACHINE_PAGE = "/mgr/machine/update-machine.jsp";
+    private static final String MACHINE_LIST_URL = "/mgr/machines";
     private final MachineDAO machineDAO = new MachineDAO();
 
     @Override
@@ -27,7 +27,7 @@ public class UpdateMachineServlet extends HttpServlet {
         String unitIdParam = request.getParameter("id");
         
         if (unitIdParam == null || unitIdParam.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+            response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
             return;
         }
 
@@ -36,7 +36,7 @@ public class UpdateMachineServlet extends HttpServlet {
             MachineUnit machineUnit = machineDAO.getMachineUnitById(unitId);
             
             if (machineUnit == null) {
-                response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+                response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
                 return;
             }
 
@@ -49,10 +49,10 @@ public class UpdateMachineServlet extends HttpServlet {
             request.getRequestDispatcher(UPDATE_MACHINE_PAGE).forward(request, response);
 
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+            response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+            response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
         }
     }
 
@@ -68,7 +68,7 @@ public class UpdateMachineServlet extends HttpServlet {
         String siteIdParam = request.getParameter("siteId");
 
         if (unitIdParam == null || unitIdParam.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+            response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
             return;
         }
 
@@ -77,7 +77,7 @@ public class UpdateMachineServlet extends HttpServlet {
             MachineUnit existingUnit = machineDAO.getMachineUnitById(unitId);
             
             if (existingUnit == null) {
-                response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+                response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
                 return;
             }
 
@@ -120,7 +120,7 @@ public class UpdateMachineServlet extends HttpServlet {
             boolean success = machineDAO.updateMachineUnit(updatedUnit);
             
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL + "?updated=true");
+                response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL + "?updated=true");
             } else {
                 request.setAttribute("errorMessage", "Failed to update machine. Please try again.");
                 request.getRequestDispatcher(UPDATE_MACHINE_PAGE).forward(request, response);

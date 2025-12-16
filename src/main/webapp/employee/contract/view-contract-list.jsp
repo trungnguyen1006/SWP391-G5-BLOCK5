@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Site Management</title>
+    <title>Contract Management</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -18,40 +18,26 @@
 
 <body>
     <div class="page-wrapper doctris-theme toggled">
-        <jsp:include page="../../mgr/common/sidebar.jsp" />
+        <jsp:include page="../../employee/common/sidebar.jsp" />
 
         <main class="page-content bg-light">
-            <jsp:include page="../../mgr/common/header.jsp" />
+            <jsp:include page="../../employee/common/header.jsp" />
 
             <div class="container-fluid">
                 <div class="layout-specing">
                     <div class="d-md-flex justify-content-between">
-                        <h5 class="mb-0">Site Management</h5>
+                        <h5 class="mb-0">Contract Management</h5>
                         <nav aria-label="breadcrumb" class="d-inline-block mt-4 mt-sm-0">
                             <ul class="breadcrumb bg-transparent rounded mb-0 p-0">
-                                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/mgr/dashboard">Dashboard</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Sites</li>
+                                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/employee/dashboard">Dashboard</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Contracts</li>
                             </ul>
                         </nav>
                     </div>
 
                     <c:if test="${param.added == 'true'}">
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                            <strong>Success!</strong> Site has been created successfully.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    </c:if>
-
-                    <c:if test="${param.updated == 'true'}">
-                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                            <strong>Success!</strong> Site has been updated successfully.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    </c:if>
-
-                    <c:if test="${param.deleted == 'true'}">
-                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                            <strong>Success!</strong> Site has been deleted successfully.
+                            <strong>Success!</strong> Contract has been created successfully.
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     </c:if>
@@ -59,13 +45,13 @@
                     <!-- Action Buttons -->
                     <div class="row mt-3">
                         <div class="col-12">
-                            <a href="${pageContext.request.contextPath}/mgr/add-site" class="btn btn-primary">
-                                <i class="mdi mdi-plus me-1"></i> Add New Site
+                            <a href="${pageContext.request.contextPath}/employee/add-contract" class="btn btn-primary">
+                                <i class="mdi mdi-plus me-1"></i> Add New Contract
                             </a>
                         </div>
                     </div>
 
-                    <!-- Site List -->
+                    <!-- Contract List -->
                     <div class="row">
                         <div class="col-12 mt-4">
                             <div class="card border-0 rounded shadow">
@@ -74,26 +60,27 @@
                                         <table class="table table-center bg-white mb-0">
                                             <thead>
                                                 <tr>
-                                                    <th class="border-bottom p-3">Site Code</th>
-                                                    <th class="border-bottom p-3">Site Name</th>
-                                                    <th class="border-bottom p-3">Address</th>
+                                                    <th class="border-bottom p-3">Contract Code</th>
                                                     <th class="border-bottom p-3">Customer</th>
+                                                    <th class="border-bottom p-3">Start Date</th>
+                                                    <th class="border-bottom p-3">End Date</th>
+                                                    <th class="border-bottom p-3">Status</th>
                                                     <th class="border-bottom p-3">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <c:choose>
-                                                    <c:when test="${not empty sites}">
-                                                        <c:forEach var="site" items="${sites}">
+                                                    <c:when test="${not empty contracts}">
+                                                        <c:forEach var="contract" items="${contracts}">
                                                             <tr>
                                                                 <td class="p-3">
-                                                                    <strong>${site.siteCode}</strong>
+                                                                    <strong>${contract.contractCode}</strong>
                                                                 </td>
-                                                                <td class="p-3">${site.siteName}</td>
+                                                                <td class="p-3">${contract.customerName}</td>
                                                                 <td class="p-3">
                                                                     <c:choose>
-                                                                        <c:when test="${not empty site.address}">
-                                                                            ${site.address}
+                                                                        <c:when test="${not empty contract.startDate}">
+                                                                            ${contract.startDate}
                                                                         </c:when>
                                                                         <c:otherwise>
                                                                             <span class="text-muted">-</span>
@@ -102,8 +89,8 @@
                                                                 </td>
                                                                 <td class="p-3">
                                                                     <c:choose>
-                                                                        <c:when test="${not empty site.customerName}">
-                                                                            ${site.customerName}
+                                                                        <c:when test="${not empty contract.endDate}">
+                                                                            ${contract.endDate}
                                                                         </c:when>
                                                                         <c:otherwise>
                                                                             <span class="text-muted">-</span>
@@ -111,11 +98,11 @@
                                                                     </c:choose>
                                                                 </td>
                                                                 <td class="p-3">
-                                                                    <a href="${pageContext.request.contextPath}/mgr/update-site?id=${site.siteId}" class="btn btn-sm btn-soft-primary" title="Edit">
-                                                                        <i class="mdi mdi-pencil"></i>
-                                                                    </a>
-                                                                    <a href="${pageContext.request.contextPath}/mgr/delete-site?id=${site.siteId}" class="btn btn-sm btn-soft-danger" title="Delete" onclick="return confirm('Are you sure?')">
-                                                                        <i class="mdi mdi-delete"></i>
+                                                                    <span class="badge bg-info">${contract.status}</span>
+                                                                </td>
+                                                                <td class="p-3">
+                                                                    <a href="${pageContext.request.contextPath}/employee/contract-detail?id=${contract.contractId}" class="btn btn-sm btn-soft-primary" title="View">
+                                                                        <i class="mdi mdi-eye"></i>
                                                                     </a>
                                                                 </td>
                                                             </tr>
@@ -123,8 +110,8 @@
                                                     </c:when>
                                                     <c:otherwise>
                                                         <tr>
-                                                            <td colspan="5" class="text-center p-3 text-muted">
-                                                                No sites found
+                                                            <td colspan="6" class="text-center p-3 text-muted">
+                                                                No contracts found
                                                             </td>
                                                         </tr>
                                                     </c:otherwise>
@@ -137,22 +124,22 @@
                                     <c:if test="${totalPages > 1}">
                                         <div class="d-flex justify-content-between align-items-center mt-4 px-3">
                                             <div class="text-muted">
-                                                Showing page ${currentPage} of ${totalPages} (Total: ${totalSites} sites)
+                                                Showing page ${currentPage} of ${totalPages} (Total: ${totalContracts} contracts)
                                             </div>
                                             <nav aria-label="Page navigation">
                                                 <ul class="pagination mb-0">
                                                     <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/sites?page=${currentPage - 1}">Previous</a>
+                                                        <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${currentPage - 1}">Previous</a>
                                                     </li>
 
                                                     <c:forEach var="i" begin="1" end="${totalPages > 5 ? 5 : totalPages}">
                                                         <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                            <a class="page-link" href="${pageContext.request.contextPath}/mgr/sites?page=${i}">${i}</a>
+                                                            <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${i}">${i}</a>
                                                         </li>
                                                     </c:forEach>
 
                                                     <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/sites?page=${currentPage + 1}">Next</a>
+                                                        <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${currentPage + 1}">Next</a>
                                                     </li>
                                                 </ul>
                                             </nav>
@@ -165,7 +152,7 @@
                 </div>
             </div>
 
-            <jsp:include page="../../mgr/common/footer.jsp" />
+            <jsp:include page="../../employee/common/footer.jsp" />
         </main>
     </div>
 

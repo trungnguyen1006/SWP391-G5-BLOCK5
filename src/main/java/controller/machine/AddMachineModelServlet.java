@@ -11,10 +11,10 @@ import model.MachineModel;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "AddMachineModelServlet", urlPatterns = {"/admin/add-machine-model"})
+@WebServlet(name = "AddMachineModelServlet", urlPatterns = {"/mgr/add-machine-model"})
 public class AddMachineModelServlet extends HttpServlet {
 
-    private static final String ADD_MODEL_PAGE = "machine/add-machine-model.jsp";
+    private static final String ADD_MODEL_PAGE = "/mgr/machine/add-machine-model.jsp";
     private final MachineDAO machineDAO = new MachineDAO();
 
     @Override
@@ -60,7 +60,7 @@ public class AddMachineModelServlet extends HttpServlet {
             int newModelId = machineDAO.addMachineModel(model);
             
             if (newModelId > 0) {
-                response.sendRedirect(request.getContextPath() + "/admin/add-machine-model?added=true");
+                response.sendRedirect(request.getContextPath() + "/mgr/add-machine-model?added=true");
             } else {
                 request.setAttribute("errorMessage", "Failed to add machine model. Please try again.");
                 request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);

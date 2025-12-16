@@ -24,30 +24,10 @@
             </li>
 
             <li class="sidebar-dropdown">
-                <a href="javascript:void(0)"><i class="uil uil-wheelchair me-2 d-inline-block"></i>Role Management</a>
+                <a href="javascript:void(0)"><i class="uil uil-shield me-2 d-inline-block"></i>Role Management</a>
                 <div class="sidebar-submenu">
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/admin/role-list">Role List</a></li>
-                    </ul>
-                </div>
-            </li>
-
-            <li class="sidebar-dropdown">
-                <a href="javascript:void(0)"><i class="uil uil-cog me-2 d-inline-block"></i>Machine Management</a>
-                <div class="sidebar-submenu">
-                    <ul>
-                        <li><a href="${pageContext.request.contextPath}/admin/machines">Machine List</a></li>
-                        <li><a href="${pageContext.request.contextPath}/admin/add-machine">Add Machine</a></li>
-                    </ul>
-                </div>
-            </li>
-
-            <li class="sidebar-dropdown">
-                <a href="javascript:void(0)"><i class="uil uil-invoice me-2 d-inline-block"></i>Invoice Management</a>
-                <div class="sidebar-submenu">
-                    <ul>
-                        <li><a href="${pageContext.request.contextPath}/sale/invoices">Invoice List</a></li>
-                        <li><a href="${pageContext.request.contextPath}/sale/add-invoice">Create Invoice</a></li>
                     </ul>
                 </div>
             </li>

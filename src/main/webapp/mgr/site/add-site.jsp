@@ -18,10 +18,10 @@
 
 <body>
     <div class="page-wrapper doctris-theme toggled">
-        <jsp:include page="../../manager/common/sidebar.jsp" />
+        <jsp:include page="../../mgr/common/sidebar.jsp" />
 
         <main class="page-content bg-light">
-            <jsp:include page="../../manager/common/header.jsp" />
+            <jsp:include page="../../mgr/common/header.jsp" />
 
             <div class="container-fluid">
                 <div class="layout-specing">
@@ -110,7 +110,7 @@
                 </div>
             </div>
 
-            <jsp:include page="../../manager/common/footer.jsp" />
+            <jsp:include page="../../mgr/common/footer.jsp" />
         </main>
     </div>
 

@@ -9,15 +9,6 @@ public class Warehouse {
 
     public Warehouse() {}
 
-    public Warehouse(int warehouseId, String warehouseCode, String warehouseName, String address, boolean active) {
-        this.warehouseId = warehouseId;
-        this.warehouseCode = warehouseCode;
-        this.warehouseName = warehouseName;
-        this.address = address;
-        this.active = active;
-    }
-
-    // Getters and Setters
     public int getWarehouseId() {
         return warehouseId;
     }

@@ -10,10 +10,10 @@ import model.MachineUnit;
 
 import java.io.IOException;
 
-@WebServlet(name = "DeleteMachineServlet", urlPatterns = {"/admin/delete-machine"})
+@WebServlet(name = "DeleteMachineServlet", urlPatterns = {"/mgr/delete-machine"})
 public class DeleteMachineServlet extends HttpServlet {
 
-    private static final String MACHINE_LIST_URL = "machines";
+    private static final String MACHINE_LIST_URL = "/mgr/machines";
     private final MachineDAO machineDAO = new MachineDAO();
 
     @Override
@@ -23,7 +23,7 @@ public class DeleteMachineServlet extends HttpServlet {
         String unitIdParam = request.getParameter("id");
 
         if (unitIdParam == null || unitIdParam.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+            response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
             return;
         }
 
@@ -32,7 +32,7 @@ public class DeleteMachineServlet extends HttpServlet {
             MachineUnit machineUnit = machineDAO.getMachineUnitById(unitId);
 
             if (machineUnit == null) {
-                response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+                response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
                 return;
             }
 
@@ -40,16 +40,16 @@ public class DeleteMachineServlet extends HttpServlet {
             boolean success = machineDAO.deleteMachineUnit(unitId);
 
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL + "?deleted=true");
+                response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL + "?deleted=true");
             } else {
-                response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL + "?error=delete_failed");
+                response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL + "?error=delete_failed");
             }
 
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL);
+            response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/admin/" + MACHINE_LIST_URL + "?error=exception");
+            response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL + "?error=exception");
         }
     }
 

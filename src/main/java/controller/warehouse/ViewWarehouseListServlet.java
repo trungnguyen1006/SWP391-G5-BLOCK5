@@ -1,27 +1,36 @@
-package controller.machine;
+package controller.warehouse;
 
-import dal.MachineDAO;
+import dal.WarehouseDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.MachineUnit;
+import jakarta.servlet.http.HttpSession;
+import model.Warehouse;
+import model.Users;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
-@WebServlet(name = "ViewMachineManagerServlet", urlPatterns = {"/mgr/machines"})
-public class ViewMachineManagerServlet extends HttpServlet {
+@WebServlet(name = "ViewWarehouseListServlet", urlPatterns = {"/mgr/warehouses"})
+public class ViewWarehouseListServlet extends HttpServlet {
 
-    private static final String MACHINE_LIST_PAGE = "/mgr/machine/view-machine-manager.jsp";
-    private static final int PAGE_SIZE = 15;
-    private final MachineDAO machineDAO = new MachineDAO();
+    private static final String WAREHOUSE_LIST_PAGE = "/mgr/warehouse/view-warehouse-list.jsp";
+    private static final int PAGE_SIZE = 10;
+    private final WarehouseDAO warehouseDAO = new WarehouseDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        Users currentUser = (Users) session.getAttribute("user");
+        
+        if (currentUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
 
         String pageParam = request.getParameter("page");
         int currentPage = 1;
@@ -37,25 +46,21 @@ public class ViewMachineManagerServlet extends HttpServlet {
             }
         }
 
-        int totalMachines = machineDAO.getTotalMachineUnits();
-        int totalPages = (int) Math.ceil((double) totalMachines / PAGE_SIZE);
+        int totalWarehouses = warehouseDAO.getTotalWarehouses();
+        int totalPages = (int) Math.ceil((double) totalWarehouses / PAGE_SIZE);
         
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         }
 
-        List<MachineUnit> machineUnits = machineDAO.getMachineUnitsByPage(currentPage, PAGE_SIZE);
-        Map<String, Integer> statusCount = machineDAO.getMachineCountByStatus();
-        Map<String, Integer> modelCount = machineDAO.getMachineCountByModel();
+        List<Warehouse> warehouses = warehouseDAO.getWarehousesByPage(currentPage, PAGE_SIZE);
         
-        request.setAttribute("machineUnits", machineUnits);
-        request.setAttribute("statusCount", statusCount);
-        request.setAttribute("modelCount", modelCount);
+        request.setAttribute("warehouses", warehouses);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("totalMachines", totalMachines);
+        request.setAttribute("totalWarehouses", totalWarehouses);
         
-        request.getRequestDispatcher(MACHINE_LIST_PAGE).forward(request, response);
+        request.getRequestDispatcher(WAREHOUSE_LIST_PAGE).forward(request, response);
     }
 
     @Override
