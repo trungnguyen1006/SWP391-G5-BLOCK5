@@ -3,6 +3,7 @@ package controller.admin;
 import dal.UserDAO;
 import dal.MachineDAO;
 import dal.ContractDAO;
+import dal.DashboardDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,11 +22,11 @@ public class DashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        UserDAO userDAO = new UserDAO();
+        DashboardDAO DAO = new DashboardDAO();
         MachineDAO machineDAO = new MachineDAO();
         ContractDAO contractDAO = new ContractDAO();
         
-        Dashboard d = userDAO.getDashboardAdmin();
+        Dashboard d = DAO.getDashboardAdmin();
         
         // Get machine statistics
         int totalMachines = machineDAO.getTotalMachineUnits();

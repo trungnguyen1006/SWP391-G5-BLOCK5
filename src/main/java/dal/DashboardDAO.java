@@ -1,6 +1,7 @@
 package dal;
 
 import java.sql.*;
+import model.Dashboard;
 import model.DashboardCustomer;
 import model.DashboardSale;
 import model.DashboardStaff;
@@ -168,6 +169,31 @@ public class DashboardDAO extends DBContext {
                     dashboard.setTotalTickets(
                             rs.getInt("totalTickets"));
                 }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return dashboard;
+    }
+
+    public Dashboard getDashboardAdmin() {
+        Dashboard dashboard = new Dashboard();
+
+        String sql = """
+        SELECT
+            (SELECT COUNT(*) FROM employees) AS totalEmployee,
+            (SELECT COUNT(*) FROM machinemodels) AS totalMachine,
+            (SELECT COUNT(*) FROM contracts) AS totalContract
+    """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                dashboard.setTotalEmployee(rs.getInt("totalEmployee"));
+                dashboard.setTotalMachine(rs.getInt("totalMachine"));
+                dashboard.setTotalContract(rs.getInt("totalContract"));
             }
 
         } catch (SQLException e) {

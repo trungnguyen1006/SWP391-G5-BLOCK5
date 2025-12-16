@@ -266,52 +266,5 @@ public class UserDAO extends DBContext {
         return null;
     }
 
-    public Dashboard getDashboardAdmin() {
-        Dashboard dashboard = new Dashboard();
-
-        String sql = """
-        SELECT
-            (SELECT COUNT(*) FROM users) AS totalUser,
-            (
-                SELECT COUNT(DISTINCT ur.UserId)
-                FROM userroles ur
-                JOIN roles r ON ur.RoleId = r.RoleId
-                WHERE LOWER(r.RoleName) IN ('admin','manager','staff')
-            ) AS totalEmployee,
-            (SELECT COUNT(*) FROM users WHERE IsActive = 1) AS totalActive,
-            (SELECT COUNT(*) FROM users WHERE IsActive = 0) AS totalDeActive,
-            (SELECT COUNT(*) FROM customers) AS totalCustomer,
-            (SELECT COUNT(*) FROM contracts) AS totalContract,
-            (SELECT COUNT(*) FROM contracts WHERE SignedDate IS NOT NULL) AS totalContractSigned,
-            (SELECT COUNT(*) FROM contracts WHERE Status = 'ACTIVE') AS totalContractActive,
-            (SELECT COUNT(*) FROM supportrequests) AS totalTicket,
-            (SELECT COUNT(*) FROM supportrequests WHERE Status = 'APPROVED') AS totalTicketApproved,
-            (SELECT COUNT(*) FROM supportrequests WHERE Status = 'REJECTED') AS totalTicketRejected,
-            (SELECT COUNT(*) FROM supportrequests WHERE Status = 'OPEN') AS totalTicketOpen
-    """;
-
-        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-
-            if (rs.next()) {
-                dashboard.setTotalUser(rs.getInt("totalUser"));
-                dashboard.setTotalEmployee(rs.getInt("totalEmployee"));
-                dashboard.setTotalActive(rs.getInt("totalActive"));
-                dashboard.setTotalDeActive(rs.getInt("totalDeActive"));
-                dashboard.setTotalCustomer(rs.getInt("totalCustomer"));
-                dashboard.setTotalContract(rs.getInt("totalContract"));
-                dashboard.setTotalContractSigned(rs.getInt("totalContractSigned"));
-                dashboard.setTotalContractActive(rs.getInt("totalContractActive"));
-                dashboard.setTotalTicket(rs.getInt("totalTicket"));
-                dashboard.setTotalTicketApproved(rs.getInt("totalTicketApproved"));
-                dashboard.setTotalTicketRejected(rs.getInt("totalTicketRejected"));
-                dashboard.setTotalTicketOpen(rs.getInt("totalTicketOpen"));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return dashboard;
-    }
-
+    
 }
