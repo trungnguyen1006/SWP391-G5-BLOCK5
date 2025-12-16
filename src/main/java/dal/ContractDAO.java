@@ -78,8 +78,7 @@ public class ContractDAO extends DBContext {
 
     public int getTotalContracts() {
         String sql = "SELECT COUNT(*) FROM Contracts";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -153,24 +152,24 @@ public class ContractDAO extends DBContext {
                     item.setContractItemId(rs.getInt("ContractItemId"));
                     item.setContractId(rs.getInt("ContractId"));
                     item.setUnitId(rs.getInt("UnitId"));
-                    
+
                     Date deliveryDate = rs.getDate("DeliveryDate");
                     item.setDeliveryDate(deliveryDate != null ? deliveryDate.toLocalDate() : null);
-                    
+
                     Date returnDueDate = rs.getDate("ReturnDueDate");
                     item.setReturnDueDate(returnDueDate != null ? returnDueDate.toLocalDate() : null);
-                    
+
                     item.setPrice(rs.getBigDecimal("Price"));
                     item.setDeposit(rs.getBigDecimal("Deposit"));
                     item.setNote(rs.getString("Note"));
-                    
+
                     // Machine info
                     item.setSerialNumber(rs.getString("SerialNumber"));
                     item.setModelName(rs.getString("ModelName"));
                     item.setModelCode(rs.getString("ModelCode"));
                     item.setBrand(rs.getString("Brand"));
                     item.setCategory(rs.getString("Category"));
-                    
+
                     items.add(item);
                 }
             }
@@ -223,7 +222,7 @@ public class ContractDAO extends DBContext {
             ps.setString(9, contract.getStatus());
             ps.setString(10, contract.getNote());
             ps.setInt(11, contract.getCreatedBy());
-            
+
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -260,7 +259,7 @@ public class ContractDAO extends DBContext {
             ps.setBigDecimal(5, item.getPrice());
             ps.setBigDecimal(6, item.getDeposit());
             ps.setString(7, item.getNote());
-            
+
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -279,8 +278,7 @@ public class ContractDAO extends DBContext {
     public List<Customer> getAllCustomers() {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT * FROM Customers WHERE IsActive = 1 ORDER BY CustomerName";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Customer customer = new Customer();
                 customer.setCustomerId(rs.getInt("CustomerId"));
@@ -326,8 +324,7 @@ public class ContractDAO extends DBContext {
     // Generate contract code
     public String generateContractCode() {
         String sql = "SELECT COUNT(*) + 1 as NextNumber FROM Contracts";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 int nextNumber = rs.getInt("NextNumber");
                 return String.format("CON%04d", nextNumber);
@@ -362,40 +359,151 @@ public class ContractDAO extends DBContext {
         contract.setSiteId(rs.getObject("SiteId", Integer.class));
         contract.setSaleEmployeeId(rs.getObject("SaleEmployeeId", Integer.class));
         contract.setManagerEmployeeId(rs.getObject("ManagerEmployeeId", Integer.class));
-        
+
         Date signedDate = rs.getDate("SignedDate");
         contract.setSignedDate(signedDate != null ? signedDate.toLocalDate() : null);
-        
+
         Date startDate = rs.getDate("StartDate");
         contract.setStartDate(startDate != null ? startDate.toLocalDate() : null);
-        
+
         Date endDate = rs.getDate("EndDate");
         contract.setEndDate(endDate != null ? endDate.toLocalDate() : null);
-        
+
         contract.setStatus(rs.getString("Status"));
         contract.setNote(rs.getString("Note"));
         contract.setCreatedBy(rs.getInt("CreatedBy"));
-        
+
         Timestamp createdDate = rs.getTimestamp("CreatedDate");
         contract.setCreatedDate(createdDate != null ? createdDate.toLocalDateTime() : null);
-        
+
         // Additional fields
         contract.setCustomerName(rs.getString("CustomerName"));
         contract.setSiteName(rs.getString("SiteName"));
-        
+
         // Handle optional columns that may not exist in all queries
         try {
             contract.setSaleEmployeeName(rs.getString("SaleEmployeeName"));
         } catch (SQLException e) {
             contract.setSaleEmployeeName(null);
         }
-        
+
         try {
             contract.setManagerEmployeeName(rs.getString("ManagerEmployeeName"));
         } catch (SQLException e) {
             contract.setManagerEmployeeName(null);
         }
-        
+
         return contract;
     }
+
+    public boolean cancelContractAndReturnUnits(
+            int contractId,
+            int warehouseId,
+            int changedBy,
+            String note) {
+
+        String getUnitsSql = """
+        SELECT UnitId
+        FROM ContractItems
+        WHERE ContractId = ?
+    """;
+
+        String updateUnitSql = """
+        UPDATE MachineUnits
+        SET CurrentStatus = 'AVAILABLE',
+            CurrentWarehouseId = ?,
+            CurrentSiteId = NULL
+        WHERE UnitId = ?
+    """;
+
+        String getOldStatusSql = """
+        SELECT Status FROM Contracts WHERE ContractId = ?
+    """;
+
+        String updateContractSql = """
+        UPDATE Contracts
+        SET Status = 'CANCELLED'
+        WHERE ContractId = ?
+    """;
+
+        String insertHistorySql = """
+        INSERT INTO ContractStatusHistories
+        (ContractId, OldStatus, NewStatus, Note, ChangedBy, ChangedDate)
+        VALUES (?, ?, ?, ?, ?, NOW())
+    """;
+
+        try {
+            connection.setAutoCommit(false);
+
+            // 1. Lấy trạng thái cũ của contract
+            String oldStatus = null;
+            try (PreparedStatement ps = connection.prepareStatement(getOldStatusSql)) {
+                ps.setInt(1, contractId);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    oldStatus = rs.getString("Status");
+                }
+            }
+
+            if (oldStatus == null) {
+                connection.rollback();
+                return false;
+            }
+
+            // 2. Lấy danh sách UnitId
+            List<Integer> unitIds = new ArrayList<>();
+            try (PreparedStatement ps = connection.prepareStatement(getUnitsSql)) {
+                ps.setInt(1, contractId);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    unitIds.add(rs.getInt("UnitId"));
+                }
+            }
+
+            // 3. Trả từng máy về kho
+            try (PreparedStatement ps = connection.prepareStatement(updateUnitSql)) {
+                for (int unitId : unitIds) {
+                    ps.setInt(1, warehouseId);
+                    ps.setInt(2, unitId);
+                    ps.executeUpdate();
+                }
+            }
+
+            // 4. Update contract
+            try (PreparedStatement ps = connection.prepareStatement(updateContractSql)) {
+                ps.setInt(1, contractId);
+                ps.executeUpdate();
+            }
+
+            // 5. Insert lịch sử trạng thái
+            try (PreparedStatement ps = connection.prepareStatement(insertHistorySql)) {
+                ps.setInt(1, contractId);
+                ps.setString(2, oldStatus);
+                ps.setString(3, "CANCELLED");
+                ps.setString(4, note);
+                ps.setInt(5, changedBy);
+                ps.executeUpdate();
+            }
+
+            connection.commit();
+            return true;
+
+        } catch (SQLException ex) {
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            ex.printStackTrace();
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
 }
