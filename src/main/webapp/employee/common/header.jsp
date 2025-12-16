@@ -45,10 +45,10 @@
                             </c:choose>
                             <div class="flex-1 ms-2">
                                 <span class="d-block mb-1">${sessionScope.user.fullName}</span>
-                                <small class="text-muted">Customer</small>
+                                <small class="text-muted">Employee</small>
                             </div>
                         </a>
-                        <a class="dropdown-item text-dark" href="${pageContext.request.contextPath}/customer/dashboard"><span class="mb-0 d-inline-block me-1"><i class="uil uil-dashboard align-middle h6"></i></span> Dashboard</a>
+                        <a class="dropdown-item text-dark" href="${pageContext.request.contextPath}/employee/dashboard"><span class="mb-0 d-inline-block me-1"><i class="uil uil-dashboard align-middle h6"></i></span> Dashboard</a>
                         <div class="dropdown-divider border-top"></div>
                         <a class="dropdown-item text-dark" href="${pageContext.request.contextPath}/logout"><span class="mb-0 d-inline-block me-1"><i class="uil uil-sign-out-alt align-middle h6"></i></span> Logout</a>
                     </div>

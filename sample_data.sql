@@ -9,8 +9,7 @@ START TRANSACTION;
 INSERT INTO Roles (RoleName, IsActive) VALUES
                                            ('ADMIN', 1),
                                            ('MANAGER', 1),
-                                           ('SALE', 1),
-                                           ('SUPPORT', 1),
+                                           ('EMPLOYEE', 1),
                                            ('CUSTOMER', 1)
     ON DUPLICATE KEY UPDATE IsActive = VALUES(IsActive);
 
@@ -49,11 +48,9 @@ WHERE u.Username='manager' AND r.RoleName='MANAGER';
 
 INSERT IGNORE INTO UserRoles (UserId, RoleId)
 SELECT u.UserId, r.RoleId FROM Users u JOIN Roles r
-WHERE u.Username='sale01' AND r.RoleName='SALE';
+WHERE u.Username='sale01' AND r.RoleName='EMPLOYEE';
 
-INSERT IGNORE INTO UserRoles (UserId, RoleId)
-SELECT u.UserId, r.RoleId FROM Users u JOIN Roles r
-WHERE u.Username='support01' AND r.RoleName='SUPPORT';
+
 
 INSERT IGNORE INTO UserRoles (UserId, RoleId)
 SELECT u.UserId, r.RoleId FROM Users u JOIN Roles r

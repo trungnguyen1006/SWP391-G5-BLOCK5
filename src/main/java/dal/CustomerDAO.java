@@ -1,21 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dal;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import model.Customers;
 
-/**
- *
- * @author Administrator
- */
-public class CustomerDAO extends DBContext{
-     public Customers getCustomerByUserId(int userId) {
+public class CustomerDAO extends DBContext {
+    
+    public Customers getCustomerByUserId(int userId) {
         String sql = "SELECT * FROM customers WHERE UserId = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -46,5 +38,37 @@ public class CustomerDAO extends DBContext{
         }
 
         return null;
+    }
+
+    // Get all active customers
+    public List<Customers> getAllCustomers() {
+        List<Customers> customers = new ArrayList<>();
+        String sql = "SELECT * FROM Customers WHERE IsActive = 1 ORDER BY CustomerName";
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Customers c = mapCustomer(rs);
+                customers.add(c);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
+    private Customers mapCustomer(ResultSet rs) throws SQLException {
+        Customers c = new Customers();
+        c.setCustomerId(rs.getInt("CustomerId"));
+        c.setUserId(rs.getObject("UserId", Integer.class));
+        c.setCustomerCode(rs.getString("CustomerCode"));
+        c.setCustomerName(rs.getString("CustomerName"));
+        c.setAddress(rs.getString("Address"));
+        c.setContactName(rs.getString("ContactName"));
+        c.setContactPhone(rs.getString("ContactPhone"));
+        c.setContactEmail(rs.getString("ContactEmail"));
+        c.setActive(rs.getBoolean("IsActive"));
+        Timestamp ts = rs.getTimestamp("CreatedDate");
+        c.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+        return c;
     }
 }

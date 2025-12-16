@@ -16,7 +16,7 @@ public class RegisterServlet extends HttpServlet {
 
     private static final String REGISTER_PAGE = "common/register.jsp";
     private static final String LOGIN_PAGE = "login";
-    private static final int DEFAULT_ROLE_ID = 2;
+    private static final int CUSTOMER_ROLE_ID = 4;
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
@@ -78,7 +78,7 @@ public class RegisterServlet extends HttpServlet {
         int newUserId = userDAO.createNewUser(newUser, hashedPassword);
 
         if (newUserId > 0) {
-            roleDAO.assignDefaultRole(newUserId, DEFAULT_ROLE_ID);
+            roleDAO.assignDefaultRole(newUserId, CUSTOMER_ROLE_ID);
             response.sendRedirect(request.getContextPath() + "/" + LOGIN_PAGE + "?registered=true");
         } else {
             request.setAttribute("message", "Registration failed. Please try again.");
