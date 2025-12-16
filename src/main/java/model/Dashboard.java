@@ -1,7 +1,7 @@
 package model;
 
 public class Dashboard {
-
+    private int totalMachine;
     private int totalUser;
     private int totalEmployee;
     private int totalActive;
@@ -14,8 +14,17 @@ public class Dashboard {
     private int totalTicketApproved;
     private int totalTicketRejected;
     private int totalTicketOpen;
+    
 
     public Dashboard() {
+    }
+
+    public int getTotalMachine() {
+        return totalMachine;
+    }
+
+    public void setTotalMachine(int totalMachine) {
+        this.totalMachine = totalMachine;
     }
 
     public int getTotalUser() {
