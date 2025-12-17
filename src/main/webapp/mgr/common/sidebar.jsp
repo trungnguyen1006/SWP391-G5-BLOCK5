@@ -4,9 +4,8 @@
 <nav id="sidebar" class="sidebar-wrapper">
     <div class="sidebar-content" data-simplebar style="height: calc(100% - 60px);">
         <div class="sidebar-brand">
-            <a href="${pageContext.request.contextPath}/mgr/dashboard">
-                <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="logo-light-mode" alt="">
-                <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="logo-dark-mode" alt="">
+            <a href="${pageContext.request.contextPath}/mgr/dashboard" style="font-size: 20px; font-weight: bold; color: #333;">
+                CMS
             </a>
         </div>
 
@@ -19,16 +18,6 @@
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/mgr/sites">Site List</a></li>
                         <li><a href="${pageContext.request.contextPath}/mgr/add-site">Add Site</a></li>
-                    </ul>
-                </div>
-            </li>
-
-            <li class="sidebar-dropdown">
-                <a href="javascript:void(0)"><i class="uil uil-users-alt me-2 d-inline-block"></i>Customer Management</a>
-                <div class="sidebar-submenu">
-                    <ul>
-                        <li><a href="${pageContext.request.contextPath}/mgr/customers">Customer List</a></li>
-                        <li><a href="${pageContext.request.contextPath}/mgr/add-customer">Add Customer</a></li>
                     </ul>
                 </div>
             </li>

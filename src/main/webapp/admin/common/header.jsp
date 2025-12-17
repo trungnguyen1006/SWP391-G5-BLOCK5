@@ -77,8 +77,8 @@
                                 <small class="text-muted">Administrator</small>
                             </div>
                         </a>
-                        <a class="dropdown-item text-dark" href="${pageContext.request.contextPath}/admin/dashboard"><span class="mb-0 d-inline-block me-1"><i class="uil uil-dashboard align-middle h6"></i></span> Dashboard</a>
-                        <a class="dropdown-item text-dark" href="#"><span class="mb-0 d-inline-block me-1"><i class="uil uil-setting align-middle h6"></i></span> Settings</a>
+                        <a class="dropdown-item text-dark" href="${pageContext.request.contextPath}/profile"><span class="mb-0 d-inline-block me-1"><i class="uil uil-user align-middle h6"></i></span> View Profile</a>
+                        <a class="dropdown-item text-dark" href="${pageContext.request.contextPath}/change-password"><span class="mb-0 d-inline-block me-1"><i class="uil uil-lock-alt align-middle h6"></i></span> Update Password</a>
                         <div class="dropdown-divider border-top"></div>
                         <a class="dropdown-item text-dark" href="${pageContext.request.contextPath}/logout"><span class="mb-0 d-inline-block me-1"><i class="uil uil-sign-out-alt align-middle h6"></i></span> Logout</a>
                     </div>

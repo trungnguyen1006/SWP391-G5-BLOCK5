@@ -91,8 +91,8 @@
         </div>
 
         <div class="d-flex justify-content-between">
-            <a href="editProfile" class="btn btn-secondary px-4">Edit Profile</a>
-            <a href="logout" class="btn btn-outline-secondary px-4">Logout</a>
+            <a href="${pageContext.request.contextPath}/edit-profile" class="btn btn-primary px-4">Edit Profile</a>
+            <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-secondary px-4">Logout</a>
         </div>
 
     </div>
