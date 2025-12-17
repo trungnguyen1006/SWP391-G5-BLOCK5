@@ -275,12 +275,12 @@ public class ContractDAO extends DBContext {
     }
 
     // Get customers
-    public List<Customer> getAllCustomers() {
-        List<Customer> customers = new ArrayList<>();
+    public List<Customers> getAllCustomers() {
+        List<Customers> customers = new ArrayList<>();
         String sql = "SELECT * FROM Customers WHERE IsActive = 1 ORDER BY CustomerName";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Customer customer = new Customer();
+                Customers customer = new Customers();
                 customer.setCustomerId(rs.getInt("CustomerId"));
                 customer.setCustomerCode(rs.getString("CustomerCode"));
                 customer.setCustomerName(rs.getString("CustomerName"));

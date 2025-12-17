@@ -28,7 +28,7 @@ public class AddContractServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Customer> customers = contractDAO.getAllCustomers();
+        List<Customers> customers = contractDAO.getAllCustomers();
         List<Site> sites = contractDAO.getAllSites();
         List<MachineUnit> availableMachines = machineDAO.getAllMachineUnits();
         String nextContractCode = contractDAO.generateContractCode();
@@ -69,7 +69,7 @@ public class AddContractServlet extends HttpServlet {
         String[] itemNotes = request.getParameterValues("itemNote");
 
         // Reload form data for error cases
-        List<Customer> customers = contractDAO.getAllCustomers();
+        List<Customers> customers = contractDAO.getAllCustomers();
         List<Site> sites = contractDAO.getAllSites();
         List<MachineUnit> availableMachines = machineDAO.getAllMachineUnits();
         request.setAttribute("customers", customers);

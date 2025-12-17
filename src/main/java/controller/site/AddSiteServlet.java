@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Site;
-import model.Customer;
 import model.Customers;
 import model.Users;
 
@@ -37,7 +36,7 @@ public class AddSiteServlet extends HttpServlet {
         }
 
         // Load customers for dropdown
-        List<Customer> customers = getAllCustomers();
+        List<Customers> customers = customerDAO.getAllCustomers();
         String nextSiteCode = siteDAO.generateSiteCode();
         
         request.setAttribute("customers", customers);
@@ -63,7 +62,7 @@ public class AddSiteServlet extends HttpServlet {
         String customerIdParam = request.getParameter("customerId");
 
         // Reload form data for error cases
-        List<Customer> customers = getAllCustomers();
+        List<Customers> customers = customerDAO.getAllCustomers();
         request.setAttribute("customers", customers);
 
         // Validation
@@ -112,22 +111,4 @@ public class AddSiteServlet extends HttpServlet {
         }
     }
 
-    private List<Customer> getAllCustomers() {
-        CustomerDAO customerDAO = new CustomerDAO();
-        List<Customers> customersList = customerDAO.getAllCustomers();
-        List<Customer> result = new java.util.ArrayList<>();
-        for (Customers c : customersList) {
-            Customer customer = new Customer();
-            customer.setCustomerId(c.getCustomerId());
-            customer.setCustomerCode(c.getCustomerCode());
-            customer.setCustomerName(c.getCustomerName());
-            customer.setAddress(c.getAddress());
-            customer.setContactName(c.getContactName());
-            customer.setContactPhone(c.getContactPhone());
-            customer.setContactEmail(c.getContactEmail());
-            customer.setActive(c.isActive());
-            result.add(customer);
-        }
-        return result;
-    }
 }
