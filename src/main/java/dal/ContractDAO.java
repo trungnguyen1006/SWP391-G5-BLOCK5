@@ -297,6 +297,27 @@ public class ContractDAO extends DBContext {
         return customers;
     }
 
+    // Get all sites
+    public List<Site> getAllSites() {
+        List<Site> sites = new ArrayList<>();
+        String sql = "SELECT * FROM Sites WHERE IsActive = 1 ORDER BY SiteName";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Site site = new Site();
+                site.setSiteId(rs.getInt("SiteId"));
+                site.setSiteCode(rs.getString("SiteCode"));
+                site.setSiteName(rs.getString("SiteName"));
+                site.setAddress(rs.getString("Address"));
+                site.setCustomerId(rs.getInt("CustomerId"));
+                site.setActive(rs.getBoolean("IsActive"));
+                sites.add(site);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return sites;
+    }
+
     // Get sites by customer
     public List<Site> getSitesByCustomer(int customerId) {
         List<Site> sites = new ArrayList<>();

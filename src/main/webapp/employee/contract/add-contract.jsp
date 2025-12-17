@@ -68,6 +68,18 @@
 
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
+                                                <label class="form-label">Site <span class="text-danger">*</span></label>
+                                                <select class="form-control" name="siteId" required>
+                                                    <option value="">-- Select Site --</option>
+                                                    <c:forEach var="site" items="${sites}">
+                                                        <option value="${site.siteId}">${site.siteName} - ${site.address}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
                                                 <label class="form-label">Signed Date</label>
                                                 <input type="date" class="form-control" name="signedDate">
                                             </div>

@@ -29,10 +29,12 @@ public class AddContractServlet extends HttpServlet {
             throws ServletException, IOException {
 
         List<Customer> customers = contractDAO.getAllCustomers();
+        List<Site> sites = contractDAO.getAllSites();
         List<MachineUnit> availableMachines = machineDAO.getAllMachineUnits();
         String nextContractCode = contractDAO.generateContractCode();
         
         request.setAttribute("customers", customers);
+        request.setAttribute("sites", sites);
         request.setAttribute("availableMachines", availableMachines);
         request.setAttribute("nextContractCode", nextContractCode);
         request.getRequestDispatcher(ADD_CONTRACT_PAGE).forward(request, response);
@@ -68,8 +70,10 @@ public class AddContractServlet extends HttpServlet {
 
         // Reload form data for error cases
         List<Customer> customers = contractDAO.getAllCustomers();
+        List<Site> sites = contractDAO.getAllSites();
         List<MachineUnit> availableMachines = machineDAO.getAllMachineUnits();
         request.setAttribute("customers", customers);
+        request.setAttribute("sites", sites);
         request.setAttribute("availableMachines", availableMachines);
 
         // Validation
