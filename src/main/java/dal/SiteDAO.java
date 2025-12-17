@@ -268,7 +268,7 @@ public class SiteDAO extends DBContext {
         List<Site> sites = new ArrayList<>();
         int offset = (page - 1) * pageSize;
         String sql = """
-            SELECT s.*, c.CustomerName
+            SELECT s.SiteId, s.SiteCode, s.SiteName, s.Address, s.CustomerId, s.IsActive, c.CustomerName
             FROM Sites s
             LEFT JOIN Customers c ON s.CustomerId = c.CustomerId
             WHERE s.IsActive = 1

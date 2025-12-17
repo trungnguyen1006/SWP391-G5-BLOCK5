@@ -484,7 +484,8 @@ public class MachineDAO extends DBContext {
         List<MachineUnit> units = new ArrayList<>();
         int offset = (page - 1) * pageSize;
         String sql = """
-            SELECT u.*, m.ModelName, m.Brand, m.ModelCode, m.Category, m.Specs,
+            SELECT u.UnitId, u.ModelId, u.SerialNumber, u.CurrentStatus, u.CurrentWarehouseId, u.CurrentSiteId, u.IsActive, u.CreatedDate,
+                   m.ModelName, m.Brand, m.ModelCode, m.Category, m.Specs,
                    w.WarehouseName, s.SiteName
             FROM MachineUnits u
             LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
