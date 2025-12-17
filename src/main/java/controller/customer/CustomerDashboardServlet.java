@@ -1,5 +1,7 @@
 package controller.customer;
 
+import dal.CustomerDAO;
+import dal.DashboardDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,30 +11,26 @@ import jakarta.servlet.http.HttpSession;
 import model.Users;
 
 import java.io.IOException;
+import model.Customers;
+import model.Dashboard;
 
 @WebServlet(name = "CustomerDashboardServlet", urlPatterns = {"/customer/dashboard"})
 public class CustomerDashboardServlet extends HttpServlet {
 
-    private static final String DASHBOARD_PAGE = "/customer/dashboard.jsp";
-
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        HttpSession session = request.getSession();
-        Users currentUser = (Users) session.getAttribute("user");
-        
-        if (currentUser == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        DashboardDAO dao = new DashboardDAO();
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            resp.sendRedirect("/login");
             return;
         }
-
-        request.getRequestDispatcher(DASHBOARD_PAGE).forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doGet(request, response);
+        Users u = (Users) session.getAttribute("user");
+        CustomerDAO customerDAO = new CustomerDAO();
+        Customers customer = customerDAO.getCustomerByUserId(u.getUserId());
+        int cusId = customer.getCustomerId();
+        Dashboard dashboard = dao.getDashboardCustomer(cusId);
+        req.setAttribute("dashboard", dashboard);
+        req.getRequestDispatcher("/customer/dashboard.jsp").forward(req, resp);
     }
 }

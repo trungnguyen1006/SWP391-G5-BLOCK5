@@ -8,64 +8,44 @@ import model.DashboardStaff;
 
 public class DashboardDAO extends DBContext {
 
-    public DashboardCustomer getDashboardCustomer(int customerId) {
-        DashboardCustomer dashboard = new DashboardCustomer();
+    public Dashboard getDashboardCustomer(int customerId) {
+        Dashboard dashboard = new Dashboard();
 
         String sql = """
-            SELECT
-                -- Tổng hợp đồng đã ký
-                (
-                    SELECT COUNT(*)
-                    FROM contracts
-                    WHERE CustomerId = ?
-                      AND SignedDate IS NOT NULL
-                ) AS totalContractsSigned,
+        SELECT
+            (
+                SELECT COUNT(*)
+                FROM contracts c
+                JOIN customers cu ON cu.CustomerId = c.CustomerId
+                WHERE cu.CustomerId = ?
+            ) AS totalContract,
 
-                -- Tổng ticket đã gửi
-                (
-                    SELECT COUNT(*)
-                    FROM supportrequests
-                    WHERE CustomerId = ?
-                ) AS totalTickets,
+            (
+                SELECT COUNT(*)
+                FROM sites s
+                JOIN customers cu ON cu.CustomerId = s.CustomerId
+                WHERE cu.CustomerId = ?
+            ) AS totalSite,
 
-                -- Ticket được chấp thuận
-                (
-                    SELECT COUNT(*)
-                    FROM supportrequests
-                    WHERE CustomerId = ?
-                      AND Status = 'APPROVED'
-                ) AS totalApprovedTickets,
-
-                -- Ticket bị reject
-                (
-                    SELECT COUNT(*)
-                    FROM supportrequests
-                    WHERE CustomerId = ?
-                      AND Status = 'REJECTED'
-                ) AS totalRejectedTickets
-        """;
+            (
+                SELECT COUNT(*)
+                FROM maintenancerequests m
+                JOIN customers cu ON cu.CustomerId = m.CustomerId
+                WHERE cu.CustomerId = ?
+            ) AS totalRequest
+    """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-
-            // set customerId cho từng sub query
             ps.setInt(1, customerId);
             ps.setInt(2, customerId);
             ps.setInt(3, customerId);
-            ps.setInt(4, customerId);
 
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    dashboard.setTotalContractsSigned(
-                            rs.getInt("totalContractsSigned"));
-                    dashboard.setTotalTickets(
-                            rs.getInt("totalTickets"));
-                    dashboard.setTotalApprovedTickets(
-                            rs.getInt("totalApprovedTickets"));
-                    dashboard.setTotalRejectedTickets(
-                            rs.getInt("totalRejectedTickets"));
-                }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                dashboard.setTotalContract(rs.getInt("totalContract"));
+                dashboard.setTotalSite(rs.getInt("totalSite"));
+                dashboard.setTotalRequest(rs.getInt("totalRequest"));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

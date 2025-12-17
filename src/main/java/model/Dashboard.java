@@ -17,9 +17,29 @@ public class Dashboard {
     private int totalContract;
     private int totalContractActive;
     private int totalContractPending;
+    private int totalSite;
+    private int totalRequest;
 
     public Dashboard() {
     }
+
+    public int getTotalSite() {
+        return totalSite;
+    }
+
+    public void setTotalSite(int totalSite) {
+        this.totalSite = totalSite;
+    }
+
+    public int getTotalRequest() {
+        return totalRequest;
+    }
+
+    public void setTotalRequest(int totalRequest) {
+        this.totalRequest = totalRequest;
+    }
+    
+    
 
     public int getTotalContract() {
         return totalContract;
