@@ -52,7 +52,7 @@ public class AddUserServlet extends HttpServlet {
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
         String isActiveParam = request.getParameter("isActive");
-        String[] roleIds = request.getParameterValues("roleIds");
+        String roleId = request.getParameter("roleId");
         
         Part imagePart = request.getPart("imageFile");
         String imagePath = null;
@@ -111,8 +111,8 @@ public class AddUserServlet extends HttpServlet {
             return;
         }
 
-        if (roleIds == null || roleIds.length == 0) {
-            request.setAttribute("errorMessage", "Please select at least one role.");
+        if (roleId == null || roleId.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "Please select a role.");
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
@@ -142,11 +142,8 @@ public class AddUserServlet extends HttpServlet {
         int newUserId = userDAO.createNewUser(newUser, hashedPassword);
 
         if (newUserId > 0) {
-            int[] roleIdArray = new int[roleIds.length];
-            for (int i = 0; i < roleIds.length; i++) {
-                roleIdArray[i] = Integer.parseInt(roleIds[i]);
-            }
-            roleDAO.assignRolesToUser(newUserId, roleIdArray);
+            int assignedRoleId = Integer.parseInt(roleId);
+            roleDAO.assignDefaultRole(newUserId, assignedRoleId);
             response.sendRedirect(request.getContextPath() + USER_LIST_URL + "?added=true");
         } else {
             request.setAttribute("errorMessage", "Failed to create user. Please try again.");

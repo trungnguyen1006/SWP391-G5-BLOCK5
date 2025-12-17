@@ -68,6 +68,33 @@
           </div>
         </div>
 
+        <div class="row mt-3">
+          <div class="col-12">
+            <div class="card border-0 rounded shadow">
+              <div class="card-body">
+                <form method="get" action="${pageContext.request.contextPath}/admin/user-list" class="row g-3">
+                  <div class="col-md-6">
+                    <label for="statusFilter" class="form-label">Filter by Status</label>
+                    <select class="form-select" id="statusFilter" name="status">
+                      <option value="">All Users</option>
+                      <option value="active" ${status == 'active' ? 'selected' : ''}>Active</option>
+                      <option value="inactive" ${status == 'inactive' ? 'selected' : ''}>Inactive</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="uil uil-search me-1"></i> Filter
+                    </button>
+                    <a href="${pageContext.request.contextPath}/admin/user-list" class="btn btn-secondary ms-2">
+                      <i class="uil uil-redo me-1"></i> Reset
+                    </a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="row">
           <div class="col-12 mt-4">
             <div class="card border-0 rounded shadow">
@@ -139,7 +166,7 @@
                     <nav aria-label="Page navigation">
                       <ul class="pagination mb-0">
                         <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                          <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${currentPage - 1}" aria-label="Previous">
+                          <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${currentPage - 1}${status != null ? '&status=' : ''}${status}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                           </a>
                         </li>
@@ -148,14 +175,14 @@
                           <c:when test="${totalPages <= 7}">
                             <c:forEach var="i" begin="1" end="${totalPages}">
                               <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${i}">${i}</a>
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${i}${status != null ? '&status=' : ''}${status}">${i}</a>
                               </li>
                             </c:forEach>
                           </c:when>
                           <c:otherwise>
                             <c:if test="${currentPage > 3}">
                               <li class="page-item">
-                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=1">1</a>
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=1${status != null ? '&status=' : ''}${status}">1</a>
                               </li>
                               <c:if test="${currentPage > 4}">
                                 <li class="page-item disabled"><span class="page-link">...</span></li>

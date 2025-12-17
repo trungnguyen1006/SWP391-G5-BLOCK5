@@ -76,7 +76,7 @@ public class UpdateUserServlet extends HttpServlet {
         String isActiveParam = request.getParameter("isActive");
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
-        String[] roleIds = request.getParameterValues("roleIds");
+        String roleId = request.getParameter("roleId");
         
         Part imagePart = request.getPart("imageFile");
         String newImagePath = null;
@@ -129,19 +129,17 @@ public class UpdateUserServlet extends HttpServlet {
             // Password change is disabled - do not allow password updates
             // Password fields are ignored in admin user management
 
-            if (roleIds == null || roleIds.length == 0) {
-                request.setAttribute("errorMessage", "Please select at least one role.");
+            if (roleId == null || roleId.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "Please select a role.");
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                 return;
             }
 
             // Check if trying to assign Admin role (roleId = 1)
-            for (String roleId : roleIds) {
-                if (roleId.equals("1")) {
-                    request.setAttribute("errorMessage", "Cannot assign Admin role to users.");
-                    request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
-                    return;
-                }
+            if (roleId.equals("1")) {
+                request.setAttribute("errorMessage", "Cannot assign Admin role to users.");
+                request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
+                return;
             }
 
             try {
@@ -172,11 +170,9 @@ public class UpdateUserServlet extends HttpServlet {
             boolean userUpdated = userDAO.updateUser(user);
 
             if (userUpdated) {
-                int[] roleIdArray = new int[roleIds.length];
-                for (int i = 0; i < roleIds.length; i++) {
-                    roleIdArray[i] = Integer.parseInt(roleIds[i]);
-                }
-                roleDAO.updateUserRoles(userId, roleIdArray);
+                int assignedRoleId = Integer.parseInt(roleId);
+                roleDAO.removeAllUserRoles(userId);
+                roleDAO.assignDefaultRole(userId, assignedRoleId);
                 response.sendRedirect(request.getContextPath() + USER_LIST_URL + "?updated=true");
             } else {
                 request.setAttribute("errorMessage", "Failed to update user. Please try again.");

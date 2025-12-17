@@ -65,10 +65,24 @@ public class LoginServlet extends HttpServlet {
             if (PasswordHasher.checkPassword(password, user.getPassword())) {
 
                 List<Roles> userRoles = roleDAO.getRolesByUserId(user.getUserId());
-
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-                session.setAttribute("roles", userRoles);
+                
+                // Check if all roles are inactive
+                boolean hasActiveRole = false;
+                if (userRoles != null && !userRoles.isEmpty()) {
+                    for (Roles role : userRoles) {
+                        if (role.isActive()) {
+                            hasActiveRole = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!hasActiveRole && userRoles != null && !userRoles.isEmpty()) {
+                    errorMessage = "Your roles have been deactivated. Please contact administrator.";
+                } else {
+                    HttpSession session = request.getSession();
+                    session.setAttribute("user", user);
+                    session.setAttribute("roles", userRoles);
 
                 if ("on".equals(rememberMe)) {
                     Cookie usernameCookie = new Cookie("rememberedUsername", username);
@@ -82,21 +96,32 @@ public class LoginServlet extends HttpServlet {
                     response.addCookie(usernameCookie);
                 }
 
-                // If no roles found, try to assign default role based on user
+                // If no roles found, assign CUSTOMER role as default
                 if (userRoles == null || userRoles.isEmpty()) {
-                    // Check if user has any role in database
+                    roleDAO.assignDefaultRole(user.getUserId(), 4); // Role ID 4 for CUSTOMER
                     userRoles = roleDAO.getRolesByUserId(user.getUserId());
-                    
-                    // If still no roles, assign CUSTOMER role as default
-                    if (userRoles == null || userRoles.isEmpty()) {
-                        roleDAO.assignDefaultRole(user.getUserId(), 4); // Role ID 4 for CUSTOMER
-                        userRoles = roleDAO.getRolesByUserId(user.getUserId());
-                    }
                 }
                 
-                String redirectUrl = getRedirectUrlByRole(userRoles);
-                response.sendRedirect(request.getContextPath() + redirectUrl);
-                return;
+                // Ensure user has only 1 active role
+                if (userRoles != null && userRoles.size() > 1) {
+                    // Keep only the first active role
+                    Roles primaryRole = null;
+                    for (Roles role : userRoles) {
+                        if (role.isActive()) {
+                            primaryRole = role;
+                            break;
+                        }
+                    }
+                    if (primaryRole != null) {
+                        userRoles.clear();
+                        userRoles.add(primaryRole);
+                    }
+                }
+                    
+                    String redirectUrl = getRedirectUrlByRole(userRoles);
+                    response.sendRedirect(request.getContextPath() + redirectUrl);
+                    return;
+                }
             } else {
                 errorMessage = "Incorrect password.";
             }

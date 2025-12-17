@@ -146,26 +146,20 @@
                                         <div class="col-12">
                                             <hr>
                                             <div class="mb-3">
-                                                <label class="form-label">Assign Roles <span class="text-danger">*</span></label>
-                                                <div class="row">
+                                                <label class="form-label">Assign Role <span class="text-danger">*</span></label>
+                                                <select name="roleId" class="form-control" required>
+                                                    <option value="">-- Select a role --</option>
                                                     <c:forEach var="role" items="${allRoles}">
                                                         <!-- Hide Admin role (roleId = 1) -->
                                                         <c:if test="${role.roleId != 1}">
-                                                            <div class="col-md-6">
-                                                                <div class="form-check mb-2">
-                                                                    <input class="form-check-input" type="checkbox" name="roleIds" value="${role.roleId}" id="role${role.roleId}"
-                                                                        <c:forEach var="userRole" items="${userRoles}">
-                                                                            <c:if test="${userRole.roleId == role.roleId}">checked</c:if>
-                                                                        </c:forEach>
-                                                                    >
-                                                                    <label class="form-check-label" for="role${role.roleId}">
-                                                                        ${role.roleName}
-                                                                    </label>
-                                                                </div>
-                                                            </div>
+                                                            <option value="${role.roleId}"
+                                                                <c:forEach var="userRole" items="${userRoles}">
+                                                                    <c:if test="${userRole.roleId == role.roleId}">selected</c:if>
+                                                                </c:forEach>
+                                                            >${role.roleName}</option>
                                                         </c:if>
                                                     </c:forEach>
-                                                </div>
+                                                </select>
                                             </div>
                                         </div>
 
