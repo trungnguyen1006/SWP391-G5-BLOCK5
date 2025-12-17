@@ -1,4 +1,4 @@
-/* =========================================================
+﻿/* =========================================================
 CMS - Machine Management - Contract Management
 MySQL / InnoDB
 ========================================================= */
@@ -164,6 +164,59 @@ CREATE TABLE ContractItems (
                                INDEX idx_citem_unit (UnitId)
 ) ENGINE=InnoDB;
 
+CREATE TABLE maintenancerequests (
+    RequestId INT AUTO_INCREMENT PRIMARY KEY,
 
+    RequestCode VARCHAR(50) UNIQUE,
+    RequestType ENUM('REPAIR', 'WARRANTY') NOT NULL, -- sửa chữa / bảo hành
 
+    CustomerId INT NOT NULL,
+    ContractId INT NULL,
+    UnitId INT NOT NULL, -- thiết bị cần sửa
 
+    Title VARCHAR(200),
+    Description TEXT,
+
+    Status ENUM(
+        'PENDING',      -- khách gửi
+        'APPROVED',     -- đã duyệt
+        'REJECTED',     -- từ chối
+        'IN_PROGRESS',  -- đang xử lý
+        'COMPLETED'     -- hoàn thành
+    ) DEFAULT 'PENDING',
+
+    CreatedBy INT NOT NULL, -- UserId (customer)
+    ApprovedBy INT NULL,    -- EmployeeId (manager / kỹ thuật)
+    ApprovedDate DATETIME NULL,
+
+    CompletedDate DATETIME NULL,
+
+    IsDelete TINYINT(1) DEFAULT 0,
+    CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (CustomerId) REFERENCES customers(CustomerId),
+    FOREIGN KEY (ContractId) REFERENCES contracts(ContractId),
+    FOREIGN KEY (UnitId) REFERENCES machineunits(UnitId),
+    FOREIGN KEY (CreatedBy) REFERENCES users(UserId),
+    FOREIGN KEY (ApprovedBy) REFERENCES employees(EmployeeId)
+);
+
+CREATE TABLE maintenancelogs (
+    LogId INT AUTO_INCREMENT PRIMARY KEY,
+    RequestId INT NOT NULL,
+
+    Status ENUM(
+        'PENDING',
+        'APPROVED',
+        'REJECTED',
+        'IN_PROGRESS',
+        'COMPLETED'
+    ),
+
+    Note TEXT,
+    UpdatedBy INT NOT NULL, -- UserId / EmployeeId
+    UpdatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (RequestId) REFERENCES maintenancerequests(RequestId),
+    FOREIGN KEY (UpdatedBy) REFERENCES users(UserId)
+);

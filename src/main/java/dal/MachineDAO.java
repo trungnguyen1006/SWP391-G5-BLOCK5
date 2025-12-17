@@ -16,8 +16,7 @@ public class MachineDAO extends DBContext {
     public List<MachineModel> getAllMachineModels() {
         List<MachineModel> models = new ArrayList<>();
         String sql = "SELECT * FROM MachineModels WHERE IsActive = 1 ORDER BY ModelName";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 MachineModel model = new MachineModel();
                 model.setModelId(rs.getInt("ModelId"));
@@ -75,8 +74,7 @@ public class MachineDAO extends DBContext {
             WHERE u.IsActive = 1
             ORDER BY m.ModelName, u.SerialNumber
             """;
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 MachineUnit unit = mapMachineUnit(rs);
                 units.add(unit);
@@ -118,8 +116,7 @@ public class MachineDAO extends DBContext {
 
     public int getTotalMachineUnits() {
         String sql = "SELECT COUNT(*) FROM MachineUnits WHERE IsActive = 1";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -132,8 +129,7 @@ public class MachineDAO extends DBContext {
     public Map<String, Integer> getMachineCountByStatus() {
         Map<String, Integer> statusCount = new HashMap<>();
         String sql = "SELECT CurrentStatus, COUNT(*) as Count FROM MachineUnits WHERE IsActive = 1 GROUP BY CurrentStatus";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 statusCount.put(rs.getString("CurrentStatus"), rs.getInt("Count"));
             }
@@ -153,8 +149,7 @@ public class MachineDAO extends DBContext {
             GROUP BY m.ModelId, m.ModelName
             ORDER BY m.ModelName
             """;
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 modelCount.put(rs.getString("ModelName"), rs.getInt("Count"));
             }
@@ -168,8 +163,7 @@ public class MachineDAO extends DBContext {
     public List<Warehouse> getAllWarehouses() {
         List<Warehouse> warehouses = new ArrayList<>();
         String sql = "SELECT * FROM Warehouses WHERE IsActive = 1 ORDER BY WarehouseName";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Warehouse warehouse = new Warehouse();
                 warehouse.setWarehouseId(rs.getInt("WarehouseId"));
@@ -195,7 +189,7 @@ public class MachineDAO extends DBContext {
             ps.setString(4, model.getCategory());
             ps.setString(5, model.getSpecs());
             ps.setBoolean(6, model.isActive());
-            
+
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -228,7 +222,7 @@ public class MachineDAO extends DBContext {
                 ps.setNull(5, Types.INTEGER);
             }
             ps.setBoolean(6, unit.isActive());
-            
+
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -314,7 +308,7 @@ public class MachineDAO extends DBContext {
                 ps.setNull(5, Types.INTEGER);
             }
             ps.setInt(6, unit.getUnitId());
-            
+
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -349,7 +343,7 @@ public class MachineDAO extends DBContext {
                 ps.setNull(3, Types.INTEGER);
             }
             ps.setInt(4, unitId);
-            
+
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             System.out.println("DEBUG: Error updating machine status: " + ex.getMessage());
@@ -369,7 +363,7 @@ public class MachineDAO extends DBContext {
         unit.setActive(rs.getBoolean("IsActive"));
         Timestamp ts = rs.getTimestamp("CreatedDate");
         unit.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
-        
+
         // Set model info
         MachineModel model = new MachineModel();
         model.setModelId(rs.getInt("ModelId"));
@@ -379,10 +373,73 @@ public class MachineDAO extends DBContext {
         model.setCategory(rs.getString("Category"));
         model.setSpecs(rs.getString("Specs"));
         unit.setMachineModel(model);
-        
+
         unit.setWarehouseName(rs.getString("WarehouseName"));
         unit.setSiteName(rs.getString("SiteName"));
-        
+
         return unit;
     }
+
+    public List<MachineUnit> getAvailableUnitsForCustomer(int customerId) {
+        List<MachineUnit> units = new ArrayList<>();
+
+        String sql = """
+        SELECT DISTINCT
+            u.UnitId,
+            u.ModelId,
+            u.SerialNumber,
+            u.CurrentStatus,
+            u.CurrentWarehouseId,
+            u.CurrentSiteId,
+            u.IsActive,
+            u.CreatedDate,
+
+            m.ModelName,
+            m.ModelCode,
+            m.Brand,
+            m.Category
+        FROM contracts c
+        JOIN contractitems ci ON c.ContractId = ci.ContractId
+        JOIN machineunits u ON ci.UnitId = u.UnitId
+        JOIN machinemodels m ON u.ModelId = m.ModelId
+        WHERE c.CustomerId = ?
+         
+        ORDER BY m.ModelName
+    """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, customerId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MachineUnit unit = new MachineUnit();
+                    unit.setUnitId(rs.getInt("UnitId"));
+                    unit.setModelId(rs.getInt("ModelId"));
+                    unit.setSerialNumber(rs.getString("SerialNumber"));
+                    unit.setCurrentStatus(rs.getString("CurrentStatus"));
+                    unit.setCurrentWarehouseId(
+                            rs.getObject("CurrentWarehouseId", Integer.class));
+                    unit.setCurrentSiteId(
+                            rs.getObject("CurrentSiteId", Integer.class));
+                    unit.setActive(rs.getBoolean("IsActive"));
+                    unit.setCreatedDate(
+                            rs.getTimestamp("CreatedDate").toLocalDateTime());
+
+                    MachineModel model = new MachineModel();
+                    model.setModelName(rs.getString("ModelName"));
+                    model.setModelCode(rs.getString("ModelCode"));
+                    model.setBrand(rs.getString("Brand"));
+                    model.setCategory(rs.getString("Category"));
+
+                    unit.setMachineModel(model);
+                    units.add(unit);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return units;
+    }
+
 }

@@ -565,5 +565,69 @@ public class ContractDAO extends DBContext {
         }
         return 0;
     }
+// Lấy danh sách thiết bị customer có thể chọn để gửi đơn
+
+    public List<MachineUnit> getAvailableUnitsForCustomer(int customerId) {
+        List<MachineUnit> units = new ArrayList<>();
+
+        String sql = """
+        SELECT 
+            u.UnitId,
+            u.ModelId,
+            u.SerialNumber,
+            u.CurrentStatus,
+            u.CurrentWarehouseId,
+            u.CurrentSiteId,
+            u.IsActive,
+            u.CreatedDate,
+
+            m.ModelName,
+            m.ModelCode,
+            m.Brand,
+            m.Category
+
+        FROM machineunits u
+        JOIN sites s ON u.CurrentSiteId = s.SiteId
+        JOIN machinemodels m ON u.ModelId = m.ModelId
+
+        WHERE s.CustomerId = ?
+          AND u.CurrentStatus = 'AVAILABLE'
+          AND u.IsActive = 1
+        ORDER BY m.ModelName
+    """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, customerId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+
+                    MachineUnit unit = new MachineUnit();
+                    unit.setUnitId(rs.getInt("UnitId"));
+                    unit.setModelId(rs.getInt("ModelId"));
+                    unit.setSerialNumber(rs.getString("SerialNumber"));
+                    unit.setCurrentStatus(rs.getString("CurrentStatus"));
+                    unit.setCurrentWarehouseId(rs.getObject("CurrentWarehouseId", Integer.class));
+                    unit.setCurrentSiteId(rs.getObject("CurrentSiteId", Integer.class));
+                    unit.setActive(rs.getBoolean("IsActive"));
+                    unit.setCreatedDate(rs.getTimestamp("CreatedDate").toLocalDateTime());
+
+                    MachineModel model = new MachineModel();
+                    model.setModelName(rs.getString("ModelName"));
+                    model.setModelCode(rs.getString("ModelCode"));
+                    model.setBrand(rs.getString("Brand"));
+                    model.setCategory(rs.getString("Category"));
+
+                    unit.setMachineModel(model);
+
+                    units.add(unit);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return units;
+    }
 
 }
