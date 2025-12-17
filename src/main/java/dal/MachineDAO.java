@@ -125,35 +125,6 @@ public class MachineDAO extends DBContext {
         return units;
     }
 
-    public List<MachineUnit> getMachineUnitsByPage(int page, int pageSize) {
-        List<MachineUnit> units = new ArrayList<>();
-        int offset = (page - 1) * pageSize;
-        String sql = """
-            SELECT u.*, m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs,
-                   w.WarehouseName, s.SiteName
-            FROM MachineUnits u
-            LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
-            LEFT JOIN Warehouses w ON u.CurrentWarehouseId = w.WarehouseId
-            LEFT JOIN Sites s ON u.CurrentSiteId = s.SiteId
-            WHERE u.IsActive = 1
-            ORDER BY m.ModelName, u.SerialNumber
-            LIMIT ? OFFSET ?
-            """;
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, pageSize);
-            ps.setInt(2, offset);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    MachineUnit unit = mapMachineUnit(rs);
-                    units.add(unit);
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return units;
-    }
-
     public int getTotalMachineUnits() {
         String sql = "SELECT COUNT(*) FROM MachineUnits WHERE IsActive = 1";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
