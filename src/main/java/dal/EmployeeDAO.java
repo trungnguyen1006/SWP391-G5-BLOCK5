@@ -14,8 +14,8 @@ import model.Employee;
  * @author Administrator
  */
 public class EmployeeDAO extends DBContext{
-    public Employee getEmployeebyUserId( int userID){
-       String sql = "SELECT * FROM employees WHERE UserId = ?";
+    public Employee getEmployeebyUserId(int userID) {
+        String sql = "SELECT * FROM employees WHERE UserId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, userID);
             ResultSet rs = ps.executeQuery();
@@ -24,7 +24,10 @@ public class EmployeeDAO extends DBContext{
                 e.setEmployeeId(rs.getInt("EmployeeId"));
                 e.setUserId(rs.getInt("UserId"));
                 e.setEmployeeCode(rs.getString("EmployeeCode"));
+                e.setEmployeeName(rs.getString("EmployeeName"));
                 e.setDepartment(rs.getString("Department"));
+                e.setPosition(rs.getString("Position"));
+                e.setActive(rs.getBoolean("IsActive"));
                 return e;
             }
         } catch (SQLException e) {

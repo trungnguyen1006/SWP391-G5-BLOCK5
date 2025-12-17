@@ -1,27 +1,24 @@
-package controller.contract;
+package controller.customer;
 
-import dal.ContractDAO;
-import dal.EmployeeDAO;
+import dal.CustomerManagementDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Contract;
-import model.Employee;
+import model.Customers;
 import model.Users;
 
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "ViewContractListServlet", urlPatterns = {"/employee/contracts"})
-public class ViewContractListServlet extends HttpServlet {
+@WebServlet(name = "ViewCustomerListEmployeeServlet", urlPatterns = {"/employee/customers"})
+public class ViewCustomerListEmployeeServlet extends HttpServlet {
 
-    private static final String CONTRACT_LIST_PAGE = "/employee/contract/view-contract-list.jsp";
+    private static final String CUSTOMER_LIST_PAGE = "/employee/customer/view-customer-list.jsp";
     private static final int PAGE_SIZE = 10;
-    private final ContractDAO contractDAO = new ContractDAO();
-    private final EmployeeDAO employeeDAO = new EmployeeDAO();
+    private final CustomerManagementDAO customerDAO = new CustomerManagementDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -49,24 +46,21 @@ public class ViewContractListServlet extends HttpServlet {
             }
         }
 
-        // Get all contracts (employees can view all contracts)
-        System.out.println("DEBUG: Fetching all contracts for employee view");
-        int totalContracts = contractDAO.getTotalContracts();
-        List<Contract> contracts = contractDAO.getContractsByPage(currentPage, PAGE_SIZE);
-        System.out.println("DEBUG: Found " + totalContracts + " total contracts");
-        
-        int totalPages = (int) Math.ceil((double) totalContracts / PAGE_SIZE);
+        int totalCustomers = customerDAO.getTotalCustomers();
+        int totalPages = (int) Math.ceil((double) totalCustomers / PAGE_SIZE);
         
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         }
 
-        request.setAttribute("contracts", contracts);
+        List<Customers> customers = customerDAO.getCustomersByPage(currentPage, PAGE_SIZE);
+        
+        request.setAttribute("customers", customers);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
-        request.setAttribute("totalContracts", totalContracts);
+        request.setAttribute("totalCustomers", totalCustomers);
         
-        request.getRequestDispatcher(CONTRACT_LIST_PAGE).forward(request, response);
+        request.getRequestDispatcher(CUSTOMER_LIST_PAGE).forward(request, response);
     }
 
     @Override

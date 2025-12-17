@@ -11,19 +11,23 @@ package model;
 public class Employee {
     private int employeeId;
     private int userId;
-    private  String employeeCode;
+    private String employeeCode;
+    private String employeeName;
     private String department;
-    private String title;
+    private String position;
+    private boolean isActive;
 
     public Employee() {
     }
 
-    public Employee(int employeeId, int userId, String employeeCode, String department, String title) {
+    public Employee(int employeeId, int userId, String employeeCode, String employeeName, String department, String position) {
         this.employeeId = employeeId;
         this.userId = userId;
         this.employeeCode = employeeCode;
+        this.employeeName = employeeName;
         this.department = department;
-        this.title = title;
+        this.position = position;
+        this.isActive = true;
     }
 
     public int getEmployeeId() {
@@ -58,11 +62,27 @@ public class Employee {
         this.department = department;
     }
 
-    public String getTitle() {
-        return title;
+    public String getEmployeeName() {
+        return employeeName;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

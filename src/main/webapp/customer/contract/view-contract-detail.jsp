@@ -19,10 +19,10 @@
 
 <body>
     <div class="page-wrapper doctris-theme toggled">
-        <jsp:include page="../../employee/common/sidebar.jsp" />
+        <jsp:include page="../../customer/common/sidebar.jsp" />
 
         <main class="page-content bg-light">
-            <jsp:include page="../../employee/common/header.jsp" />
+            <jsp:include page="../../customer/common/header.jsp" />
 
             <div class="container-fluid">
                 <div class="layout-specing">
@@ -30,26 +30,12 @@
                         <h5 class="mb-0">Contract Details</h5>
                         <nav aria-label="breadcrumb" class="d-inline-block mt-4 mt-sm-0">
                             <ul class="breadcrumb bg-transparent rounded mb-0 p-0">
-                                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/employee/dashboard">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/employee/contracts">Contracts</a></li>
+                                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/customer/dashboard">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/customer/contracts">Contracts</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">${contract.contractCode}</li>
                             </ul>
                         </nav>
                     </div>
-
-                    <c:if test="${param.returned == 'true'}">
-                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                            <strong>Success!</strong> All machines have been returned successfully.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    </c:if>
-
-                    <c:if test="${param.error == 'return_failed'}">
-                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                            <strong>Error!</strong> Failed to return machines. Please try again.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    </c:if>
 
                     <div class="row mt-4">
                         <!-- Contract Information -->
@@ -89,12 +75,12 @@
 
                                     <div class="row mb-3">
                                         <div class="col-md-6">
-                                            <label class="text-muted">Customer</label>
-                                            <p class="mb-0"><strong>${contract.customerName}</strong></p>
-                                        </div>
-                                        <div class="col-md-6">
                                             <label class="text-muted">Site</label>
                                             <p class="mb-0"><strong>${contract.siteName != null ? contract.siteName : 'N/A'}</strong></p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="text-muted">Signed Date</label>
+                                            <p class="mb-0"><strong>${contract.signedDate}</strong></p>
                                         </div>
                                     </div>
 
@@ -120,10 +106,10 @@
                                 </div>
                             </div>
 
-                            <!-- Contract Items -->
+                            <!-- Contract Items (Machines) -->
                             <div class="card border-0 rounded shadow">
                                 <div class="card-body">
-                                    <h6 class="mb-4">Machines</h6>
+                                    <h6 class="mb-4">Rented Machines</h6>
                                     
                                     <c:choose>
                                         <c:when test="${not empty contract.contractItems}">
@@ -168,25 +154,39 @@
                         <div class="col-lg-4">
                             <div class="card border-0 rounded shadow">
                                 <div class="card-body">
-                                    <h6 class="mb-4">Actions</h6>
+                                    <h6 class="mb-4">Contract Summary</h6>
                                     
-                                    <c:if test="${contract.status == 'DRAFT'}">
-                                        <form method="POST" action="${pageContext.request.contextPath}/employee/confirm-delivery" class="mb-2">
-                                            <input type="hidden" name="contractId" value="${contract.contractId}">
-                                            <button type="submit" class="btn btn-success w-100 mb-2">
-                                                <i class="mdi mdi-check-circle me-1"></i> Xác Nhận Giao Máy
-                                            </button>
-                                        </form>
-                                    </c:if>
+                                    <div class="mb-3">
+                                        <label class="text-muted">Total Machines</label>
+                                        <p class="mb-0"><strong>${contract.contractItems != null ? contract.contractItems.size() : 0}</strong></p>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted">Total Rental Cost</label>
+                                        <p class="mb-0"><strong>
+                                            <c:set var="totalPrice" value="0" />
+                                            <c:forEach var="item" items="${contract.contractItems}">
+                                                <c:set var="totalPrice" value="${totalPrice + item.price}" />
+                                            </c:forEach>
+                                            <fmt:formatNumber value="${totalPrice}" type="currency" currencySymbol="₫" />
+                                        </strong></p>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted">Total Deposit</label>
+                                        <p class="mb-0"><strong>
+                                            <c:set var="totalDeposit" value="0" />
+                                            <c:forEach var="item" items="${contract.contractItems}">
+                                                <c:set var="totalDeposit" value="${totalDeposit + item.deposit}" />
+                                            </c:forEach>
+                                            <fmt:formatNumber value="${totalDeposit}" type="currency" currencySymbol="₫" />
+                                        </strong></p>
+                                    </div>
+
+                                    <hr>
                                     
-                                    <c:if test="${contract.status != 'CANCELLED' && contract.status != 'COMPLETED'}">
-                                        <button type="button" class="btn btn-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#confirmReceiptModal">
-                                            <i class="mdi mdi-check me-1"></i> Đã Nhận Lại Máy
-                                        </button>
-                                    </c:if>
-                                    
-                                    <a href="${pageContext.request.contextPath}/employee/contracts" class="btn btn-secondary w-100">
-                                        <i class="mdi mdi-arrow-left me-1"></i> Quay Lại
+                                    <a href="${pageContext.request.contextPath}/customer/contracts" class="btn btn-secondary w-100">
+                                        <i class="mdi mdi-arrow-left me-1"></i> Back to List
                                     </a>
                                 </div>
                             </div>
@@ -195,44 +195,7 @@
                 </div>
             </div>
 
-            <!-- Confirm Receipt Modal -->
-            <div class="modal fade" id="confirmReceiptModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Xác Nhận Đã Nhận Lại Máy</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <form method="POST" action="${pageContext.request.contextPath}/employee/confirm-receipt">
-                            <div class="modal-body">
-                                <input type="hidden" name="contractId" value="${contract.contractId}">
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">Trả Về Kho <span class="text-danger">*</span></label>
-                                    <select class="form-control" name="warehouseId" required>
-                                        <option value="">-- Chọn Kho --</option>
-                                        <option value="1">Kho Chính</option>
-                                        <option value="2">Kho Phụ</option>
-                                    </select>
-                                </div>
-
-                                <div class="alert alert-info">
-                                    <i class="mdi mdi-information me-2"></i>
-                                    <strong>Lưu ý:</strong> Tất cả máy trong hợp đồng sẽ được đánh dấu là đã nhận lại và trả về kho.
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                <button type="submit" class="btn btn-success">
-                                    <i class="mdi mdi-check me-1"></i> Xác Nhận
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <jsp:include page="../../employee/common/footer.jsp" />
+            <jsp:include page="../../customer/common/footer.jsp" />
         </main>
     </div>
 

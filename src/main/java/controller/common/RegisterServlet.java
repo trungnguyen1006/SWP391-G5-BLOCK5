@@ -1,5 +1,6 @@
 package controller.common;
 
+import dal.CustomerDAO;
 import dal.RoleDAO;
 import dal.UserDAO;
 import jakarta.servlet.ServletException;
@@ -7,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Customers;
 import model.Users;
 
 import java.io.IOException;
@@ -20,6 +22,7 @@ public class RegisterServlet extends HttpServlet {
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
+    private final CustomerDAO customerDAO = new CustomerDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -78,7 +81,25 @@ public class RegisterServlet extends HttpServlet {
         int newUserId = userDAO.createNewUser(newUser, hashedPassword);
 
         if (newUserId > 0) {
+            // Assign CUSTOMER role
             roleDAO.assignDefaultRole(newUserId, CUSTOMER_ROLE_ID);
+            
+            // Create Customer record linked to this user
+            Customers customer = new Customers();
+            customer.setUserId(newUserId);
+            customer.setCustomerCode("CUST-" + System.currentTimeMillis()); // Generate unique code
+            customer.setCustomerName(fullName);
+            customer.setContactEmail(email);
+            customer.setActive(true);
+            
+            int customerId = customerDAO.createCustomer(customer);
+            
+            if (customerId > 0) {
+                System.out.println("DEBUG: Created customer ID " + customerId + " for user ID " + newUserId);
+            } else {
+                System.out.println("DEBUG: Failed to create customer for user ID " + newUserId);
+            }
+            
             response.sendRedirect(request.getContextPath() + "/" + LOGIN_PAGE + "?registered=true");
         } else {
             request.setAttribute("message", "Registration failed. Please try again.");

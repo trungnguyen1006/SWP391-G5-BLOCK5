@@ -126,27 +126,22 @@ public class UpdateUserServlet extends HttpServlet {
                 return;
             }
 
-            if (newPassword != null && !newPassword.isEmpty()) {
-                if (!Validator.isValidPassword(newPassword)) {
-                    request.setAttribute("errorMessage", Validator.getPasswordErrorMessage());
-                    request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
-                    return;
-                }
-
-                if (!newPassword.equals(confirmPassword)) {
-                    request.setAttribute("errorMessage", "Passwords do not match.");
-                    request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
-                    return;
-                }
-
-                String hashedPassword = PasswordHasher.hashPassword(newPassword);
-                userDAO.updateUserPassword(userId, hashedPassword);
-            }
+            // Password change is disabled - do not allow password updates
+            // Password fields are ignored in admin user management
 
             if (roleIds == null || roleIds.length == 0) {
                 request.setAttribute("errorMessage", "Please select at least one role.");
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                 return;
+            }
+
+            // Check if trying to assign Admin role (roleId = 1)
+            for (String roleId : roleIds) {
+                if (roleId.equals("1")) {
+                    request.setAttribute("errorMessage", "Cannot assign Admin role to users.");
+                    request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
+                    return;
+                }
             }
 
             try {

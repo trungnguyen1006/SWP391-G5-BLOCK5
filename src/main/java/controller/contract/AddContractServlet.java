@@ -123,37 +123,46 @@ public class AddContractServlet extends HttpServlet {
             int contractId = contractDAO.addContract(contract);
             
             if (contractId > 0) {
-                // Add contract items
+                // Add contract items and update machine status
                 boolean allItemsAdded = true;
                 
                 for (int i = 0; i < unitIds.length; i++) {
                     if (unitIds[i] != null && !unitIds[i].isEmpty()) {
+                        int unitId = Integer.parseInt(unitIds[i]);
+                        
                         ContractItem item = new ContractItem();
                         item.setContractId(contractId);
-                        item.setUnitId(Integer.parseInt(unitIds[i]));
+                        item.setUnitId(unitId);
                         
-                        if (prices[i] != null && !prices[i].isEmpty()) {
+                        if (prices != null && i < prices.length && prices[i] != null && !prices[i].isEmpty()) {
                             item.setPrice(new BigDecimal(prices[i]));
                         }
                         
-                        if (deposits[i] != null && !deposits[i].isEmpty()) {
+                        if (deposits != null && i < deposits.length && deposits[i] != null && !deposits[i].isEmpty()) {
                             item.setDeposit(new BigDecimal(deposits[i]));
                         }
                         
-                        if (deliveryDates[i] != null && !deliveryDates[i].isEmpty()) {
+                        if (deliveryDates != null && i < deliveryDates.length && deliveryDates[i] != null && !deliveryDates[i].isEmpty()) {
                             item.setDeliveryDate(LocalDate.parse(deliveryDates[i]));
                         }
                         
-                        if (returnDueDates[i] != null && !returnDueDates[i].isEmpty()) {
+                        if (returnDueDates != null && i < returnDueDates.length && returnDueDates[i] != null && !returnDueDates[i].isEmpty()) {
                             item.setReturnDueDate(LocalDate.parse(returnDueDates[i]));
                         }
                         
-                        if (itemNotes[i] != null && !itemNotes[i].isEmpty()) {
+                        if (itemNotes != null && i < itemNotes.length && itemNotes[i] != null && !itemNotes[i].isEmpty()) {
                             item.setNote(itemNotes[i]);
                         }
                         
                         int itemId = contractDAO.addContractItem(item);
-                        if (itemId == 0) {
+                        if (itemId > 0) {
+                            // Update machine status to ALLOCATED
+                            boolean statusUpdated = machineDAO.updateMachineStatus(unitId, "ALLOCATED", null, null);
+                            if (!statusUpdated) {
+                                System.out.println("DEBUG: Failed to update machine status for unit " + unitId);
+                                allItemsAdded = false;
+                            }
+                        } else {
                             allItemsAdded = false;
                         }
                     }

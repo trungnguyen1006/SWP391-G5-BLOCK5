@@ -1,12 +1,11 @@
 <%@ page isELIgnored="false" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Contract List</title>
+    <title>Customer List</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -27,18 +26,32 @@
             <div class="container-fluid">
                 <div class="layout-specing">
                     <div class="d-md-flex justify-content-between">
-                        <h5 class="mb-0">Contract Management</h5>
+                        <h5 class="mb-0">Customer Management</h5>
                         <nav aria-label="breadcrumb" class="d-inline-block mt-4 mt-sm-0">
                             <ul class="breadcrumb bg-transparent rounded mb-0 p-0">
                                 <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/employee/dashboard">Dashboard</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Contracts</li>
+                                <li class="breadcrumb-item active" aria-current="page">Customers</li>
                             </ul>
                         </nav>
                     </div>
 
                     <c:if test="${param.added == 'true'}">
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                            <strong>Success!</strong> Contract has been created successfully.
+                            <strong>Success!</strong> Customer has been added successfully.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${param.updated == 'true'}">
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <strong>Success!</strong> Customer has been updated successfully.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${param.deleted == 'true'}">
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <strong>Success!</strong> Customer has been deleted successfully.
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     </c:if>
@@ -50,11 +63,11 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between">
                                         <div class="flex-1">
-                                            <h6 class="text-muted mb-0">Total Contracts</h6>
-                                            <h4 class="mb-0">${totalContracts}</h4>
+                                            <h6 class="text-muted mb-0">Total Customers</h6>
+                                            <h4 class="mb-0">${totalCustomers}</h4>
                                         </div>
                                         <div class="avatar avatar-md-sm rounded-circle bg-soft-primary d-flex align-items-center justify-content-center">
-                                            <i class="mdi mdi-file-contract text-primary h5 mb-0"></i>
+                                            <i class="mdi mdi-account-multiple text-primary h5 mb-0"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -65,69 +78,58 @@
                     <!-- Action Buttons -->
                     <div class="row mt-3">
                         <div class="col-12">
-                            <a href="${pageContext.request.contextPath}/employee/add-contract" class="btn btn-primary">
-                                <i class="mdi mdi-plus me-1"></i> Create New Contract
+                            <a href="${pageContext.request.contextPath}/employee/add-customer" class="btn btn-primary">
+                                <i class="mdi mdi-plus me-1"></i> Add New Customer
                             </a>
                         </div>
                     </div>
 
-                    <!-- Contract List -->
+                    <!-- Customer List -->
                     <div class="row">
                         <div class="col-12 mt-4">
                             <div class="card border-0 rounded shadow">
                                 <div class="card-body">
                                     <c:choose>
-                                        <c:when test="${not empty contracts}">
+                                        <c:when test="${not empty customers}">
                                             <div class="table-responsive">
                                                 <table class="table table-center bg-white mb-0">
                                                     <thead>
                                                         <tr>
-                                                            <th class="border-bottom p-3">Contract Code</th>
-                                                            <th class="border-bottom p-3">Customer</th>
-                                                            <th class="border-bottom p-3">Start Date</th>
-                                                            <th class="border-bottom p-3">End Date</th>
-                                                            <th class="border-bottom p-3">Status</th>
+                                                            <th class="border-bottom p-3">Customer Code</th>
+                                                            <th class="border-bottom p-3">Customer Name</th>
+                                                            <th class="border-bottom p-3">Contact Name</th>
+                                                            <th class="border-bottom p-3">Phone</th>
+                                                            <th class="border-bottom p-3">Email</th>
                                                             <th class="border-bottom p-3">Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <c:forEach var="contract" items="${contracts}">
+                                                        <c:forEach var="customer" items="${customers}">
                                                             <tr>
                                                                 <td class="p-3">
-                                                                    <strong>${contract.contractCode}</strong>
+                                                                    <strong>${customer.customerCode}</strong>
                                                                 </td>
                                                                 <td class="p-3">
-                                                                    ${contract.customerName}
+                                                                    ${customer.customerName}
                                                                 </td>
                                                                 <td class="p-3">
-                                                                    ${contract.startDate}
+                                                                    ${customer.contactName}
                                                                 </td>
                                                                 <td class="p-3">
-                                                                    ${contract.endDate}
+                                                                    ${customer.contactPhone}
                                                                 </td>
                                                                 <td class="p-3">
-                                                                    <c:choose>
-                                                                        <c:when test="${contract.status == 'DRAFT'}">
-                                                                            <span class="badge bg-soft-warning">Draft</span>
-                                                                        </c:when>
-                                                                        <c:when test="${contract.status == 'ACTIVE'}">
-                                                                            <span class="badge bg-soft-success">Active</span>
-                                                                        </c:when>
-                                                                        <c:when test="${contract.status == 'COMPLETED'}">
-                                                                            <span class="badge bg-soft-info">Completed</span>
-                                                                        </c:when>
-                                                                        <c:when test="${contract.status == 'CANCELLED'}">
-                                                                            <span class="badge bg-soft-danger">Cancelled</span>
-                                                                        </c:when>
-                                                                        <c:otherwise>
-                                                                            <span class="badge bg-soft-secondary">${contract.status}</span>
-                                                                        </c:otherwise>
-                                                                    </c:choose>
+                                                                    ${customer.contactEmail}
                                                                 </td>
                                                                 <td class="p-3">
-                                                                    <a href="${pageContext.request.contextPath}/employee/contract-detail?id=${contract.contractId}" 
-                                                                       class="btn btn-icon btn-pills btn-soft-primary btn-sm" title="View Details">
-                                                                        <i class="mdi mdi-eye"></i>
+                                                                    <a href="${pageContext.request.contextPath}/employee/update-customer?id=${customer.customerId}" 
+                                                                       class="btn btn-icon btn-pills btn-soft-success btn-sm" title="Edit">
+                                                                        <i class="mdi mdi-pencil"></i>
+                                                                    </a>
+                                                                    <a href="${pageContext.request.contextPath}/employee/delete-customer?id=${customer.customerId}" 
+                                                                       class="btn btn-icon btn-pills btn-soft-danger btn-sm" title="Delete" 
+                                                                       onclick="return confirm('Are you sure you want to delete this customer?');">
+                                                                        <i class="mdi mdi-delete"></i>
                                                                     </a>
                                                                 </td>
                                                             </tr>
@@ -140,22 +142,22 @@
                                             <c:if test="${totalPages > 1}">
                                                 <div class="d-flex justify-content-between align-items-center mt-4 px-3">
                                                     <div class="text-muted">
-                                                        Showing page ${currentPage} of ${totalPages} (Total: ${totalContracts} contracts)
+                                                        Showing page ${currentPage} of ${totalPages} (Total: ${totalCustomers} customers)
                                                     </div>
                                                     <nav aria-label="Page navigation">
                                                         <ul class="pagination mb-0">
                                                             <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                                                <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${currentPage - 1}">Previous</a>
+                                                                <a class="page-link" href="${pageContext.request.contextPath}/employee/customers?page=${currentPage - 1}">Previous</a>
                                                             </li>
                                                             
                                                             <c:forEach var="i" begin="1" end="${totalPages > 5 ? 5 : totalPages}">
                                                                 <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                                    <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${i}">${i}</a>
+                                                                    <a class="page-link" href="${pageContext.request.contextPath}/employee/customers?page=${i}">${i}</a>
                                                                 </li>
                                                             </c:forEach>
                                                             
                                                             <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                                                <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${currentPage + 1}">Next</a>
+                                                                <a class="page-link" href="${pageContext.request.contextPath}/employee/customers?page=${currentPage + 1}">Next</a>
                                                             </li>
                                                         </ul>
                                                     </nav>
@@ -164,10 +166,10 @@
                                         </c:when>
                                         <c:otherwise>
                                             <div class="text-center py-5">
-                                                <i class="mdi mdi-file-document-outline h1 text-muted"></i>
-                                                <p class="text-muted mt-3">No contracts found. Create your first contract.</p>
-                                                <a href="${pageContext.request.contextPath}/employee/add-contract" class="btn btn-primary mt-3">
-                                                    <i class="mdi mdi-plus me-1"></i> Create Contract
+                                                <i class="mdi mdi-account-multiple-outline h1 text-muted"></i>
+                                                <p class="text-muted mt-3">No customers found. Add your first customer.</p>
+                                                <a href="${pageContext.request.contextPath}/employee/add-customer" class="btn btn-primary mt-3">
+                                                    <i class="mdi mdi-plus me-1"></i> Add Customer
                                                 </a>
                                             </div>
                                         </c:otherwise>

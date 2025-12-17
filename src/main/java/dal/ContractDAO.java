@@ -352,48 +352,54 @@ public class ContractDAO extends DBContext {
     }
 
     private Contract mapContract(ResultSet rs) throws SQLException {
-        Contract contract = new Contract();
-        contract.setContractId(rs.getInt("ContractId"));
-        contract.setContractCode(rs.getString("ContractCode"));
-        contract.setCustomerId(rs.getInt("CustomerId"));
-        contract.setSiteId(rs.getObject("SiteId", Integer.class));
-        contract.setSaleEmployeeId(rs.getObject("SaleEmployeeId", Integer.class));
-        contract.setManagerEmployeeId(rs.getObject("ManagerEmployeeId", Integer.class));
-
-        Date signedDate = rs.getDate("SignedDate");
-        contract.setSignedDate(signedDate != null ? signedDate.toLocalDate() : null);
-
-        Date startDate = rs.getDate("StartDate");
-        contract.setStartDate(startDate != null ? startDate.toLocalDate() : null);
-
-        Date endDate = rs.getDate("EndDate");
-        contract.setEndDate(endDate != null ? endDate.toLocalDate() : null);
-
-        contract.setStatus(rs.getString("Status"));
-        contract.setNote(rs.getString("Note"));
-        contract.setCreatedBy(rs.getInt("CreatedBy"));
-
-        Timestamp createdDate = rs.getTimestamp("CreatedDate");
-        contract.setCreatedDate(createdDate != null ? createdDate.toLocalDateTime() : null);
-
-        // Additional fields
-        contract.setCustomerName(rs.getString("CustomerName"));
-        contract.setSiteName(rs.getString("SiteName"));
-
-        // Handle optional columns that may not exist in all queries
         try {
-            contract.setSaleEmployeeName(rs.getString("SaleEmployeeName"));
-        } catch (SQLException e) {
-            contract.setSaleEmployeeName(null);
-        }
+            Contract contract = new Contract();
+            contract.setContractId(rs.getInt("ContractId"));
+            contract.setContractCode(rs.getString("ContractCode"));
+            contract.setCustomerId(rs.getInt("CustomerId"));
+            contract.setSiteId(rs.getObject("SiteId", Integer.class));
+            contract.setSaleEmployeeId(rs.getObject("SaleEmployeeId", Integer.class));
+            contract.setManagerEmployeeId(rs.getObject("ManagerEmployeeId", Integer.class));
 
-        try {
-            contract.setManagerEmployeeName(rs.getString("ManagerEmployeeName"));
-        } catch (SQLException e) {
-            contract.setManagerEmployeeName(null);
-        }
+            Date signedDate = rs.getDate("SignedDate");
+            contract.setSignedDate(signedDate != null ? signedDate.toLocalDate() : null);
 
-        return contract;
+            Date startDate = rs.getDate("StartDate");
+            contract.setStartDate(startDate != null ? startDate.toLocalDate() : null);
+
+            Date endDate = rs.getDate("EndDate");
+            contract.setEndDate(endDate != null ? endDate.toLocalDate() : null);
+
+            contract.setStatus(rs.getString("Status"));
+            contract.setNote(rs.getString("Note"));
+            contract.setCreatedBy(rs.getInt("CreatedBy"));
+
+            Timestamp createdDate = rs.getTimestamp("CreatedDate");
+            contract.setCreatedDate(createdDate != null ? createdDate.toLocalDateTime() : null);
+
+            // Additional fields
+            contract.setCustomerName(rs.getString("CustomerName"));
+            contract.setSiteName(rs.getString("SiteName"));
+
+            // Handle optional columns that may not exist in all queries
+            try {
+                contract.setSaleEmployeeName(rs.getString("SaleEmployeeName"));
+            } catch (SQLException e) {
+                contract.setSaleEmployeeName(null);
+            }
+
+            try {
+                contract.setManagerEmployeeName(rs.getString("ManagerEmployeeName"));
+            } catch (SQLException e) {
+                contract.setManagerEmployeeName(null);
+            }
+
+            return contract;
+        } catch (SQLException e) {
+            System.out.println("DEBUG DAO: Error mapping contract: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public boolean cancelContractAndReturnUnits(
@@ -504,6 +510,60 @@ public class ContractDAO extends DBContext {
         }
 
         return false;
+    }
+
+    // Get contracts by customer with pagination
+    public List<Contract> getContractsByCustomer(int customerId, int page, int pageSize) {
+        List<Contract> contracts = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT c.*, cust.CustomerName, s.SiteName, 
+                   u1.FullName as SaleEmployeeName, u2.FullName as ManagerEmployeeName
+            FROM Contracts c
+            LEFT JOIN Customers cust ON c.CustomerId = cust.CustomerId
+            LEFT JOIN Sites s ON c.SiteId = s.SiteId
+            LEFT JOIN Employees e1 ON c.SaleEmployeeId = e1.EmployeeId
+            LEFT JOIN Users u1 ON e1.UserId = u1.UserId
+            LEFT JOIN Employees e2 ON c.ManagerEmployeeId = e2.EmployeeId
+            LEFT JOIN Users u2 ON e2.UserId = u2.UserId
+            WHERE c.CustomerId = ?
+            ORDER BY c.CreatedDate DESC
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, customerId);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            System.out.println("DEBUG DAO: Executing query for customer " + customerId + ", page " + page + ", pageSize " + pageSize);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Contract contract = mapContract(rs);
+                    contracts.add(contract);
+                    System.out.println("DEBUG DAO: Mapped contract " + contract.getContractCode());
+                }
+                System.out.println("DEBUG DAO: Total contracts retrieved: " + contracts.size());
+            }
+        } catch (SQLException ex) {
+            System.out.println("DEBUG DAO: SQL Error in getContractsByCustomer: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        return contracts;
+    }
+
+    // Get total contracts by customer
+    public int getTotalContractsByCustomer(int customerId) {
+        String sql = "SELECT COUNT(*) FROM Contracts WHERE CustomerId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
     }
 
 }

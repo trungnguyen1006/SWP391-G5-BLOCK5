@@ -56,6 +56,35 @@ public class CustomerDAO extends DBContext {
         return customers;
     }
 
+    // Create new customer
+    public int createCustomer(Customers customer) {
+        String sql = "INSERT INTO Customers (UserId, CustomerCode, CustomerName, Address, ContactName, ContactPhone, ContactEmail, IsActive) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setObject(1, customer.getUserId(), Types.INTEGER);
+            ps.setString(2, customer.getCustomerCode());
+            ps.setString(3, customer.getCustomerName());
+            ps.setString(4, customer.getAddress());
+            ps.setString(5, customer.getContactName());
+            ps.setString(6, customer.getContactPhone());
+            ps.setString(7, customer.getContactEmail());
+            ps.setBoolean(8, customer.isActive());
+            
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("DEBUG: Error creating customer: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     private Customers mapCustomer(ResultSet rs) throws SQLException {
         Customers c = new Customers();
         c.setCustomerId(rs.getInt("CustomerId"));

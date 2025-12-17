@@ -333,6 +333,31 @@ public class MachineDAO extends DBContext {
         }
     }
 
+    // Update machine status
+    public boolean updateMachineStatus(int unitId, String newStatus, Integer warehouseId, Integer siteId) {
+        String sql = "UPDATE MachineUnits SET CurrentStatus = ?, CurrentWarehouseId = ?, CurrentSiteId = ? WHERE UnitId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, newStatus);
+            if (warehouseId != null) {
+                ps.setInt(2, warehouseId);
+            } else {
+                ps.setNull(2, Types.INTEGER);
+            }
+            if (siteId != null) {
+                ps.setInt(3, siteId);
+            } else {
+                ps.setNull(3, Types.INTEGER);
+            }
+            ps.setInt(4, unitId);
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.out.println("DEBUG: Error updating machine status: " + ex.getMessage());
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     private MachineUnit mapMachineUnit(ResultSet rs) throws SQLException {
         MachineUnit unit = new MachineUnit();
         unit.setUnitId(rs.getInt("UnitId"));

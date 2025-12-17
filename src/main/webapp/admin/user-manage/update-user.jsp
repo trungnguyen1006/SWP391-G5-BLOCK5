@@ -136,24 +136,9 @@
 
                                         <div class="col-md-6"></div>
 
-                                        <div class="col-12">
-                                            <hr>
-                                            <h6 class="mb-3">Change Password (Optional)</h6>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">New Password</label>
-                                                <input name="newPassword" type="password" class="form-control" placeholder="Leave blank to keep current password">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Confirm New Password</label>
-                                                <input name="confirmPassword" type="password" class="form-control" placeholder="Re-enter new password">
-                                            </div>
-                                        </div>
+                                        <!-- Password change is disabled -->
+                                        <input name="newPassword" type="hidden" value="">
+                                        <input name="confirmPassword" type="hidden" value="">
 
                                         <div class="col-12">
                                             <hr>
@@ -161,18 +146,21 @@
                                                 <label class="form-label">Assign Roles <span class="text-danger">*</span></label>
                                                 <div class="row">
                                                     <c:forEach var="role" items="${allRoles}">
-                                                        <div class="col-md-6">
-                                                            <div class="form-check mb-2">
-                                                                <input class="form-check-input" type="checkbox" name="roleIds" value="${role.roleId}" id="role${role.roleId}"
-                                                                    <c:forEach var="userRole" items="${userRoles}">
-                                                                        <c:if test="${userRole.roleId == role.roleId}">checked</c:if>
-                                                                    </c:forEach>
-                                                                >
-                                                                <label class="form-check-label" for="role${role.roleId}">
-                                                                    ${role.roleName}
-                                                                </label>
+                                                        <!-- Hide Admin role (roleId = 1) -->
+                                                        <c:if test="${role.roleId != 1}">
+                                                            <div class="col-md-6">
+                                                                <div class="form-check mb-2">
+                                                                    <input class="form-check-input" type="checkbox" name="roleIds" value="${role.roleId}" id="role${role.roleId}"
+                                                                        <c:forEach var="userRole" items="${userRoles}">
+                                                                            <c:if test="${userRole.roleId == role.roleId}">checked</c:if>
+                                                                        </c:forEach>
+                                                                    >
+                                                                    <label class="form-check-label" for="role${role.roleId}">
+                                                                        ${role.roleName}
+                                                                    </label>
+                                                                </div>
                                                             </div>
-                                                        </div>
+                                                        </c:if>
                                                     </c:forEach>
                                                 </div>
                                             </div>

@@ -92,36 +92,46 @@
                                         <h6 class="mb-3">Contract Items</h6>
                                         
                                         <div id="itemsContainer">
-                                            <div class="row item-row mb-3">
-                                                <div class="col-md-3">
-                                                    <label class="form-label">Machine <span class="text-danger">*</span></label>
-                                                    <select class="form-control" name="unitId" required>
-                                                        <option value="">-- Select Machine --</option>
-                                                        <c:forEach var="machine" items="${availableMachines}">
-                                                            <option value="${machine.unitId}">${machine.serialNumber}</option>
-                                                        </c:forEach>
-                                                    </select>
+                                            <div class="item-row mb-4 p-3 border rounded bg-light">
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label">Machine <span class="text-danger">*</span></label>
+                                                        <select class="form-control" name="unitId" required>
+                                                            <option value="">-- Select Machine --</option>
+                                                            <c:forEach var="machine" items="${availableMachines}">
+                                                                <option value="${machine.unitId}">${machine.serialNumber}</option>
+                                                            </c:forEach>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3 mb-3">
+                                                        <label class="form-label">Price</label>
+                                                        <input type="number" class="form-control" name="price" step="0.01" placeholder="0.00">
+                                                    </div>
+                                                    <div class="col-md-3 mb-3">
+                                                        <label class="form-label">Deposit</label>
+                                                        <input type="number" class="form-control" name="deposit" step="0.01" placeholder="0.00">
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label class="form-label">Price</label>
-                                                    <input type="number" class="form-control" name="price" step="0.01">
+                                                <div class="row">
+                                                    <div class="col-md-4 mb-3">
+                                                        <label class="form-label">Delivery Date</label>
+                                                        <input type="date" class="form-control" name="deliveryDate">
+                                                    </div>
+                                                    <div class="col-md-4 mb-3">
+                                                        <label class="form-label">Return Due Date</label>
+                                                        <input type="date" class="form-control" name="returnDueDate">
+                                                    </div>
+                                                    <div class="col-md-4 mb-3">
+                                                        <label class="form-label">Note</label>
+                                                        <input type="text" class="form-control" name="itemNote" placeholder="Item note">
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <label class="form-label">Deposit</label>
-                                                    <input type="number" class="form-control" name="deposit" step="0.01">
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <label class="form-label">Delivery Date</label>
-                                                    <input type="date" class="form-control" name="deliveryDate">
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <label class="form-label">Return Due Date</label>
-                                                    <input type="date" class="form-control" name="returnDueDate">
-                                                </div>
-                                                <div class="col-md-1 d-flex align-items-end">
-                                                    <button type="button" class="btn btn-sm btn-danger remove-item" style="display:none;">
-                                                        <i class="mdi mdi-delete"></i>
-                                                    </button>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <button type="button" class="btn btn-sm btn-danger remove-item" style="display:none;">
+                                                            <i class="mdi mdi-delete me-1"></i> Remove Item
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
