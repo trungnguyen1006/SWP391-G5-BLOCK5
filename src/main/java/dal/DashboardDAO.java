@@ -183,8 +183,21 @@ public class DashboardDAO extends DBContext {
 
         String sql = """
         SELECT
-            (SELECT COUNT(*) FROM employees) AS totalEmployee,
-            (SELECT COUNT(*) FROM machinemodels) AS totalMachine,
+            (SELECT COUNT(*) 
+            FROM users u
+            JOIN userroles ur ON u.UserId = ur.UserId
+            join roles r on r.RoleId = ur.RoleId
+            WHERE r.RoleName = 'EMPLOYEE') AS totalEmployee,
+            (SELECT COUNT(*) 
+            FROM users u
+            JOIN userroles ur ON u.UserId = ur.UserId
+            join roles r on r.RoleId = ur.RoleId
+            WHERE r.RoleName = 'MANAGER') AS totalManager,
+            (SELECT COUNT(*) 
+            FROM users u
+            JOIN userroles ur ON u.UserId = ur.UserId
+            join roles r on r.RoleId = ur.RoleId
+            WHERE r.RoleName = 'CUSTOMER') AS totalCustomer,                          
             (SELECT COUNT(*) FROM contracts) AS totalContract
     """;
 
@@ -192,7 +205,8 @@ public class DashboardDAO extends DBContext {
 
             if (rs.next()) {
                 dashboard.setTotalEmployee(rs.getInt("totalEmployee"));
-                dashboard.setTotalMachine(rs.getInt("totalMachine"));
+                dashboard.setTotalManager(rs.getInt("totalManager"));
+                dashboard.setTotalCustomer(rs.getInt("totalCustomer"));
                 dashboard.setTotalContract(rs.getInt("totalContract"));
             }
 

@@ -1,6 +1,7 @@
 package model;
 
 public class Dashboard {
+    private int totalManager;
     private int totalMachine;
     private int totalUser;
     private int totalEmployee;
@@ -18,6 +19,15 @@ public class Dashboard {
 
     public Dashboard() {
     }
+
+    public int getTotalManager() {
+        return totalManager;
+    }
+
+    public void setTotalManager(int totalManager) {
+        this.totalManager = totalManager;
+    }
+    
 
     public int getTotalMachine() {
         return totalMachine;

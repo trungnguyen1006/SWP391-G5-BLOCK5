@@ -39,11 +39,9 @@
                             </nav>
                         </div>
 
-                        <!-- Key Statistics -->
-                        <div class="row justify-content-center">
+                        <div class="row">
 
-                            <!-- Total Employees -->
-                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mt-4">
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mt-4">
                                 <div class="card border-0 shadow-sm rounded h-100">
                                     <div class="card-body d-flex align-items-center">
                                         <div class="icon bg-soft-primary text-primary rounded-circle p-3 me-3">
@@ -57,23 +55,35 @@
                                 </div>
                             </div>
 
-                            <!-- Total Machines -->
-                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mt-4">
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mt-4">
                                 <div class="card border-0 shadow-sm rounded h-100">
                                     <div class="card-body d-flex align-items-center">
-                                        <div class="icon bg-soft-success text-success rounded-circle p-3 me-3">
-                                            <i class="uil uil-cog h4 mb-0"></i>
+                                        <div class="icon bg-soft-info text-info rounded-circle p-3 me-3">
+                                            <i class="uil uil-user-check h4 mb-0"></i>
                                         </div>
                                         <div>
-                                            <h4 class="mb-0 fw-bold">${dashboard.totalMachine}</h4>
-                                            <small class="text-muted">Total Machines</small>
+                                            <h4 class="mb-0 fw-bold">${dashboard.totalManager}</h4>
+                                            <small class="text-muted">Total Managers</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Total Contracts -->
-                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mt-4">
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mt-4">
+                                <div class="card border-0 shadow-sm rounded h-100">
+                                    <div class="card-body d-flex align-items-center">
+                                        <div class="icon bg-soft-success text-success rounded-circle p-3 me-3">
+                                            <i class="uil uil-building h4 mb-0"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold">${dashboard.totalCustomer}</h4>
+                                            <small class="text-muted">Total Customers</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mt-4">
                                 <div class="card border-0 shadow-sm rounded h-100">
                                     <div class="card-body d-flex align-items-center">
                                         <div class="icon bg-soft-warning text-warning rounded-circle p-3 me-3">
@@ -89,9 +99,6 @@
 
                         </div>
 
-
-
-                        <!-- Machine & Invoice Management -->
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-12 mt-4">
                                 <div class="card border-0 shadow rounded">
