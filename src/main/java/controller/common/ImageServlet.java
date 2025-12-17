@@ -28,6 +28,12 @@ public class ImageServlet extends HttpServlet {
         
         String fileName = pathInfo.substring(1);
         
+        // Prevent directory traversal attacks
+        if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+        
         String realPath = getServletContext().getRealPath("/");
         String webappPath = FileUploadUtil.getSourceWebappPath(realPath);
         String filePath = webappPath + "uploads" + File.separator + fileName;
@@ -45,6 +51,7 @@ public class ImageServlet extends HttpServlet {
         
         response.setContentType(mimeType);
         response.setContentLength((int) file.length());
+        response.setHeader("Cache-Control", "public, max-age=86400");
         
         Path path = Paths.get(filePath);
         Files.copy(path, response.getOutputStream());

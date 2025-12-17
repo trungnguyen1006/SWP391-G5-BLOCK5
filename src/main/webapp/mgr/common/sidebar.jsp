@@ -4,7 +4,7 @@
 <nav id="sidebar" class="sidebar-wrapper">
     <div class="sidebar-content" data-simplebar style="height: calc(100% - 60px);">
         <div class="sidebar-brand">
-            <a href="${pageContext.request.contextPath}/manager/dashboard">
+            <a href="${pageContext.request.contextPath}/mgr/dashboard">
                 <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="logo-light-mode" alt="">
                 <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="logo-dark-mode" alt="">
             </a>

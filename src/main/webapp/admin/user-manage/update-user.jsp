@@ -54,10 +54,13 @@
                                 <div id="imagePreviewContainer" style="position: relative; display: inline-block;">
                                     <c:choose>
                                         <c:when test="${not empty user.image}">
-                                            <img id="userAvatar" src="${pageContext.request.contextPath}/${user.image}" class="avatar avatar-large rounded-circle shadow" alt="${user.fullName}">
+                                            <img id="userAvatar" src="${pageContext.request.contextPath}/uploads/${user.image}" class="avatar avatar-large rounded-circle shadow" alt="${user.fullName}" onerror="this.style.display='none'; document.getElementById('defaultAvatarFallback').style.display='flex';">
+                                            <div id="defaultAvatarFallback" class="avatar avatar-large rounded-circle bg-soft-primary shadow d-flex align-items-center justify-content-center" style="display: none; position: absolute; top: 0; left: 0;">
+                                                <i class="mdi mdi-account text-white" style="font-size: 4rem;"></i>
+                                            </div>
                                         </c:when>
                                         <c:otherwise>
-                                            <div id="userAvatar" class="avatar avatar-large rounded-circle bg-soft-primary shadow d-inline-flex align-items-center justify-content-center">
+                                            <div id="userAvatar" class="avatar avatar-large rounded-circle bg-soft-primary shadow d-flex align-items-center justify-content-center">
                                                 <i class="mdi mdi-account text-white" style="font-size: 4rem;"></i>
                                             </div>
                                         </c:otherwise>
@@ -198,7 +201,6 @@
     const imagePreviewContainer = document.getElementById('imagePreviewContainer');
     
     const originalAvatarHTML = userAvatar.outerHTML;
-    const hasOriginalImage = ${not empty user.image ? 'true' : 'false'};
 
     imageFileInput.addEventListener('change', function(e) {
         const file = e.target.files[0];

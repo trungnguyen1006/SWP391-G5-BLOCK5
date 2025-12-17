@@ -51,7 +51,7 @@
                     <div class="col-lg-4 mt-4">
                         <div class="card border-0 rounded shadow">
                             <div class="card-body text-center">
-                                <div id="imagePreviewContainer" class="position-relative" style="width: 120px; height: 120px; margin: 0 auto;">
+                                <div id="imagePreviewContainer" class="position-relative d-inline-block" style="width: 120px; height: 120px;">
                                     <div id="defaultAvatar" class="avatar avatar-large rounded-circle bg-soft-primary shadow d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
                                         <i class="mdi mdi-account text-white" style="font-size: 4rem;"></i>
                                     </div>

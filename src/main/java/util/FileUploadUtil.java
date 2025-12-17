@@ -55,7 +55,7 @@ public class FileUploadUtil {
         Path filePath = Paths.get(uploadPath, uniqueFileName);
         Files.copy(filePart.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         
-        return UPLOAD_DIR + "/" + uniqueFileName;
+        return uniqueFileName;
     }
     
     public static void deleteFile(String filePath, String webappPath) {

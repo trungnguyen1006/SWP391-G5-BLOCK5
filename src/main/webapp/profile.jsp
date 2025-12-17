@@ -1,6 +1,7 @@
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="model.Users"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html>
@@ -25,10 +26,26 @@
         <h3 class="fw-bold text-center mb-4">View Profile</h3>
 
         <div class="d-flex justify-content-center mb-4">
-            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                 style="width:100px; height:100px;">
-                Avatar
-            </div>
+            <c:choose>
+                <c:when test="${not empty user.image}">
+                    <div style="position: relative; display: inline-block;">
+                        <img src="<%= request.getContextPath() %>/uploads/<%= user.getImage() %>" 
+                             class="rounded-circle" 
+                             alt="<%= user.getFullName() %>"
+                             style="width:100px; height:100px; object-fit: cover; border: 3px solid #007bff;"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('div').style.display='flex';">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="display: none; position: absolute; top: 0; left: 0; width:100px; height:100px;">
+                            <i class="mdi mdi-account" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                         style="width:100px; height:100px;">
+                        <i class="mdi mdi-account" style="font-size: 2rem;"></i>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <div class="mb-3">

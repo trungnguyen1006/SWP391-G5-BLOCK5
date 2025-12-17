@@ -53,7 +53,12 @@
                             <div class="card-body text-center">
                                 <c:choose>
                                     <c:when test="${not empty user.image}">
-                                        <img src="${pageContext.request.contextPath}/${user.image}" class="avatar avatar-large rounded-circle shadow" alt="${user.fullName}">
+                                        <div style="position: relative; display: inline-block;">
+                                            <img src="${pageContext.request.contextPath}/uploads/${user.image}" class="avatar avatar-large rounded-circle shadow" alt="${user.fullName}" onerror="this.style.display='none'; this.parentElement.querySelector('div').style.display='flex';">
+                                            <div class="avatar avatar-large rounded-circle bg-soft-primary shadow mx-auto d-flex align-items-center justify-content-center" style="display: none; position: absolute; top: 0; left: 0;">
+                                                <i class="mdi mdi-account text-white" style="font-size: 4rem;"></i>
+                                            </div>
+                                        </div>
                                     </c:when>
                                     <c:otherwise>
                                         <div class="avatar avatar-large rounded-circle bg-soft-primary shadow mx-auto d-flex align-items-center justify-content-center">
