@@ -1,6 +1,7 @@
 package model;
 
 public class Dashboard {
+
     private int totalManager;
     private int totalMachine;
     private int totalUser;
@@ -8,17 +9,44 @@ public class Dashboard {
     private int totalActive;
     private int totalDeActive;
     private int totalCustomer;
-    private int totalContract;
     private int totalContractSigned;
-    private int totalContractActive;
     private int totalTicket;
     private int totalTicketApproved;
     private int totalTicketRejected;
     private int totalTicketOpen;
-    
+    private int totalContract;
+    private int totalContractActive;
+    private int totalContractPending;
 
     public Dashboard() {
     }
+
+    public int getTotalContract() {
+        return totalContract;
+    }
+
+    public void setTotalContract(int totalContract) {
+        this.totalContract = totalContract;
+    }
+
+    public int getTotalContractActive() {
+        return totalContractActive;
+    }
+
+    public void setTotalContractActive(int totalContractActive) {
+        this.totalContractActive = totalContractActive;
+    }
+
+    public int getTotalContractPending() {
+        return totalContractPending;
+    }
+
+    public void setTotalContractPending(int totalContractPending) {
+        this.totalContractPending = totalContractPending;
+    }
+    
+    
+    
 
     public int getTotalManager() {
         return totalManager;
@@ -27,7 +55,6 @@ public class Dashboard {
     public void setTotalManager(int totalManager) {
         this.totalManager = totalManager;
     }
-    
 
     public int getTotalMachine() {
         return totalMachine;
@@ -77,13 +104,7 @@ public class Dashboard {
         this.totalCustomer = totalCustomer;
     }
 
-    public int getTotalContract() {
-        return totalContract;
-    }
-
-    public void setTotalContract(int totalContract) {
-        this.totalContract = totalContract;
-    }
+    
 
     public int getTotalContractSigned() {
         return totalContractSigned;
@@ -93,13 +114,7 @@ public class Dashboard {
         this.totalContractSigned = totalContractSigned;
     }
 
-    public int getTotalContractActive() {
-        return totalContractActive;
-    }
-
-    public void setTotalContractActive(int totalContractActive) {
-        this.totalContractActive = totalContractActive;
-    }
+   
 
     public int getTotalTicket() {
         return totalTicket;

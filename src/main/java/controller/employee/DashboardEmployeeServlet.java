@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import model.Dashboard;
 import model.DashboardSale;
 import model.Employee;
 import model.Users;
@@ -21,9 +22,9 @@ import model.Users;
  *
  * @author Administrator
  */
-@WebServlet("/sale/dashboard")
+@WebServlet("/employee/dashboard")
 
-public class DashboardSaleServlet extends HttpServlet{
+public class DashboardEmployeeServlet extends HttpServlet{
      @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -44,13 +45,11 @@ public class DashboardSaleServlet extends HttpServlet{
             return;
         }
 
-        int saleEmployeeId = employee.getEmployeeId();
-
         DashboardDAO dao = new DashboardDAO();
-        DashboardSale dashboard = dao.getDashboardSale(saleEmployeeId);
+        Dashboard dashboard = dao.getDashboardEmployee(); 
 
         req.setAttribute("dashboard", dashboard);
-        req.getRequestDispatcher("/sale/sale-dashboard.jsp")
+        req.getRequestDispatcher("/employee/dashboard.jsp")
            .forward(req, resp);
     }
 }

@@ -121,54 +121,23 @@ public class DashboardDAO extends DBContext {
         return dashboard;
     }
 
-    public DashboardSale getDashboardSale(int saleEmployeeId) {
-        DashboardSale dashboard = new DashboardSale();
+    public Dashboard getDashboardEmployee() {
+        Dashboard dashboard = new Dashboard();
+
         String sql = """
         SELECT
-            (
-                SELECT COUNT(*)
-                FROM contracts
-                WHERE SaleEmployeeId = ?
-                  AND SignedDate IS NOT NULL
-            ) AS totalContractsSigned,
-            (
-                SELECT COUNT(DISTINCT CustomerId)
-                FROM contracts
-                WHERE SaleEmployeeId = ?
-                  AND SignedDate IS NOT NULL
-            ) AS totalCustomers,
-            (
-                SELECT COALESCE(SUM(Price), 0)
-                FROM contracts
-                WHERE SaleEmployeeId = ?
-                  AND SignedDate IS NOT NULL
-            ) AS totalRevenue,
-            (
-                SELECT COUNT(*)
-                FROM supportrequests sr
-                JOIN contracts c ON sr.ContractId = c.ContractId
-                WHERE c.SaleEmployeeId = ?
-            ) AS totalTickets
+                    COUNT(*) AS totalContract,
+                    COUNT(SignedDate) AS totalContractActive,
+                    COUNT(*) - COUNT(SignedDate) AS totalContractPending
+                FROM cms.contracts
     """;
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-            ps.setInt(1, saleEmployeeId);
-            ps.setInt(2, saleEmployeeId);
-            ps.setInt(3, saleEmployeeId);
-            ps.setInt(4, saleEmployeeId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    dashboard.setTotalContractsSigned(
-                            rs.getInt("totalContractsSigned"));
-                    dashboard.setTotalCustomers(
-                            rs.getInt("totalCustomers"));
-                    dashboard.setTotalRevenue(
-                            rs.getDouble("totalRevenue"));
-                    dashboard.setTotalTickets(
-                            rs.getInt("totalTickets"));
-                }
+            if (rs.next()) {
+                dashboard.setTotalContract(rs.getInt("totalContract"));
+                dashboard.setTotalContractActive(rs.getInt("totalContractActive"));
+                dashboard.setTotalContractPending(rs.getInt("totalContractPending"));
             }
 
         } catch (SQLException e) {
