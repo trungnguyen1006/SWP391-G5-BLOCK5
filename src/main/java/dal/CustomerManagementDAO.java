@@ -125,6 +125,54 @@ public class CustomerManagementDAO extends DBContext {
         return false;
     }
 
+    // Generate next customer code
+    public String generateCustomerCode() {
+        String sql = "SELECT MAX(CAST(SUBSTRING(CustomerCode, 4) AS UNSIGNED)) as maxNum FROM Customers WHERE CustomerCode LIKE 'CUS%'";
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                int maxNum = rs.getInt("maxNum");
+                return "CUS" + String.format("%05d", maxNum + 1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return "CUS00001";
+    }
+
+    // Check if customer code exists
+    public boolean isCustomerCodeExists(String customerCode) {
+        String sql = "SELECT COUNT(*) FROM Customers WHERE CustomerCode = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, customerCode);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    // Check if customer code exists for other customer
+    public boolean isCustomerCodeExistsForOther(String customerCode, int customerId) {
+        String sql = "SELECT COUNT(*) FROM Customers WHERE CustomerCode = ? AND CustomerId != ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, customerCode);
+            ps.setInt(2, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
     // Map ResultSet to Customer object
     private Customers mapCustomer(ResultSet rs) throws SQLException {
         Customers customer = new Customers();

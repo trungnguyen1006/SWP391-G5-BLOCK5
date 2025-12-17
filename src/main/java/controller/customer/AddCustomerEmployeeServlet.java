@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Customer;
+import model.Customers;
 import model.Users;
 
 import java.io.IOException;
@@ -65,6 +65,7 @@ public class AddCustomerEmployeeServlet extends HttpServlet {
             return;
         }
 
+        // Check if customer code already exists
         if (customerDAO.isCustomerCodeExists(customerCode.trim())) {
             request.setAttribute("errorMessage", "Customer code already exists: " + customerCode);
             String nextCustomerCode = customerDAO.generateCustomerCode();
@@ -74,7 +75,7 @@ public class AddCustomerEmployeeServlet extends HttpServlet {
         }
 
         try {
-            Customer customer = new Customer();
+            Customers customer = new Customers();
             customer.setCustomerCode(customerCode.trim());
             customer.setCustomerName(customerName.trim());
             customer.setAddress(address != null ? address.trim() : "");

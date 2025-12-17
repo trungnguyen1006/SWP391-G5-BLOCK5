@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Customer;
+import model.Customers;
 import model.Users;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class DeleteCustomerEmployeeServlet extends HttpServlet {
 
         try {
             int customerId = Integer.parseInt(customerIdParam);
-            Customer customer = customerDAO.getCustomerById(customerId);
+            Customers customer = customerDAO.getCustomerById(customerId);
 
             if (customer == null) {
                 response.sendRedirect(request.getContextPath() + CUSTOMER_LIST_URL);

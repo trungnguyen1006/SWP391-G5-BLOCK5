@@ -170,6 +170,10 @@
                                 <div class="card-body">
                                     <h6 class="mb-4">Actions</h6>
                                     
+                                    <a href="${pageContext.request.contextPath}/employee/export-contract-pdf?contractId=${contract.contractId}" class="btn btn-info w-100 mb-2" target="_blank">
+                                        <i class="mdi mdi-file-pdf me-1"></i> Xuất PDF
+                                    </a>
+                                    
                                     <c:if test="${contract.status == 'DRAFT'}">
                                         <form method="POST" action="${pageContext.request.contextPath}/employee/confirm-delivery" class="mb-2">
                                             <input type="hidden" name="contractId" value="${contract.contractId}">
