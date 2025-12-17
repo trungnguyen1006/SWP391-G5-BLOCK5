@@ -266,8 +266,6 @@ public class UserDAO extends DBContext {
         return null;
     }
 
-    
-}
 
     public java.util.List<Users> getUsersByPageWithFilter(int page, int pageSize, String status) {
         java.util.List<Users> users = new java.util.ArrayList<>();
@@ -315,3 +313,4 @@ public class UserDAO extends DBContext {
         }
         return 0;
     }
+}

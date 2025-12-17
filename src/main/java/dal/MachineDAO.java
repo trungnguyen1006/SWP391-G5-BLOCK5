@@ -566,3 +566,5 @@ public class MachineDAO extends DBContext {
         }
         return 0;
     }
+
+}

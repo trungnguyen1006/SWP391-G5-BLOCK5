@@ -189,7 +189,6 @@ public class CustomerManagementDAO extends DBContext {
         customer.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
         return customer;
     }
-}
 
     public List<Customers> getCustomersByPageWithFilter(int page, int pageSize, String status) {
         List<Customers> customers = new ArrayList<>();
@@ -232,3 +231,4 @@ public class CustomerManagementDAO extends DBContext {
         }
         return 0;
     }
+}

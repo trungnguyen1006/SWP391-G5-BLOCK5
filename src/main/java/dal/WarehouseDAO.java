@@ -128,7 +128,6 @@ public class WarehouseDAO extends DBContext {
         warehouse.setActive(rs.getBoolean("IsActive"));
         return warehouse;
     }
-}
 
     public List<Warehouse> getWarehousesByPageWithFilter(int page, int pageSize, String status) {
         List<Warehouse> warehouses = new ArrayList<>();
@@ -176,3 +175,4 @@ public class WarehouseDAO extends DBContext {
         }
         return 0;
     }
+}

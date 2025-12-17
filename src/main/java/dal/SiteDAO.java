@@ -219,7 +219,6 @@ public class SiteDAO extends DBContext {
         site.setCustomerName(rs.getString("CustomerName"));
         return site;
     }
-}
 
     public List<Site> getSitesByPageWithFilter(int page, int pageSize, String status) {
         List<Site> sites = new ArrayList<>();
@@ -268,3 +267,4 @@ public class SiteDAO extends DBContext {
         }
         return 0;
     }
+}
