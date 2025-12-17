@@ -129,6 +129,32 @@
                             </div>
                         </div>
                     </c:if>
+
+                    <!-- Pagination -->
+                    <c:if test="${totalPages > 1}">
+                        <div class="d-flex justify-content-between align-items-center mt-4 px-3">
+                            <div class="text-muted">
+                                Showing page ${currentPage} of ${totalPages} (Total: ${totalModels} machines)
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination mb-0">
+                                    <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                        <a class="page-link" href="${pageContext.request.contextPath}/customer/machines?page=${currentPage - 1}">Previous</a>
+                                    </li>
+                                    
+                                    <c:forEach var="i" begin="1" end="${totalPages > 5 ? 5 : totalPages}">
+                                        <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                            <a class="page-link" href="${pageContext.request.contextPath}/customer/machines?page=${i}">${i}</a>
+                                        </li>
+                                    </c:forEach>
+                                    
+                                    <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                        <a class="page-link" href="${pageContext.request.contextPath}/customer/machines?page=${currentPage + 1}">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </c:if>
                 </div>
             </div>
         </main>

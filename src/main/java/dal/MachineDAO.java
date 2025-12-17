@@ -61,6 +61,46 @@ public class MachineDAO extends DBContext {
         return null;
     }
 
+    public int getTotalMachineModels() {
+        String sql = "SELECT COUNT(*) FROM MachineModels WHERE IsActive = 1";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<MachineModel> getMachineModelsByPage(int page, int pageSize) {
+        List<MachineModel> models = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = "SELECT * FROM MachineModels WHERE IsActive = 1 ORDER BY ModelName LIMIT ? OFFSET ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, pageSize);
+            ps.setInt(2, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MachineModel model = new MachineModel();
+                    model.setModelId(rs.getInt("ModelId"));
+                    model.setModelCode(rs.getString("ModelCode"));
+                    model.setModelName(rs.getString("ModelName"));
+                    model.setBrand(rs.getString("Brand"));
+                    model.setCategory(rs.getString("Category"));
+                    model.setSpecs(rs.getString("Specs"));
+                    model.setActive(rs.getBoolean("IsActive"));
+                    Timestamp ts = rs.getTimestamp("CreatedDate");
+                    model.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    models.add(model);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return models;
+    }
+
     // Machine Units
     public List<MachineUnit> getAllMachineUnits() {
         List<MachineUnit> units = new ArrayList<>();
@@ -124,6 +164,33 @@ public class MachineDAO extends DBContext {
             ex.printStackTrace();
         }
         return 0;
+    }
+
+    public List<MachineUnit> getMachineUnitsByPage(int page, int pageSize) {
+        List<MachineUnit> units = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT u.*, m.ModelName, m.Brand, w.WarehouseName
+            FROM MachineUnits u
+            LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
+            LEFT JOIN Warehouses w ON u.CurrentWarehouseId = w.WarehouseId
+            WHERE u.IsActive = 1
+            ORDER BY u.SerialNumber
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, pageSize);
+            ps.setInt(2, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MachineUnit unit = mapMachineUnit(rs);
+                    units.add(unit);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return units;
     }
 
     public Map<String, Integer> getMachineCountByStatus() {
