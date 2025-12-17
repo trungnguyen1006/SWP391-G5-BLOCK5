@@ -26,6 +26,7 @@ public class ViewUserListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String pageParam = request.getParameter("page");
+        String statusParam = request.getParameter("status");
         int currentPage = 1;
         
         if (pageParam != null) {
@@ -39,48 +40,28 @@ public class ViewUserListServlet extends HttpServlet {
             }
         }
 
-        // Get all users and filter out Admin role users
-        List<Users> allUsers = userDAO.getUsersByPage(1, Integer.MAX_VALUE);
-        List<Users> filteredUsers = new ArrayList<>();
-        RoleDAO roleDAO = new RoleDAO();
+        int totalUsers;
+        List<Users> userList;
         
-        for (Users user : allUsers) {
-            // Check if user has Admin role (roleId = 1)
-            boolean isAdmin = false;
-            try {
-                List<Roles> userRoles = roleDAO.getRolesByUserId(user.getUserId());
-                for (Roles role : userRoles) {
-                    if (role.getRoleId() == 1) { // Admin role
-                        isAdmin = true;
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            
-            // Only add non-admin users
-            if (!isAdmin) {
-                filteredUsers.add(user);
-            }
+        if (statusParam != null && !statusParam.isEmpty()) {
+            totalUsers = userDAO.getTotalUsersWithFilter(statusParam);
+            userList = userDAO.getUsersByPageWithFilter(currentPage, PAGE_SIZE, statusParam);
+        } else {
+            totalUsers = userDAO.getTotalUsers();
+            userList = userDAO.getUsersByPage(currentPage, PAGE_SIZE);
         }
         
-        int totalUsers = filteredUsers.size();
         int totalPages = (int) Math.ceil((double) totalUsers / PAGE_SIZE);
         
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         }
-
-        // Get paginated results from filtered list
-        int startIndex = (currentPage - 1) * PAGE_SIZE;
-        int endIndex = Math.min(startIndex + PAGE_SIZE, filteredUsers.size());
-        List<Users> userList = filteredUsers.subList(startIndex, endIndex);
         
         request.setAttribute("userList", userList);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalUsers", totalUsers);
+        request.setAttribute("status", statusParam);
         
         request.getRequestDispatcher(USER_LIST_PAGE).forward(request, response);
     }

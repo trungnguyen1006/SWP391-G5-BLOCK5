@@ -129,3 +129,50 @@ public class WarehouseDAO extends DBContext {
         return warehouse;
     }
 }
+
+    public List<Warehouse> getWarehousesByPageWithFilter(int page, int pageSize, String status) {
+        List<Warehouse> warehouses = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT * FROM Warehouses
+            WHERE IsActive = ?
+            ORDER BY WarehouseName
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Warehouse warehouse = new Warehouse();
+                    warehouse.setWarehouseId(rs.getInt("WarehouseId"));
+                    warehouse.setWarehouseCode(rs.getString("WarehouseCode"));
+                    warehouse.setWarehouseName(rs.getString("WarehouseName"));
+                    warehouse.setAddress(rs.getString("Address"));
+                    warehouse.setActive(rs.getBoolean("IsActive"));
+                    warehouses.add(warehouse);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return warehouses;
+    }
+
+    public int getTotalWarehousesWithFilter(String status) {
+        String sql = "SELECT COUNT(*) FROM Warehouses WHERE IsActive = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }

@@ -190,3 +190,45 @@ public class CustomerManagementDAO extends DBContext {
         return customer;
     }
 }
+
+    public List<Customers> getCustomersByPageWithFilter(int page, int pageSize, String status) {
+        List<Customers> customers = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT * FROM Customers
+            WHERE IsActive = ?
+            ORDER BY CustomerName
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Customers customer = mapCustomer(rs);
+                    customers.add(customer);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return customers;
+    }
+
+    public int getTotalCustomersWithFilter(String status) {
+        String sql = "SELECT COUNT(*) FROM Customers WHERE IsActive = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }

@@ -220,3 +220,51 @@ public class SiteDAO extends DBContext {
         return site;
     }
 }
+
+    public List<Site> getSitesByPageWithFilter(int page, int pageSize, String status) {
+        List<Site> sites = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT * FROM Sites
+            WHERE IsActive = ?
+            ORDER BY SiteName
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Site site = new Site();
+                    site.setSiteId(rs.getInt("SiteId"));
+                    site.setSiteCode(rs.getString("SiteCode"));
+                    site.setSiteName(rs.getString("SiteName"));
+                    site.setAddress(rs.getString("Address"));
+                    site.setCustomerId(rs.getInt("CustomerId"));
+                    site.setActive(rs.getBoolean("IsActive"));
+                    sites.add(site);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return sites;
+    }
+
+    public int getTotalSitesWithFilter(String status) {
+        String sql = "SELECT COUNT(*) FROM Sites WHERE IsActive = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }

@@ -68,6 +68,33 @@
                     </div>
                 </div>
 
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card border-0 rounded shadow">
+                            <div class="card-body">
+                                <form method="get" action="${pageContext.request.contextPath}/admin/role-list" class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="statusFilter" class="form-label">Filter by Status</label>
+                                        <select class="form-select" id="statusFilter" name="status">
+                                            <option value="">All Roles</option>
+                                            <option value="active" ${status == 'active' ? 'selected' : ''}>Active</option>
+                                            <option value="inactive" ${status == 'inactive' ? 'selected' : ''}>Inactive</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="uil uil-search me-1"></i> Filter
+                                        </button>
+                                        <a href="${pageContext.request.contextPath}/admin/role-list" class="btn btn-secondary ms-2">
+                                            <i class="uil uil-redo me-1"></i> Reset
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-12 mt-4">
                         <div class="card border-0 rounded shadow">
@@ -129,17 +156,17 @@
                                         <nav aria-label="Page navigation">
                                             <ul class="pagination mb-0">
                                                 <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                                    <a class="page-link" href="${pageContext.request.contextPath}/admin/role-list?page=${currentPage - 1}">Previous</a>
+                                                    <a class="page-link" href="${pageContext.request.contextPath}/admin/role-list?page=${currentPage - 1}${status != null ? '&status=' : ''}${status}">Previous</a>
                                                 </li>
                                                 
                                                 <c:forEach var="i" begin="1" end="${totalPages > 5 ? 5 : totalPages}">
                                                     <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                        <a class="page-link" href="${pageContext.request.contextPath}/admin/role-list?page=${i}">${i}</a>
+                                                        <a class="page-link" href="${pageContext.request.contextPath}/admin/role-list?page=${i}${status != null ? '&status=' : ''}${status}">${i}</a>
                                                     </li>
                                                 </c:forEach>
                                                 
                                                 <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                                    <a class="page-link" href="${pageContext.request.contextPath}/admin/role-list?page=${currentPage + 1}">Next</a>
+                                                    <a class="page-link" href="${pageContext.request.contextPath}/admin/role-list?page=${currentPage + 1}${status != null ? '&status=' : ''}${status}">Next</a>
                                                 </li>
                                             </ul>
                                         </nav>

@@ -33,6 +33,7 @@ public class ViewCustomerListEmployeeServlet extends HttpServlet {
         }
 
         String pageParam = request.getParameter("page");
+        String statusParam = request.getParameter("status");
         int currentPage = 1;
         
         if (pageParam != null) {
@@ -46,19 +47,28 @@ public class ViewCustomerListEmployeeServlet extends HttpServlet {
             }
         }
 
-        int totalCustomers = customerDAO.getTotalCustomers();
+        int totalCustomers;
+        List<Customers> customers;
+        
+        if (statusParam != null && !statusParam.isEmpty()) {
+            totalCustomers = customerDAO.getTotalCustomersWithFilter(statusParam);
+            customers = customerDAO.getCustomersByPageWithFilter(currentPage, PAGE_SIZE, statusParam);
+        } else {
+            totalCustomers = customerDAO.getTotalCustomers();
+            customers = customerDAO.getCustomersByPage(currentPage, PAGE_SIZE);
+        }
+        
         int totalPages = (int) Math.ceil((double) totalCustomers / PAGE_SIZE);
         
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         }
-
-        List<Customers> customers = customerDAO.getCustomersByPage(currentPage, PAGE_SIZE);
         
         request.setAttribute("customers", customers);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalCustomers", totalCustomers);
+        request.setAttribute("status", statusParam);
         
         request.getRequestDispatcher(CUSTOMER_LIST_PAGE).forward(request, response);
     }

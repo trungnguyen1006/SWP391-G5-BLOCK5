@@ -34,6 +34,7 @@ public class ViewSiteListServlet extends HttpServlet {
         }
 
         String pageParam = request.getParameter("page");
+        String statusParam = request.getParameter("status");
         int currentPage = 1;
         
         if (pageParam != null) {
@@ -47,19 +48,28 @@ public class ViewSiteListServlet extends HttpServlet {
             }
         }
 
-        int totalSites = siteDAO.getTotalSites();
+        int totalSites;
+        List<Site> sites;
+        
+        if (statusParam != null && !statusParam.isEmpty()) {
+            totalSites = siteDAO.getTotalSitesWithFilter(statusParam);
+            sites = siteDAO.getSitesByPageWithFilter(currentPage, PAGE_SIZE, statusParam);
+        } else {
+            totalSites = siteDAO.getTotalSites();
+            sites = siteDAO.getSitesByPage(currentPage, PAGE_SIZE);
+        }
+        
         int totalPages = (int) Math.ceil((double) totalSites / PAGE_SIZE);
         
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         }
-
-        List<Site> sites = siteDAO.getSitesByPage(currentPage, PAGE_SIZE);
         
         request.setAttribute("sites", sites);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalSites", totalSites);
+        request.setAttribute("status", statusParam);
         
         request.getRequestDispatcher(SITE_LIST_PAGE).forward(request, response);
     }

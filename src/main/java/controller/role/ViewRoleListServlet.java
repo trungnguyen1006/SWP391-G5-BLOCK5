@@ -23,6 +23,7 @@ public class ViewRoleListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String pageParam = request.getParameter("page");
+        String statusParam = request.getParameter("status");
         int currentPage = 1;
         
         if (pageParam != null) {
@@ -36,19 +37,28 @@ public class ViewRoleListServlet extends HttpServlet {
             }
         }
 
-        int totalRoles = roleDAO.getTotalRoles();
+        int totalRoles;
+        List<Roles> roleList;
+        
+        if (statusParam != null && !statusParam.isEmpty()) {
+            totalRoles = roleDAO.getTotalRolesWithFilter(statusParam);
+            roleList = roleDAO.getRolesByPageWithFilter(currentPage, PAGE_SIZE, statusParam);
+        } else {
+            totalRoles = roleDAO.getTotalRoles();
+            roleList = roleDAO.getRolesByPage(currentPage, PAGE_SIZE);
+        }
+        
         int totalPages = (int) Math.ceil((double) totalRoles / PAGE_SIZE);
         
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         }
-
-        List<Roles> roleList = roleDAO.getRolesByPage(currentPage, PAGE_SIZE);
         
         request.setAttribute("roleList", roleList);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalRoles", totalRoles);
+        request.setAttribute("status", statusParam);
         request.getRequestDispatcher(ROLE_LIST_PAGE).forward(request, response);
     }
 

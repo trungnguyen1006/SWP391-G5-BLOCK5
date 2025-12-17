@@ -268,3 +268,50 @@ public class UserDAO extends DBContext {
 
     
 }
+
+    public java.util.List<Users> getUsersByPageWithFilter(int page, int pageSize, String status) {
+        java.util.List<Users> users = new java.util.ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = "SELECT * FROM Users WHERE IsActive = ? ORDER BY CreatedDate DESC LIMIT ? OFFSET ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Users user = new Users();
+                    user.setUserId(rs.getInt("UserId"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setPassword(rs.getString("Password"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setActive(rs.getBoolean("IsActive"));
+                    Timestamp ts = rs.getTimestamp("CreatedDate");
+                    user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    user.setPhone(rs.getString("Phone"));
+                    user.setImage(rs.getString("Image"));
+                    users.add(user);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return users;
+    }
+
+    public int getTotalUsersWithFilter(String status) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE IsActive = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }

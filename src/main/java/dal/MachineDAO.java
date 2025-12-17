@@ -481,3 +481,43 @@ public class MachineDAO extends DBContext {
     }
 
 }
+
+    public List<MachineUnit> getMachineUnitsByPageWithFilter(int page, int pageSize, String status) {
+        List<MachineUnit> units = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT * FROM MachineUnits
+            WHERE CurrentStatus = ? AND IsActive = 1
+            ORDER BY SerialNumber
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MachineUnit unit = mapMachineUnit(rs);
+                    units.add(unit);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return units;
+    }
+
+    public int getTotalMachineUnitsWithFilter(String status) {
+        String sql = "SELECT COUNT(*) FROM MachineUnits WHERE CurrentStatus = ? AND IsActive = 1";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }

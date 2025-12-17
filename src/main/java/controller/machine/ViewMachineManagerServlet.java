@@ -24,6 +24,7 @@ public class ViewMachineManagerServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String pageParam = request.getParameter("page");
+        String statusParam = request.getParameter("status");
         int currentPage = 1;
         
         if (pageParam != null) {
@@ -37,14 +38,23 @@ public class ViewMachineManagerServlet extends HttpServlet {
             }
         }
 
-        int totalMachines = machineDAO.getTotalMachineUnits();
+        int totalMachines;
+        List<MachineUnit> machineUnits;
+        
+        if (statusParam != null && !statusParam.isEmpty()) {
+            totalMachines = machineDAO.getTotalMachineUnitsWithFilter(statusParam);
+            machineUnits = machineDAO.getMachineUnitsByPageWithFilter(currentPage, PAGE_SIZE, statusParam);
+        } else {
+            totalMachines = machineDAO.getTotalMachineUnits();
+            machineUnits = machineDAO.getMachineUnitsByPage(currentPage, PAGE_SIZE);
+        }
+        
         int totalPages = (int) Math.ceil((double) totalMachines / PAGE_SIZE);
         
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         }
 
-        List<MachineUnit> machineUnits = machineDAO.getMachineUnitsByPage(currentPage, PAGE_SIZE);
         Map<String, Integer> statusCount = machineDAO.getMachineCountByStatus();
         Map<String, Integer> modelCount = machineDAO.getMachineCountByModel();
         
@@ -54,6 +64,7 @@ public class ViewMachineManagerServlet extends HttpServlet {
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalMachines", totalMachines);
+        request.setAttribute("status", statusParam);
         
         request.getRequestDispatcher(MACHINE_LIST_PAGE).forward(request, response);
     }

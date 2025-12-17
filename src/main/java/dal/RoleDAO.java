@@ -114,6 +114,47 @@ public class RoleDAO extends DBContext {
         return roles;
     }
 
+    public List<Roles> getRolesByPageWithFilter(int page, int pageSize, String status) {
+        List<Roles> roles = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = "SELECT * FROM Roles WHERE IsActive = ? ORDER BY RoleName LIMIT ? OFFSET ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Roles role = new Roles(
+                            rs.getInt("RoleId"),
+                            rs.getString("RoleName"),
+                            rs.getBoolean("IsActive")
+                    );
+                    roles.add(role);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return roles;
+    }
+
+    public int getTotalRolesWithFilter(String status) {
+        String sql = "SELECT COUNT(*) FROM Roles WHERE IsActive = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setBoolean(1, isActive);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
     public int getUserCountByRole(int roleId) {
         String sql = "SELECT COUNT(*) FROM UserRoles WHERE RoleId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

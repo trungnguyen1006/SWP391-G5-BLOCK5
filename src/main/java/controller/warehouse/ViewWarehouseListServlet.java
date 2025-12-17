@@ -33,6 +33,7 @@ public class ViewWarehouseListServlet extends HttpServlet {
         }
 
         String pageParam = request.getParameter("page");
+        String statusParam = request.getParameter("status");
         int currentPage = 1;
         
         if (pageParam != null) {
@@ -46,19 +47,28 @@ public class ViewWarehouseListServlet extends HttpServlet {
             }
         }
 
-        int totalWarehouses = warehouseDAO.getTotalWarehouses();
+        int totalWarehouses;
+        List<Warehouse> warehouses;
+        
+        if (statusParam != null && !statusParam.isEmpty()) {
+            totalWarehouses = warehouseDAO.getTotalWarehousesWithFilter(statusParam);
+            warehouses = warehouseDAO.getWarehousesByPageWithFilter(currentPage, PAGE_SIZE, statusParam);
+        } else {
+            totalWarehouses = warehouseDAO.getTotalWarehouses();
+            warehouses = warehouseDAO.getWarehousesByPage(currentPage, PAGE_SIZE);
+        }
+        
         int totalPages = (int) Math.ceil((double) totalWarehouses / PAGE_SIZE);
         
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         }
-
-        List<Warehouse> warehouses = warehouseDAO.getWarehousesByPage(currentPage, PAGE_SIZE);
         
         request.setAttribute("warehouses", warehouses);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalWarehouses", totalWarehouses);
+        request.setAttribute("status", statusParam);
         
         request.getRequestDispatcher(WAREHOUSE_LIST_PAGE).forward(request, response);
     }
