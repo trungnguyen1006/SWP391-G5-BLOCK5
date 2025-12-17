@@ -521,3 +521,48 @@ public class MachineDAO extends DBContext {
         }
         return 0;
     }
+
+    public List<MachineModel> getMachineModelsByPageAndCategory(int page, int pageSize, String category) {
+        List<MachineModel> models = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT * FROM MachineModels
+            WHERE Category = ?
+            ORDER BY ModelName
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, category);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MachineModel model = new MachineModel();
+                    model.setModelId(rs.getInt("ModelId"));
+                    model.setModelCode(rs.getString("ModelCode"));
+                    model.setModelName(rs.getString("ModelName"));
+                    model.setBrand(rs.getString("Brand"));
+                    model.setCategory(rs.getString("Category"));
+                    models.add(model);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return models;
+    }
+
+    public int getTotalMachineModelsByCategory(String category) {
+        String sql = "SELECT COUNT(*) FROM MachineModels WHERE Category = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, category);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
