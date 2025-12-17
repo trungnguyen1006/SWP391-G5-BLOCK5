@@ -139,6 +139,33 @@
                         </div>
                     </div>
 
+                    <!-- Filter Form -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card border-0 rounded shadow">
+                                <div class="card-body">
+                                    <form method="GET" action="${pageContext.request.contextPath}/mgr/machines" class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Filter by Status</label>
+                                            <select name="status" class="form-control">
+                                                <option value="">-- All Status --</option>
+                                                <option value="IN_STOCK" ${status == 'IN_STOCK' ? 'selected' : ''}>In Stock</option>
+                                                <option value="ON_SITE" ${status == 'ON_SITE' ? 'selected' : ''}>On Site</option>
+                                                <option value="MAINTENANCE" ${status == 'MAINTENANCE' ? 'selected' : ''}>Maintenance</option>
+                                                <option value="ALLOCATED" ${status == 'ALLOCATED' ? 'selected' : ''}>Allocated</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="mdi mdi-filter me-1"></i> Filter
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Machine List -->
                     <div class="row">
                         <div class="col-12 mt-4">
@@ -226,17 +253,17 @@
                                             <nav aria-label="Page navigation">
                                                 <ul class="pagination mb-0">
                                                     <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/machines?page=${currentPage - 1}">Previous</a>
+                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/machines?page=${currentPage - 1}${not empty status ? '&status=' : ''}${status}">Previous</a>
                                                     </li>
                                                     
                                                     <c:forEach var="i" begin="1" end="${totalPages > 5 ? 5 : totalPages}">
                                                         <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                            <a class="page-link" href="${pageContext.request.contextPath}/mgr/machines?page=${i}">${i}</a>
+                                                            <a class="page-link" href="${pageContext.request.contextPath}/mgr/machines?page=${i}${not empty status ? '&status=' : ''}${status}">${i}</a>
                                                         </li>
                                                     </c:forEach>
                                                     
                                                     <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/machines?page=${currentPage + 1}">Next</a>
+                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/machines?page=${currentPage + 1}${not empty status ? '&status=' : ''}${status}">Next</a>
                                                     </li>
                                                 </ul>
                                             </nav>

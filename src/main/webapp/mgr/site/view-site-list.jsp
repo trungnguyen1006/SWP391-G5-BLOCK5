@@ -65,6 +65,31 @@
                         </div>
                     </div>
 
+                    <!-- Search Form -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card border-0 rounded shadow">
+                                <div class="card-body">
+                                    <form method="GET" action="${pageContext.request.contextPath}/mgr/sites" class="row g-3">
+                                        <div class="col-md-5">
+                                            <label class="form-label">Search by Site Name</label>
+                                            <input type="text" name="searchName" class="form-control" placeholder="Enter site name" value="${searchName}">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label">Search by Address</label>
+                                            <input type="text" name="searchAddress" class="form-control" placeholder="Enter address" value="${searchAddress}">
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="mdi mdi-magnify me-1"></i> Search
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Site List -->
                     <div class="row">
                         <div class="col-12 mt-4">
@@ -142,17 +167,17 @@
                                             <nav aria-label="Page navigation">
                                                 <ul class="pagination mb-0">
                                                     <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/sites?page=${currentPage - 1}">Previous</a>
+                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/sites?page=${currentPage - 1}${not empty searchName ? '&searchName=' : ''}${searchName}${not empty searchAddress ? '&searchAddress=' : ''}${searchAddress}">Previous</a>
                                                     </li>
 
                                                     <c:forEach var="i" begin="1" end="${totalPages > 5 ? 5 : totalPages}">
                                                         <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                            <a class="page-link" href="${pageContext.request.contextPath}/mgr/sites?page=${i}">${i}</a>
+                                                            <a class="page-link" href="${pageContext.request.contextPath}/mgr/sites?page=${i}${not empty searchName ? '&searchName=' : ''}${searchName}${not empty searchAddress ? '&searchAddress=' : ''}${searchAddress}">${i}</a>
                                                         </li>
                                                     </c:forEach>
 
                                                     <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/sites?page=${currentPage + 1}">Next</a>
+                                                        <a class="page-link" href="${pageContext.request.contextPath}/mgr/sites?page=${currentPage + 1}${not empty searchName ? '&searchName=' : ''}${searchName}${not empty searchAddress ? '&searchAddress=' : ''}${searchAddress}">Next</a>
                                                     </li>
                                                 </ul>
                                             </nav>

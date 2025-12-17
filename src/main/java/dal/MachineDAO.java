@@ -480,15 +480,18 @@ public class MachineDAO extends DBContext {
         return units;
     }
 
-}
-
     public List<MachineUnit> getMachineUnitsByPageWithFilter(int page, int pageSize, String status) {
         List<MachineUnit> units = new ArrayList<>();
         int offset = (page - 1) * pageSize;
         String sql = """
-            SELECT * FROM MachineUnits
-            WHERE CurrentStatus = ? AND IsActive = 1
-            ORDER BY SerialNumber
+            SELECT u.*, m.ModelName, m.Brand, m.ModelCode, m.Category, m.Specs,
+                   w.WarehouseName, s.SiteName
+            FROM MachineUnits u
+            LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
+            LEFT JOIN Warehouses w ON u.CurrentWarehouseId = w.WarehouseId
+            LEFT JOIN Sites s ON u.CurrentSiteId = s.SiteId
+            WHERE u.CurrentStatus = ? AND u.IsActive = 1
+            ORDER BY u.SerialNumber
             LIMIT ? OFFSET ?
             """;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

@@ -38,7 +38,7 @@ public class UpdateSiteServlet extends HttpServlet {
         String siteIdParam = request.getParameter("id");
         
         if (siteIdParam == null || siteIdParam.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/admin/" + SITE_LIST_URL);
+            response.sendRedirect(request.getContextPath() + "/mgr/" + SITE_LIST_URL);
             return;
         }
 
@@ -47,7 +47,7 @@ public class UpdateSiteServlet extends HttpServlet {
             Site site = siteDAO.getSiteById(siteId);
             
             if (site == null) {
-                response.sendRedirect(request.getContextPath() + "/admin/" + SITE_LIST_URL);
+                response.sendRedirect(request.getContextPath() + "/mgr/" + SITE_LIST_URL);
                 return;
             }
 
@@ -59,7 +59,7 @@ public class UpdateSiteServlet extends HttpServlet {
             request.getRequestDispatcher(UPDATE_SITE_PAGE).forward(request, response);
 
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/admin/" + SITE_LIST_URL);
+            response.sendRedirect(request.getContextPath() + "/mgr/" + SITE_LIST_URL);
         }
     }
 
