@@ -15,8 +15,6 @@ import model.Dashboard;
 @WebServlet(name = "ManagerDashboardServlet", urlPatterns = {"/mgr/dashboard"})
 public class ManagerDashboardServlet extends HttpServlet {
 
-    private static final String DASHBOARD_PAGE = "/mgr/dashboard.jsp";
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -34,8 +32,6 @@ public class ManagerDashboardServlet extends HttpServlet {
         Dashboard dashboard = dashboardDAO.getDashboardManager();
 
         request.setAttribute("dashboard", dashboard);
-        request.setAttribute("pageTitle", "Manager Dashboard");
-
-        request.getRequestDispatcher(DASHBOARD_PAGE).forward(request, response);
+        request.getRequestDispatcher("/mgr/dashboard.jsp").forward(request, response);
     }
 }
