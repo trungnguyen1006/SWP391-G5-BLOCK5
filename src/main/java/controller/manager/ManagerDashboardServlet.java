@@ -29,11 +29,10 @@ public class ManagerDashboardServlet extends HttpServlet {
             return;
         }
 
-        // 🔹 GỌI DAO ĐÃ CÓ
+        
         DashboardDAO dashboardDAO = new DashboardDAO();
         Dashboard dashboard = dashboardDAO.getDashboardManager();
 
-        // 🔹 SET ATTRIBUTE
         request.setAttribute("dashboard", dashboard);
         request.setAttribute("pageTitle", "Manager Dashboard");
 

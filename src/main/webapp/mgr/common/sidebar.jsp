@@ -43,6 +43,23 @@
                 </div>
             </li>
 
+            <li class="sidebar-dropdown">
+                <a href="javascript:void(0)">
+                    <i class="uil uil-file-alt me-2 d-inline-block"></i>
+                    Request Management
+                </a>
+                <div class="sidebar-submenu">
+                    <ul>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/mgr/maintenance-requests">
+                                Request List
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+
         </ul>
     </div>
 </nav>

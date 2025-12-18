@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class MaintenanceRequestDAO extends DBContext {
 
-    // 1. Customer gửi đơn
     public void createRequest(MaintenanceRequest r) {
         String sql = """
             INSERT INTO maintenancerequests
@@ -39,7 +38,6 @@ public class MaintenanceRequestDAO extends DBContext {
         }
     }
 
-    // Manager duyệt / từ chối (CHỈ áp dụng cho PENDING)
     public void updateStatus(int requestId, String status, int employeeId) {
         String sql = """
         UPDATE maintenancerequests
@@ -74,7 +72,6 @@ public class MaintenanceRequestDAO extends DBContext {
         }
     }
 
-    // 4. Lấy danh sách theo trạng thái
     public List<MaintenanceRequest> getByStatus(String status) {
         List<MaintenanceRequest> list = new ArrayList<>();
         String sql = """

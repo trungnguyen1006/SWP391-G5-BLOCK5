@@ -20,8 +20,7 @@ import model.Users;
 @WebServlet(name = "MaintenanceRequestServlet", urlPatterns = {"/customer/sendrequest"})
 public class MaintenanceRequestServlet extends HttpServlet {
 
-    // ===================== GET =====================
-    // Hiển thị form gửi đơn + danh sách thiết bị
+   
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -41,8 +40,6 @@ public class MaintenanceRequestServlet extends HttpServlet {
         req.getRequestDispatcher("/customer/send_request.jsp").forward(req, resp);
     }
 
-    // ===================== POST =====================
-    // Xử lý gửi đơn
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -59,7 +56,7 @@ public class MaintenanceRequestServlet extends HttpServlet {
         int userID = user.getUserId();
         Customers cust = customerDAO.getCustomerByUserId(userID);
         int unitId = Integer.parseInt(req.getParameter("unitId"));
-        String requestType = req.getParameter("requestType"); // REPAIR | WARRANTY
+        String requestType = req.getParameter("requestType"); 
         String title = req.getParameter("title");
         String description = req.getParameter("description");
         String requestCode = "MR-" + System.currentTimeMillis();

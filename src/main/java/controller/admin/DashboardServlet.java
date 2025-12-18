@@ -28,7 +28,6 @@ public class DashboardServlet extends HttpServlet {
         
         Dashboard d = DAO.getDashboardAdmin();
         
-        // Get machine statistics
         int totalMachines = machineDAO.getTotalMachineUnits();
         
         request.setAttribute("dashboard", d);
