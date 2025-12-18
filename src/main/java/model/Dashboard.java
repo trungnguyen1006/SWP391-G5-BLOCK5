@@ -19,9 +19,29 @@ public class Dashboard {
     private int totalContractPending;
     private int totalSite;
     private int totalRequest;
+    private int totalMachinemodel;
+    private int totalWarehouse;
 
     public Dashboard() {
     }
+
+    public int getTotalMachinemodel() {
+        return totalMachinemodel;
+    }
+
+    public void setTotalMachinemodel(int totalMachinemodel) {
+        this.totalMachinemodel = totalMachinemodel;
+    }
+
+    public int getTotalWarehouse() {
+        return totalWarehouse;
+    }
+
+    public void setTotalWarehouse(int totalWarehouse) {
+        this.totalWarehouse = totalWarehouse;
+    }
+    
+    
 
     public int getTotalSite() {
         return totalSite;

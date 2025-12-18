@@ -53,45 +53,25 @@ public class DashboardDAO extends DBContext {
         return dashboard;
     }
 
-    public DashboardStaff getDashboardStaff(int employeeId) {
-        DashboardStaff dashboard = new DashboardStaff();
+    public Dashboard getDashboardManager() {
+        Dashboard dashboard = new Dashboard();
 
         String sql = """
         SELECT
-            (
-                SELECT COUNT(*)
-                FROM supportrequests
-            ) AS totalTickets,
-            (
-                SELECT COUNT(*)
-                FROM supportrequests
-                WHERE Status = 'APPROVED'
-            ) AS approvedTickets,
-            (
-                SELECT COUNT(*)
-                FROM supportrequests
-                WHERE Status = 'REJECTED'
-            ) AS rejectedTickets,
-            (
-                SELECT COUNT(*)
-                FROM supportrequests
-                WHERE AssignedToEmployeeId = ?
-            ) AS assignedTickets
+            (SELECT COUNT(*) FROM machinemodels) AS totalMachinemodel,
+            (SELECT COUNT(*) FROM warehouses) AS totalWarehouse,
+            (SELECT COUNT(*) FROM sites) AS totalSite
     """;
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, employeeId);
 
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    dashboard.setTotalTickets(
-                            rs.getInt("totalTickets"));
-                    dashboard.setApprovedTickets(
-                            rs.getInt("approvedTickets"));
-                    dashboard.setRejectedTickets(
-                            rs.getInt("rejectedTickets"));
-                    dashboard.setAssignedTickets(
-                            rs.getInt("assignedTickets"));
-                }
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                dashboard.setTotalMachinemodel(
+                        rs.getInt("totalMachinemodel"));
+                dashboard.setTotalWarehouse(
+                        rs.getInt("totalWarehouse"));
+                dashboard.setTotalSite(
+                        rs.getInt("totalSite"));
             }
 
         } catch (SQLException e) {
