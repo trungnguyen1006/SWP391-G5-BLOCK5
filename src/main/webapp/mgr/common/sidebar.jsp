@@ -23,7 +23,7 @@
             </li>
 
             <li class="sidebar-dropdown">
-                <a href="javascript:void(0)"><i class="uil uil-warehouse me-2 d-inline-block"></i>Warehouse Management</a>
+                <a href="javascript:void(0)"><i class="uil uil-store me-2 d-inline-block"></i>Warehouse Management</a>
                 <div class="sidebar-submenu">
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/mgr/warehouses">Warehouse List</a></li>
