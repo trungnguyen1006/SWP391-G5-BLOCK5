@@ -147,6 +147,14 @@ public class AddContractServlet extends HttpServlet {
                     if (unitIds[i] != null && !unitIds[i].isEmpty()) {
                         int unitId = Integer.parseInt(unitIds[i]);
                         
+                        // Check if machine is available for rental (must be IN_STOCK)
+                        MachineUnit machine = machineDAO.getMachineUnitById(unitId);
+                        if (machine == null || !machine.getCurrentStatus().equals("IN_STOCK")) {
+                            request.setAttribute("errorMessage", "Machine " + unitId + " is not available for rental. Only machines with IN_STOCK status can be rented.");
+                            request.getRequestDispatcher(ADD_CONTRACT_PAGE).forward(request, response);
+                            return;
+                        }
+                        
                         ContractItem item = new ContractItem();
                         item.setContractId(contractId);
                         item.setUnitId(unitId);

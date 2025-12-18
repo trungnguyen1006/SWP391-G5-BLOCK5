@@ -437,7 +437,7 @@ public class ContractDAO extends DBContext {
 
         String updateUnitSql = """
         UPDATE MachineUnits
-        SET CurrentStatus = 'AVAILABLE',
+        SET CurrentStatus = 'IN_STOCK',
             CurrentWarehouseId = ?,
             CurrentSiteId = NULL
         WHERE UnitId = ?
@@ -449,7 +449,7 @@ public class ContractDAO extends DBContext {
 
         String updateContractSql = """
         UPDATE Contracts
-        SET Status = 'CANCELLED'
+        SET Status = 'CLOSED'
         WHERE ContractId = ?
     """;
 
@@ -713,6 +713,52 @@ public class ContractDAO extends DBContext {
         }
 
         return units;
+    }
+
+    public List<MachineModel> getMachineModelsFromCustomerContracts(int customerId) {
+        List<MachineModel> models = new ArrayList<>();
+        String sql = """
+            SELECT DISTINCT m.ModelId, m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs, m.IsActive, m.CreatedDate
+            FROM MachineModels m
+            INNER JOIN MachineUnits u ON m.ModelId = u.ModelId
+            INNER JOIN ContractItems ci ON u.UnitId = ci.UnitId
+            INNER JOIN Contracts c ON ci.ContractId = c.ContractId
+            WHERE c.CustomerId = ? AND c.Status != 'CANCELLED' AND u.IsActive = 1
+            ORDER BY m.ModelName
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MachineModel model = new MachineModel();
+                    model.setModelId(rs.getInt("ModelId"));
+                    model.setModelCode(rs.getString("ModelCode"));
+                    model.setModelName(rs.getString("ModelName"));
+                    model.setBrand(rs.getString("Brand"));
+                    model.setCategory(rs.getString("Category"));
+                    model.setSpecs(rs.getString("Specs"));
+                    model.setActive(rs.getBoolean("IsActive"));
+                    Timestamp ts = rs.getTimestamp("CreatedDate");
+                    model.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    models.add(model);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return models;
+    }
+
+    public boolean updateContractStatus(int contractId, String newStatus) {
+        String sql = "UPDATE Contracts SET Status = ? WHERE ContractId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, newStatus);
+            ps.setInt(2, contractId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 
 }

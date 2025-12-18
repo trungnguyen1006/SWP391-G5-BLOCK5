@@ -61,8 +61,14 @@ public class ConfirmMachineDeliveryServlet extends HttpServlet {
                 }
             }
 
+            // Update contract status to ACTIVE
             if (allUpdated) {
-                response.sendRedirect(request.getContextPath() + CONTRACT_DETAIL_URL + "?id=" + contractId + "&delivery_confirmed=true");
+                boolean contractUpdated = contractDAO.updateContractStatus(contractId, "ACTIVE");
+                if (contractUpdated) {
+                    response.sendRedirect(request.getContextPath() + CONTRACT_DETAIL_URL + "?id=" + contractId + "&delivery_confirmed=true");
+                } else {
+                    response.sendRedirect(request.getContextPath() + CONTRACT_DETAIL_URL + "?id=" + contractId + "&error=contract_status_update_failed");
+                }
             } else {
                 response.sendRedirect(request.getContextPath() + CONTRACT_DETAIL_URL + "?id=" + contractId + "&error=delivery_failed");
             }
