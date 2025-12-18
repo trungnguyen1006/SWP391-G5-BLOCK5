@@ -1,5 +1,9 @@
 <%@ page isELIgnored="false" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="dal.RoleDAO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="model.Roles" %>
+<%@ page import="model.Users" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -73,19 +77,28 @@
             <div class="card border-0 rounded shadow">
               <div class="card-body">
                 <form method="get" action="${pageContext.request.contextPath}/admin/user-list" class="row g-3">
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <label for="statusFilter" class="form-label">Filter by Status</label>
                     <select class="form-select" id="statusFilter" name="status">
-                      <option value="">All Users</option>
+                      <option value="">All Status</option>
                       <option value="active" ${status == 'active' ? 'selected' : ''}>Active</option>
                       <option value="inactive" ${status == 'inactive' ? 'selected' : ''}>Inactive</option>
                     </select>
                   </div>
-                  <div class="col-md-6 d-flex align-items-end">
+                  <div class="col-md-4">
+                    <label for="roleFilter" class="form-label">Filter by Role</label>
+                    <select class="form-select" id="roleFilter" name="role">
+                      <option value="">All Roles</option>
+                      <c:forEach var="r" items="${allRoles}">
+                        <option value="${r.roleId}" ${role == r.roleId ? 'selected' : ''}>${r.roleName}</option>
+                      </c:forEach>
+                    </select>
+                  </div>
+                  <div class="col-md-4 d-flex align-items-end gap-2">
                     <button type="submit" class="btn btn-primary">
                       <i class="uil uil-search me-1"></i> Filter
                     </button>
-                    <a href="${pageContext.request.contextPath}/admin/user-list" class="btn btn-secondary ms-2">
+                    <a href="${pageContext.request.contextPath}/admin/user-list" class="btn btn-secondary">
                       <i class="uil uil-redo me-1"></i> Reset
                     </a>
                   </div>
@@ -109,6 +122,7 @@
                       <th class="border-bottom p-3">Full Name</th>
                       <th class="border-bottom p-3">Email</th>
                       <th class="border-bottom p-3">Phone</th>
+                      <th class="border-bottom p-3" style="min-width: 100px;">Role</th>
                       <th class="border-bottom p-3" style="min-width: 100px;">Status</th>
                       <th class="border-bottom p-3" style="min-width: 100px;">Actions</th>
                     </tr>
@@ -139,6 +153,9 @@
                         <td class="p-3">${user.email}</td>
                         <td class="p-3">${not empty user.phone ? user.phone : '-'}</td>
                         <td class="p-3">
+                          ${user.role != null ? user.role : '-'}
+                        </td>
+                        <td class="p-3">
                           <c:choose>
                             <c:when test="${user.active}">
                               <span class="badge bg-soft-success">Active</span>
@@ -166,7 +183,7 @@
                     <nav aria-label="Page navigation">
                       <ul class="pagination mb-0">
                         <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                          <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${currentPage - 1}${status != null ? '&status=' : ''}${status}" aria-label="Previous">
+                          <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${currentPage - 1}${status != null ? '&status=' : ''}${status}${role != null ? '&role=' : ''}${role}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                           </a>
                         </li>
@@ -175,14 +192,14 @@
                           <c:when test="${totalPages <= 7}">
                             <c:forEach var="i" begin="1" end="${totalPages}">
                               <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${i}${status != null ? '&status=' : ''}${status}">${i}</a>
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${i}${status != null ? '&status=' : ''}${status}${role != null ? '&role=' : ''}${role}">${i}</a>
                               </li>
                             </c:forEach>
                           </c:when>
                           <c:otherwise>
                             <c:if test="${currentPage > 3}">
                               <li class="page-item">
-                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=1${status != null ? '&status=' : ''}${status}">1</a>
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=1${status != null ? '&status=' : ''}${status}${role != null ? '&role=' : ''}${role}">1</a>
                               </li>
                               <c:if test="${currentPage > 4}">
                                 <li class="page-item disabled"><span class="page-link">...</span></li>
@@ -192,7 +209,7 @@
                             <c:forEach var="i" begin="${currentPage - 2 < 1 ? 1 : currentPage - 2}" 
                                        end="${currentPage + 2 > totalPages ? totalPages : currentPage + 2}">
                               <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${i}">${i}</a>
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${i}${status != null ? '&status=' : ''}${status}${role != null ? '&role=' : ''}${role}">${i}</a>
                               </li>
                             </c:forEach>
 
@@ -201,14 +218,14 @@
                                 <li class="page-item disabled"><span class="page-link">...</span></li>
                               </c:if>
                               <li class="page-item">
-                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${totalPages}">${totalPages}</a>
+                                <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${totalPages}${status != null ? '&status=' : ''}${status}${role != null ? '&role=' : ''}${role}">${totalPages}</a>
                               </li>
                             </c:if>
                           </c:otherwise>
                         </c:choose>
 
                         <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                          <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${currentPage + 1}" aria-label="Next">
+                          <a class="page-link" href="${pageContext.request.contextPath}/admin/user-list?page=${currentPage + 1}${status != null ? '&status=' : ''}${status}${role != null ? '&role=' : ''}${role}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                           </a>
                         </li>

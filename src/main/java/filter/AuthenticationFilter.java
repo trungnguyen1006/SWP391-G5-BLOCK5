@@ -27,8 +27,21 @@ public class AuthenticationFilter implements Filter {
         String path = requestURI.substring(contextPath.length());
 
         // Các trang không cần login
-        if (path.equals("/") || path.equals("/login") || path.equals("/common/homepage.jsp") || 
-            path.startsWith("/assets/") || path.startsWith("/common/") || path.equals("/ForgotPassword.jsp")) {
+        if (path.equals("/") || path.equals("/login") || path.equals("/logout") || path.equals("/common/homepage.jsp") || 
+            path.startsWith("/assets/") || path.startsWith("/common/") || path.equals("/ForgotPassword.jsp") || 
+            path.equals("/changePassword.jsp")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Các trang có thể truy cập bởi tất cả users đã login (không cần kiểm tra role)
+        if (path.equals("/profile") || path.equals("/change-password") || path.equals("/edit-profile") || 
+            path.equals("/changePassword")) {
+            // Kiểm tra session
+            if (session == null || session.getAttribute("user") == null) {
+                httpResponse.sendRedirect(contextPath + "/login");
+                return;
+            }
             chain.doFilter(request, response);
             return;
         }

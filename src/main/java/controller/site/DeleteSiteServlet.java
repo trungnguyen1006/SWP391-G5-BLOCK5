@@ -32,7 +32,7 @@ public class DeleteSiteServlet extends HttpServlet {
         String siteIdParam = request.getParameter("id");
         
         if (siteIdParam == null || siteIdParam.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/admin/" + SITE_LIST_URL);
+            response.sendRedirect(request.getContextPath() + "/mgr/" + SITE_LIST_URL);
             return;
         }
 
@@ -40,9 +40,9 @@ public class DeleteSiteServlet extends HttpServlet {
             int siteId = Integer.parseInt(siteIdParam);
             
             if (siteDAO.deleteSite(siteId)) {
-                response.sendRedirect(request.getContextPath() + "/manager/" + SITE_LIST_URL + "?deleted=true");
+                response.sendRedirect(request.getContextPath() + "/mgr/" + SITE_LIST_URL + "?deleted=true");
             } else {
-                response.sendRedirect(request.getContextPath() + "/manager/" + SITE_LIST_URL + "?error=true");
+                response.sendRedirect(request.getContextPath() + "/mgr/" + SITE_LIST_URL + "?error=true");
             }
 
         } catch (NumberFormatException e) {

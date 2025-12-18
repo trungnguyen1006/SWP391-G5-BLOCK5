@@ -586,6 +586,70 @@ public class ContractDAO extends DBContext {
         }
         return 0;
     }
+
+    // Delete contract (only for DRAFT contracts)
+    public boolean deleteContract(int contractId) {
+        String sql = "DELETE FROM Contracts WHERE ContractId = ? AND Status = 'DRAFT'";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, contractId);
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    // Get contracts by status with pagination
+    public List<Contract> getContractsByPageAndStatus(int page, int pageSize, String status) {
+        List<Contract> contracts = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT c.*, cust.CustomerName, s.SiteName, 
+                   u1.FullName as SaleEmployeeName, u2.FullName as ManagerEmployeeName
+            FROM Contracts c
+            LEFT JOIN Customers cust ON c.CustomerId = cust.CustomerId
+            LEFT JOIN Sites s ON c.SiteId = s.SiteId
+            LEFT JOIN Employees e1 ON c.SaleEmployeeId = e1.EmployeeId
+            LEFT JOIN Users u1 ON e1.UserId = u1.UserId
+            LEFT JOIN Employees e2 ON c.ManagerEmployeeId = e2.EmployeeId
+            LEFT JOIN Users u2 ON e2.UserId = u2.UserId
+            WHERE c.Status = ?
+            ORDER BY c.CreatedDate DESC
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Contract contract = mapContract(rs);
+                    contracts.add(contract);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return contracts;
+    }
+
+    // Get total contracts by status
+    public int getTotalContractsByStatus(String status) {
+        String sql = "SELECT COUNT(*) FROM Contracts WHERE Status = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
 // Lấy danh sách thiết bị customer có thể chọn để gửi đơn
 
     public List<MachineUnit> getAvailableUnitsForCustomer(int customerId) {

@@ -12,6 +12,7 @@ public class Users {
     private LocalDateTime createdDate;
     private String phone;
     private String image;
+    private String role;
 
     public Users() {
 
@@ -90,5 +91,12 @@ public class Users {
     }
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
     }
 }

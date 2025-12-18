@@ -36,6 +36,7 @@ public class ViewContractListServlet extends HttpServlet {
         }
 
         String pageParam = request.getParameter("page");
+        String statusParam = request.getParameter("status");
         int currentPage = 1;
         
         if (pageParam != null) {
@@ -49,11 +50,17 @@ public class ViewContractListServlet extends HttpServlet {
             }
         }
 
-        // Get all contracts (employees can view all contracts)
-        System.out.println("DEBUG: Fetching all contracts for employee view");
-        int totalContracts = contractDAO.getTotalContracts();
-        List<Contract> contracts = contractDAO.getContractsByPage(currentPage, PAGE_SIZE);
-        System.out.println("DEBUG: Found " + totalContracts + " total contracts");
+        // Get contracts with optional status filter
+        int totalContracts;
+        List<Contract> contracts;
+        
+        if (statusParam != null && !statusParam.isEmpty()) {
+            totalContracts = contractDAO.getTotalContractsByStatus(statusParam);
+            contracts = contractDAO.getContractsByPageAndStatus(currentPage, PAGE_SIZE, statusParam);
+        } else {
+            totalContracts = contractDAO.getTotalContracts();
+            contracts = contractDAO.getContractsByPage(currentPage, PAGE_SIZE);
+        }
         
         int totalPages = (int) Math.ceil((double) totalContracts / PAGE_SIZE);
         
@@ -65,6 +72,7 @@ public class ViewContractListServlet extends HttpServlet {
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalContracts", totalContracts);
+        request.setAttribute("status", statusParam);
         
         request.getRequestDispatcher(CONTRACT_LIST_PAGE).forward(request, response);
     }

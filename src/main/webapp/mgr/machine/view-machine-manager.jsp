@@ -187,6 +187,7 @@
                                                     <tr>
                                                         <td class="p-3">
                                                             <strong>${unit.serialNumber}</strong>
+                                                            <br><small class="text-muted">ID: ${unit.unitId}</small>
                                                         </td>
                                                         <td class="p-3">
                                                             ${unit.machineModel.modelName}
@@ -229,7 +230,7 @@
                                                                 <i class="mdi mdi-eye"></i>
                                                             </button>
                                                             <a href="${pageContext.request.contextPath}/mgr/update-machine?id=${unit.unitId}" 
-                                                               class="btn btn-icon btn-pills btn-soft-success btn-sm" title="Edit">
+                                                               class="btn btn-icon btn-pills btn-soft-success btn-sm" title="Edit (ID: ${unit.unitId})">
                                                                 <i class="mdi mdi-pencil"></i>
                                                             </a>
                                                             <a href="${pageContext.request.contextPath}/mgr/delete-machine?id=${unit.unitId}" 

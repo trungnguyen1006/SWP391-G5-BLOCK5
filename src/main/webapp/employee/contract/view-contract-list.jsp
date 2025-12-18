@@ -43,6 +43,47 @@
                         </div>
                     </c:if>
 
+                    <c:if test="${param.deleted == 'true'}">
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <strong>Success!</strong> Contract has been deleted successfully.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${param.error == 'only_draft_can_be_deleted'}">
+                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                            <strong>Error!</strong> Only draft contracts can be deleted.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </c:if>
+
+                    <!-- Filter Form -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card border-0 rounded shadow">
+                                <div class="card-body">
+                                    <form method="GET" action="${pageContext.request.contextPath}/employee/contracts" class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Filter by Status</label>
+                                            <select name="status" class="form-control">
+                                                <option value="">-- All Status --</option>
+                                                <option value="DRAFT" ${status == 'DRAFT' ? 'selected' : ''}>Draft</option>
+                                                <option value="ACTIVE" ${status == 'ACTIVE' ? 'selected' : ''}>Active</option>
+                                                <option value="COMPLETED" ${status == 'COMPLETED' ? 'selected' : ''}>Completed</option>
+                                                <option value="CANCELLED" ${status == 'CANCELLED' ? 'selected' : ''}>Cancelled</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="mdi mdi-filter me-1"></i> Filter
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Statistics Cards -->
                     <div class="row mt-3">
                         <div class="col-xl-3 col-lg-6 col-md-6 mt-4">
@@ -129,6 +170,13 @@
                                                                        class="btn btn-icon btn-pills btn-soft-primary btn-sm" title="View Details">
                                                                         <i class="mdi mdi-eye"></i>
                                                                     </a>
+                                                                    <c:if test="${contract.status == 'DRAFT'}">
+                                                                        <a href="${pageContext.request.contextPath}/employee/delete-contract?id=${contract.contractId}" 
+                                                                           class="btn btn-icon btn-pills btn-soft-danger btn-sm" title="Delete"
+                                                                           onclick="return confirm('Are you sure you want to delete this draft contract?');">
+                                                                            <i class="mdi mdi-delete"></i>
+                                                                        </a>
+                                                                    </c:if>
                                                                 </td>
                                                             </tr>
                                                         </c:forEach>
@@ -145,17 +193,17 @@
                                                     <nav aria-label="Page navigation">
                                                         <ul class="pagination mb-0">
                                                             <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                                                <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${currentPage - 1}">Previous</a>
+                                                                <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${currentPage - 1}${not empty status ? '&status=' : ''}${status}">Previous</a>
                                                             </li>
                                                             
                                                             <c:forEach var="i" begin="1" end="${totalPages > 5 ? 5 : totalPages}">
                                                                 <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                                    <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${i}">${i}</a>
+                                                                    <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${i}${not empty status ? '&status=' : ''}${status}">${i}</a>
                                                                 </li>
                                                             </c:forEach>
                                                             
                                                             <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                                                <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${currentPage + 1}">Next</a>
+                                                                <a class="page-link" href="${pageContext.request.contextPath}/employee/contracts?page=${currentPage + 1}${not empty status ? '&status=' : ''}${status}">Next</a>
                                                             </li>
                                                         </ul>
                                                     </nav>

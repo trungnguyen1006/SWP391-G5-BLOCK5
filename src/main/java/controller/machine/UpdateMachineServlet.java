@@ -25,15 +25,19 @@ public class UpdateMachineServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String unitIdParam = request.getParameter("id");
+        System.out.println("DEBUG: UpdateMachineServlet - unitIdParam = " + unitIdParam);
         
-        if (unitIdParam == null || unitIdParam.isEmpty()) {
+        if (unitIdParam == null || unitIdParam.isEmpty() || unitIdParam.equals("0")) {
+            System.out.println("DEBUG: Invalid unitId, redirecting to machine list");
             response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);
             return;
         }
 
         try {
             int unitId = Integer.parseInt(unitIdParam);
+            System.out.println("DEBUG: Fetching machine unit with ID: " + unitId);
             MachineUnit machineUnit = machineDAO.getMachineUnitById(unitId);
+            System.out.println("DEBUG: Machine unit retrieved: " + (machineUnit != null ? "Found" : "Not found"));
             
             if (machineUnit == null) {
                 response.sendRedirect(request.getContextPath() + MACHINE_LIST_URL);

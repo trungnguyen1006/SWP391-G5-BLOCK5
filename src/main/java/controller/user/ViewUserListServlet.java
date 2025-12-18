@@ -27,6 +27,7 @@ public class ViewUserListServlet extends HttpServlet {
 
         String pageParam = request.getParameter("page");
         String statusParam = request.getParameter("status");
+        String roleParam = request.getParameter("role");
         int currentPage = 1;
         
         if (pageParam != null) {
@@ -42,13 +43,34 @@ public class ViewUserListServlet extends HttpServlet {
 
         int totalUsers;
         List<Users> userList;
+        RoleDAO roleDAO = new RoleDAO();
+        List<Roles> allRoles = roleDAO.getAllActiveRoles();
         
-        if (statusParam != null && !statusParam.isEmpty()) {
+        if (roleParam != null && !roleParam.isEmpty()) {
+            try {
+                int roleId = Integer.parseInt(roleParam);
+                totalUsers = userDAO.getTotalUsersWithRoleFilter(roleId);
+                userList = userDAO.getUsersByPageWithRoleFilter(currentPage, PAGE_SIZE, roleId);
+            } catch (NumberFormatException e) {
+                totalUsers = userDAO.getTotalUsers();
+                userList = userDAO.getUsersByPage(currentPage, PAGE_SIZE);
+            }
+        } else if (statusParam != null && !statusParam.isEmpty()) {
             totalUsers = userDAO.getTotalUsersWithFilter(statusParam);
             userList = userDAO.getUsersByPageWithFilter(currentPage, PAGE_SIZE, statusParam);
         } else {
             totalUsers = userDAO.getTotalUsers();
             userList = userDAO.getUsersByPage(currentPage, PAGE_SIZE);
+        }
+        
+        // Fetch and set role for each user
+        for (Users user : userList) {
+            List<Roles> userRoles = roleDAO.getRolesByUserId(user.getUserId());
+            if (userRoles != null && !userRoles.isEmpty()) {
+                user.setRole(userRoles.get(0).getRoleName());
+            } else {
+                user.setRole("-");
+            }
         }
         
         int totalPages = (int) Math.ceil((double) totalUsers / PAGE_SIZE);
@@ -62,6 +84,8 @@ public class ViewUserListServlet extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalUsers", totalUsers);
         request.setAttribute("status", statusParam);
+        request.setAttribute("role", roleParam);
+        request.setAttribute("allRoles", allRoles);
         
         request.getRequestDispatcher(USER_LIST_PAGE).forward(request, response);
     }

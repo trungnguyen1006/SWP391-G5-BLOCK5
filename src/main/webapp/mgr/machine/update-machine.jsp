@@ -167,7 +167,7 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Created Date</label>
                                         <p class="mb-0">
-                                            <fmt:formatDate value="${machineUnit.createdDate}" pattern="dd/MM/yyyy HH:mm" />
+                                            ${machineUnit.createdDate}
                                         </p>
                                     </div>
                                 </div>

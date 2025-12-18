@@ -105,7 +105,8 @@ public class MachineDAO extends DBContext {
     public List<MachineUnit> getAllMachineUnits() {
         List<MachineUnit> units = new ArrayList<>();
         String sql = """
-            SELECT u.*, m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs,
+            SELECT u.UnitId, u.ModelId, u.SerialNumber, u.CurrentStatus, u.CurrentWarehouseId, u.CurrentSiteId, u.IsActive, u.CreatedDate,
+                   m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs,
                    w.WarehouseName, s.SiteName
             FROM MachineUnits u
             LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
@@ -141,10 +142,13 @@ public class MachineDAO extends DBContext {
         List<MachineUnit> units = new ArrayList<>();
         int offset = (page - 1) * pageSize;
         String sql = """
-            SELECT u.*, m.ModelName, m.Brand, w.WarehouseName
+            SELECT u.UnitId, u.ModelId, u.SerialNumber, u.CurrentStatus, u.CurrentWarehouseId, u.CurrentSiteId, u.IsActive, u.CreatedDate,
+                   m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs,
+                   w.WarehouseName, s.SiteName
             FROM MachineUnits u
             LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
             LEFT JOIN Warehouses w ON u.CurrentWarehouseId = w.WarehouseId
+            LEFT JOIN Sites s ON u.CurrentSiteId = s.SiteId
             WHERE u.IsActive = 1
             ORDER BY u.SerialNumber
             LIMIT ? OFFSET ?
@@ -308,7 +312,8 @@ public class MachineDAO extends DBContext {
 
     public MachineUnit getMachineUnitById(int unitId) {
         String sql = """
-            SELECT u.*, m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs,
+            SELECT u.UnitId, u.ModelId, u.SerialNumber, u.CurrentStatus, u.CurrentWarehouseId, u.CurrentSiteId, u.IsActive, u.CreatedDate,
+                   m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs,
                    w.WarehouseName, s.SiteName
             FROM MachineUnits u
             LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
