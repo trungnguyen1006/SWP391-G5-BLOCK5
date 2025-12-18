@@ -89,7 +89,7 @@ public class ExportContractPdfServlet extends HttpServlet {
         PdfFont boldFont = PdfFontFactory.createFont("Helvetica-Bold");
 
         // Title
-        Paragraph title = new Paragraph("HỢP ĐỒNG THUÊ MÁY")
+        Paragraph title = new Paragraph("MACHINE RENTAL CONTRACT")
                 .setFont(boldFont)
                 .setFontSize(18)
                 .setTextAlignment(TextAlignment.CENTER)
@@ -97,14 +97,14 @@ public class ExportContractPdfServlet extends HttpServlet {
         document.add(title);
 
         // Contract Code
-        Paragraph code = new Paragraph("Mã Hợp Đồng: " + contract.getContractCode())
+        Paragraph code = new Paragraph("Contract Code: " + contract.getContractCode())
                 .setFont(font)
                 .setFontSize(11)
                 .setMarginBottom(15);
         document.add(code);
 
         // Contract Information Section
-        Paragraph infoTitle = new Paragraph("THÔNG TIN HỢP ĐỒNG")
+        Paragraph infoTitle = new Paragraph("CONTRACT INFORMATION")
                 .setFont(boldFont)
                 .setFontSize(12)
                 .setMarginBottom(10);
@@ -114,17 +114,17 @@ public class ExportContractPdfServlet extends HttpServlet {
         infoTable.setWidth(UnitValue.createPercentValue(100));
         infoTable.setMarginBottom(15);
 
-        addCell(infoTable, "Khách Hàng:", contract.getCustomerName(), font, boldFont);
-        addCell(infoTable, "Địa Điểm:", contract.getSiteName() != null ? contract.getSiteName() : "N/A", font, boldFont);
-        addCell(infoTable, "Ngày Bắt Đầu:", contract.getStartDate().toString(), font, boldFont);
-        addCell(infoTable, "Ngày Kết Thúc:", contract.getEndDate().toString(), font, boldFont);
-        addCell(infoTable, "Trạng Thái:", contract.getStatus(), font, boldFont);
-        addCell(infoTable, "Ngày Ký:", contract.getSignedDate() != null ? contract.getSignedDate().toString() : "N/A", font, boldFont);
+        addCell(infoTable, "Customer:", contract.getCustomerName(), font, boldFont);
+        addCell(infoTable, "Location:", contract.getSiteName() != null ? contract.getSiteName() : "N/A", font, boldFont);
+        addCell(infoTable, "Start Date:", contract.getStartDate().toString(), font, boldFont);
+        addCell(infoTable, "End Date:", contract.getEndDate().toString(), font, boldFont);
+        addCell(infoTable, "Status:", contract.getStatus(), font, boldFont);
+        addCell(infoTable, "Signed Date:", contract.getSignedDate() != null ? contract.getSignedDate().toString() : "N/A", font, boldFont);
 
         document.add(infoTable);
 
         // Machines Section
-        Paragraph machineTitle = new Paragraph("DANH SÁCH MÁY")
+        Paragraph machineTitle = new Paragraph("MACHINE LIST")
                 .setFont(boldFont)
                 .setFontSize(12)
                 .setMarginBottom(10);
@@ -136,13 +136,13 @@ public class ExportContractPdfServlet extends HttpServlet {
             machineTable.setMarginBottom(15);
 
             // Header
-            addHeaderCell(machineTable, "Số Seri", boldFont);
+            addHeaderCell(machineTable, "Serial Number", boldFont);
             addHeaderCell(machineTable, "Model", boldFont);
-            addHeaderCell(machineTable, "Thương Hiệu", boldFont);
-            addHeaderCell(machineTable, "Ngày Giao", boldFont);
-            addHeaderCell(machineTable, "Ngày Trả", boldFont);
-            addHeaderCell(machineTable, "Giá Thuê", boldFont);
-            addHeaderCell(machineTable, "Tiền Cọc", boldFont);
+            addHeaderCell(machineTable, "Brand", boldFont);
+            addHeaderCell(machineTable, "Delivery Date", boldFont);
+            addHeaderCell(machineTable, "Return Date", boldFont);
+            addHeaderCell(machineTable, "Rental Price", boldFont);
+            addHeaderCell(machineTable, "Deposit", boldFont);
 
             NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
@@ -164,7 +164,7 @@ public class ExportContractPdfServlet extends HttpServlet {
 
             // Total row
             Cell totalCell = new Cell(1, 5)
-                    .add(new Paragraph("TỔNG CỘNG").setFont(boldFont))
+                    .add(new Paragraph("TOTAL").setFont(boldFont))
                     .setTextAlignment(TextAlignment.RIGHT);
             machineTable.addCell(totalCell);
             machineTable.addCell(new Cell().add(new Paragraph(formatCurrency(totalPrice)).setFont(boldFont)));
@@ -172,7 +172,7 @@ public class ExportContractPdfServlet extends HttpServlet {
 
             document.add(machineTable);
         } else {
-            Paragraph noMachines = new Paragraph("Không có máy trong hợp đồng này")
+            Paragraph noMachines = new Paragraph("No machines in this contract")
                     .setFont(font)
                     .setMarginBottom(15);
             document.add(noMachines);
@@ -180,7 +180,7 @@ public class ExportContractPdfServlet extends HttpServlet {
 
         // Note Section
         if (contract.getNote() != null && !contract.getNote().isEmpty()) {
-            Paragraph noteTitle = new Paragraph("GHI CHÚ")
+            Paragraph noteTitle = new Paragraph("NOTES")
                     .setFont(boldFont)
                     .setFontSize(12)
                     .setMarginBottom(10);
@@ -192,12 +192,50 @@ public class ExportContractPdfServlet extends HttpServlet {
             document.add(note);
         }
 
+        // Signature Section
+        document.add(new Paragraph("\n\n").setMarginTop(30));
+        
+        Paragraph signatureTitle = new Paragraph("AUTHORIZED SIGNATURES")
+                .setFont(boldFont)
+                .setFontSize(12)
+                .setMarginBottom(20);
+        document.add(signatureTitle);
+
+        Table signatureTable = new Table(new float[]{1, 1, 1});
+        signatureTable.setWidth(UnitValue.createPercentValue(100));
+        signatureTable.setMarginBottom(15);
+
+        // Signature cells
+        Cell companyCell = new Cell()
+                .add(new Paragraph("COMPANY REPRESENTATIVE").setFont(boldFont).setTextAlignment(TextAlignment.CENTER))
+                .add(new Paragraph("\n\n\n").setFont(font))
+                .add(new Paragraph("_____________________").setFont(font).setTextAlignment(TextAlignment.CENTER))
+                .add(new Paragraph("Name & Signature").setFont(font).setTextAlignment(TextAlignment.CENTER).setFontSize(9));
+        signatureTable.addCell(companyCell);
+
+        Cell customerCell = new Cell()
+                .add(new Paragraph("CUSTOMER REPRESENTATIVE").setFont(boldFont).setTextAlignment(TextAlignment.CENTER))
+                .add(new Paragraph("\n\n\n").setFont(font))
+                .add(new Paragraph("_____________________").setFont(font).setTextAlignment(TextAlignment.CENTER))
+                .add(new Paragraph("Name & Signature").setFont(font).setTextAlignment(TextAlignment.CENTER).setFontSize(9));
+        signatureTable.addCell(customerCell);
+
+        Cell dateCell = new Cell()
+                .add(new Paragraph("DATE").setFont(boldFont).setTextAlignment(TextAlignment.CENTER))
+                .add(new Paragraph("\n\n\n").setFont(font))
+                .add(new Paragraph("_____________________").setFont(font).setTextAlignment(TextAlignment.CENTER))
+                .add(new Paragraph("Date").setFont(font).setTextAlignment(TextAlignment.CENTER).setFontSize(9));
+        signatureTable.addCell(dateCell);
+
+        document.add(signatureTable);
+
         // Footer
-        Paragraph footer = new Paragraph("Tài liệu này được tạo tự động. Vui lòng liên hệ với công ty để xác nhận.")
+        document.add(new Paragraph("\n"));
+        Paragraph footer = new Paragraph("This document is automatically generated. Please contact the company for confirmation.")
                 .setFont(font)
                 .setFontSize(9)
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginTop(30);
+                .setMarginTop(20);
         document.add(footer);
 
         document.close();
@@ -224,10 +262,9 @@ public class ExportContractPdfServlet extends HttpServlet {
 
     private String formatCurrency(BigDecimal amount) {
         if (amount == null) {
-            return "0 ₫";
+            return "$0.00";
         }
-        NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
-        nf.setMaximumFractionDigits(0);
-        return nf.format(amount) + " ₫";
+        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
+        return nf.format(amount);
     }
 }

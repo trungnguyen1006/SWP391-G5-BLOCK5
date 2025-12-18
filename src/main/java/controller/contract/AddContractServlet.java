@@ -107,16 +107,29 @@ public class AddContractServlet extends HttpServlet {
                 contract.setSiteId(Integer.parseInt(siteIdParam));
             }
             
+            LocalDate signedDate = null;
             if (signedDateParam != null && !signedDateParam.isEmpty()) {
-                contract.setSignedDate(LocalDate.parse(signedDateParam));
+                signedDate = LocalDate.parse(signedDateParam);
+                contract.setSignedDate(signedDate);
             }
             
+            LocalDate startDate = null;
             if (startDateParam != null && !startDateParam.isEmpty()) {
-                contract.setStartDate(LocalDate.parse(startDateParam));
+                startDate = LocalDate.parse(startDateParam);
+                contract.setStartDate(startDate);
             }
             
+            LocalDate endDate = null;
             if (endDateParam != null && !endDateParam.isEmpty()) {
-                contract.setEndDate(LocalDate.parse(endDateParam));
+                endDate = LocalDate.parse(endDateParam);
+                contract.setEndDate(endDate);
+            }
+            
+            // Validate dates
+            if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+                request.setAttribute("errorMessage", "Start date must be before end date.");
+                request.getRequestDispatcher(ADD_CONTRACT_PAGE).forward(request, response);
+                return;
             }
             
             contract.setStatus("DRAFT");
