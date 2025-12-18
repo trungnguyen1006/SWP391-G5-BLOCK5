@@ -579,4 +579,98 @@ public class MachineDAO extends DBContext {
         return 0;
     }
 
+    public List<MachineUnit> getMachineUnitsByPageWithModel(int page, int pageSize, String modelName) {
+        List<MachineUnit> units = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT u.UnitId, u.ModelId, u.SerialNumber, u.CurrentStatus, u.CurrentWarehouseId, u.CurrentSiteId, u.IsActive, u.CreatedDate,
+                   m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs,
+                   w.WarehouseName, s.SiteName
+            FROM MachineUnits u
+            LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
+            LEFT JOIN Warehouses w ON u.CurrentWarehouseId = w.WarehouseId
+            LEFT JOIN Sites s ON u.CurrentSiteId = s.SiteId
+            WHERE m.ModelName = ? AND u.IsActive = 1
+            ORDER BY u.SerialNumber
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, modelName);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MachineUnit unit = mapMachineUnit(rs);
+                    units.add(unit);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return units;
+    }
+
+    public int getTotalMachineUnitsByModel(String modelName) {
+        String sql = "SELECT COUNT(*) FROM MachineUnits u JOIN MachineModels m ON u.ModelId = m.ModelId WHERE m.ModelName = ? AND u.IsActive = 1";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, modelName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<MachineUnit> getMachineUnitsByPageWithBothFilters(int page, int pageSize, String status, String modelName) {
+        List<MachineUnit> units = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT u.UnitId, u.ModelId, u.SerialNumber, u.CurrentStatus, u.CurrentWarehouseId, u.CurrentSiteId, u.IsActive, u.CreatedDate,
+                   m.ModelCode, m.ModelName, m.Brand, m.Category, m.Specs,
+                   w.WarehouseName, s.SiteName
+            FROM MachineUnits u
+            LEFT JOIN MachineModels m ON u.ModelId = m.ModelId
+            LEFT JOIN Warehouses w ON u.CurrentWarehouseId = w.WarehouseId
+            LEFT JOIN Sites s ON u.CurrentSiteId = s.SiteId
+            WHERE u.CurrentStatus = ? AND m.ModelName = ? AND u.IsActive = 1
+            ORDER BY u.SerialNumber
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setString(2, modelName);
+            ps.setInt(3, pageSize);
+            ps.setInt(4, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MachineUnit unit = mapMachineUnit(rs);
+                    units.add(unit);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return units;
+    }
+
+    public int getTotalMachineUnitsWithBothFilters(String status, String modelName) {
+        String sql = "SELECT COUNT(*) FROM MachineUnits u JOIN MachineModels m ON u.ModelId = m.ModelId WHERE u.CurrentStatus = ? AND m.ModelName = ? AND u.IsActive = 1";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setString(2, modelName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
 }

@@ -9,8 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.MachineUnit;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.LinkedHashMap;
 
 @WebServlet(name = "ViewMachineManagerServlet", urlPatterns = {"/mgr/machines"})
 public class ViewMachineManagerServlet extends HttpServlet {
@@ -25,6 +25,7 @@ public class ViewMachineManagerServlet extends HttpServlet {
 
         String pageParam = request.getParameter("page");
         String statusParam = request.getParameter("status");
+        String modelParam = request.getParameter("model");
         int currentPage = 1;
         
         if (pageParam != null) {
@@ -41,9 +42,18 @@ public class ViewMachineManagerServlet extends HttpServlet {
         int totalMachines;
         List<MachineUnit> machineUnits;
         
-        if (statusParam != null && !statusParam.isEmpty()) {
+        boolean hasStatusFilter = statusParam != null && !statusParam.isEmpty();
+        boolean hasModelFilter = modelParam != null && !modelParam.isEmpty();
+        
+        if (hasStatusFilter && hasModelFilter) {
+            totalMachines = machineDAO.getTotalMachineUnitsWithBothFilters(statusParam, modelParam);
+            machineUnits = machineDAO.getMachineUnitsByPageWithBothFilters(currentPage, PAGE_SIZE, statusParam, modelParam);
+        } else if (hasStatusFilter) {
             totalMachines = machineDAO.getTotalMachineUnitsWithFilter(statusParam);
             machineUnits = machineDAO.getMachineUnitsByPageWithFilter(currentPage, PAGE_SIZE, statusParam);
+        } else if (hasModelFilter) {
+            totalMachines = machineDAO.getTotalMachineUnitsByModel(modelParam);
+            machineUnits = machineDAO.getMachineUnitsByPageWithModel(currentPage, PAGE_SIZE, modelParam);
         } else {
             totalMachines = machineDAO.getTotalMachineUnits();
             machineUnits = machineDAO.getMachineUnitsByPage(currentPage, PAGE_SIZE);
@@ -55,9 +65,17 @@ public class ViewMachineManagerServlet extends HttpServlet {
             currentPage = totalPages;
         }
 
+        // Group machines by model
+        Map<String, List<MachineUnit>> groupedByModel = new LinkedHashMap<>();
+        for (MachineUnit unit : machineUnits) {
+            String modelName = unit.getMachineModel() != null ? unit.getMachineModel().getModelName() : "Unknown";
+            groupedByModel.computeIfAbsent(modelName, k -> new ArrayList<>()).add(unit);
+        }
+
         Map<String, Integer> statusCount = machineDAO.getMachineCountByStatus();
         Map<String, Integer> modelCount = machineDAO.getMachineCountByModel();
         
+        request.setAttribute("groupedByModel", groupedByModel);
         request.setAttribute("machineUnits", machineUnits);
         request.setAttribute("statusCount", statusCount);
         request.setAttribute("modelCount", modelCount);
@@ -65,6 +83,7 @@ public class ViewMachineManagerServlet extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("totalMachines", totalMachines);
         request.setAttribute("status", statusParam);
+        request.setAttribute("model", modelParam);
         
         request.getRequestDispatcher(MACHINE_LIST_PAGE).forward(request, response);
     }

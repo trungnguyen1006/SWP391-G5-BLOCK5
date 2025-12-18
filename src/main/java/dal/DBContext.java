@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class DBContext {
     protected Connection connection;
 
-    public DBContext() {
+    public DBContext() { 
         try {
             String user = "root";
             String pass = "123456";
