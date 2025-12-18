@@ -12,15 +12,7 @@
         <ul class="sidebar-menu pt-3">
             <li><a href="${pageContext.request.contextPath}/employee/dashboard"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
 
-            <li class="sidebar-dropdown">
-                <a href="javascript:void(0)"><i class="uil uil-users-alt me-2 d-inline-block"></i>Customer Management</a>
-                <div class="sidebar-submenu">
-                    <ul>
-                        <li><a href="${pageContext.request.contextPath}/employee/customers">Customer List</a></li>
-                        <li><a href="${pageContext.request.contextPath}/employee/add-customer">Add Customer</a></li>
-                    </ul>
-                </div>
-            </li>
+            <li><a href="${pageContext.request.contextPath}/employee/customers"><i class="uil uil-users-alt me-2 d-inline-block"></i>Customer List</a></li>
 
             <li class="sidebar-dropdown">
                 <a href="javascript:void(0)"><i class="uil uil-file-contract me-2 d-inline-block"></i>Contract Management</a>

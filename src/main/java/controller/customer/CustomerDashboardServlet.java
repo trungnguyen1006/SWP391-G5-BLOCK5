@@ -22,12 +22,18 @@ public class CustomerDashboardServlet extends HttpServlet {
         DashboardDAO dao = new DashboardDAO();
         HttpSession session = req.getSession(false);
         if (session == null) {
-            resp.sendRedirect("/login");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
         Users u = (Users) session.getAttribute("user");
         CustomerDAO customerDAO = new CustomerDAO();
         Customers customer = customerDAO.getCustomerByUserId(u.getUserId());
+        
+        if (customer == null) {
+            resp.sendRedirect(req.getContextPath() + "/access-denied.jsp");
+            return;
+        }
+        
         int cusId = customer.getCustomerId();
         Dashboard dashboard = dao.getDashboardCustomer(cusId);
         req.setAttribute("dashboard", dashboard);

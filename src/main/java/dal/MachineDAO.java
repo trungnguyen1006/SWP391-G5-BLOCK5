@@ -227,9 +227,9 @@ public class MachineDAO extends DBContext {
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, model.getModelCode());
             ps.setString(2, model.getModelName());
-            ps.setString(3, model.getBrand());
-            ps.setString(4, model.getCategory());
-            ps.setString(5, model.getSpecs());
+            ps.setString(3, model.getBrand() != null ? model.getBrand() : "");
+            ps.setString(4, model.getCategory() != null ? model.getCategory() : "");
+            ps.setString(5, model.getSpecs() != null ? model.getSpecs() : "");
             ps.setBoolean(6, model.isActive());
 
             int affectedRows = ps.executeUpdate();
@@ -241,6 +241,9 @@ public class MachineDAO extends DBContext {
                 }
             }
         } catch (SQLException ex) {
+            System.out.println("DEBUG: Error adding machine model: " + ex.getMessage());
+            System.out.println("DEBUG: SQL State: " + ex.getSQLState());
+            System.out.println("DEBUG: Error Code: " + ex.getErrorCode());
             ex.printStackTrace();
         }
         return 0;

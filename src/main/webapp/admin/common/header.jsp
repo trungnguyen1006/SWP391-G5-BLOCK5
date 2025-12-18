@@ -39,39 +39,11 @@
             <li class="list-inline-item mb-0 ms-1">
                 <div class="dropdown dropdown-primary">
                     <button type="button" class="btn btn-pills btn-soft-primary dropdown-toggle p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <c:choose>
-                            <c:when test="${not empty sessionScope.user.image}">
-                                <div style="position: relative; display: inline-block;">
-                                    <img src="${pageContext.request.contextPath}/uploads/${sessionScope.user.image}" class="avatar avatar-ex-small rounded-circle" alt="" onerror="this.style.display='none'; this.parentElement.querySelector('div').style.display='flex';">
-                                    <div class="avatar avatar-ex-small rounded-circle bg-soft-primary d-flex align-items-center justify-content-center" style="display: none; position: absolute; top: 0; left: 0;">
-                                        <i class="mdi mdi-account text-white"></i>
-                                    </div>
-                                </div>
-                            </c:when>
-                            <c:otherwise>
-                                <div class="avatar avatar-ex-small rounded-circle bg-soft-primary d-flex align-items-center justify-content-center">
-                                    <i class="mdi mdi-account text-white"></i>
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
+                        <img src="${not empty sessionScope.user.image ? pageContext.request.contextPath.concat('/uploads/').concat(sessionScope.user.image) : pageContext.request.contextPath.concat('/assets/images/default-avatar.svg')}" class="avatar avatar-ex-small rounded-circle" alt="Avatar">
                     </button>
                     <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow border-0 mt-3 py-3" style="min-width: 200px;">
                         <a class="dropdown-item d-flex align-items-center text-dark" href="#">
-                            <c:choose>
-                                <c:when test="${not empty sessionScope.user.image}">
-                                    <div style="position: relative; display: inline-block;">
-                                        <img src="${pageContext.request.contextPath}/uploads/${sessionScope.user.image}" class="avatar avatar-md-sm rounded-circle border shadow" alt="" onerror="this.style.display='none'; this.parentElement.querySelector('div').style.display='flex';">
-                                        <div class="avatar avatar-md-sm rounded-circle bg-soft-primary border shadow d-flex align-items-center justify-content-center" style="display: none; position: absolute; top: 0; left: 0;">
-                                            <i class="mdi mdi-account text-white h4 mb-0"></i>
-                                        </div>
-                                    </div>
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="avatar avatar-md-sm rounded-circle bg-soft-primary border shadow d-flex align-items-center justify-content-center">
-                                        <i class="mdi mdi-account text-white h4 mb-0"></i>
-                                    </div>
-                                </c:otherwise>
-                            </c:choose>
+                            <img src="${not empty sessionScope.user.image ? pageContext.request.contextPath.concat('/uploads/').concat(sessionScope.user.image) : pageContext.request.contextPath.concat('/assets/images/default-avatar.svg')}" class="avatar avatar-md-sm rounded-circle border shadow" alt="Avatar">
                             <div class="flex-1 ms-2">
                                 <span class="d-block mb-1">${sessionScope.user.fullName}</span>
                                 <small class="text-muted">Administrator</small>

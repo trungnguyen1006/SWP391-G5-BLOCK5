@@ -132,21 +132,7 @@
                       <tr>
                         <th class="p-3">${user.userId}</th>
                         <td class="p-3">
-                          <c:choose>
-                            <c:when test="${not empty user.image}">
-                              <div style="position: relative; display: inline-block;">
-                                <img src="${pageContext.request.contextPath}/uploads/${user.image}" class="avatar avatar-md-sm rounded-circle" alt="${user.fullName}" onerror="this.style.display='none'; this.parentElement.querySelector('div').style.display='flex';">
-                                <div class="avatar avatar-md-sm rounded-circle bg-soft-primary d-flex align-items-center justify-content-center" style="display: none; position: absolute; top: 0; left: 0;">
-                                  <i class="mdi mdi-account text-white h5 mb-0"></i>
-                                </div>
-                              </div>
-                            </c:when>
-                            <c:otherwise>
-                              <div class="avatar avatar-md-sm rounded-circle bg-soft-primary d-flex align-items-center justify-content-center">
-                                <i class="mdi mdi-account text-white h5 mb-0"></i>
-                              </div>
-                            </c:otherwise>
-                          </c:choose>
+                          <img src="${not empty user.image ? pageContext.request.contextPath.concat('/uploads/').concat(user.image) : pageContext.request.contextPath.concat('/assets/images/default-avatar.svg')}" class="avatar avatar-md-sm rounded-circle" alt="${user.fullName}">
                         </td>
                         <td class="p-3">${user.username}</td>
                         <td class="p-3">${user.fullName}</td>

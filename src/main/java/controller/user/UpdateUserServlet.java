@@ -171,9 +171,17 @@ public class UpdateUserServlet extends HttpServlet {
 
             if (userUpdated) {
                 int assignedRoleId = Integer.parseInt(roleId);
-                roleDAO.removeAllUserRoles(userId);
-                roleDAO.assignDefaultRole(userId, assignedRoleId);
-                response.sendRedirect(request.getContextPath() + USER_LIST_URL + "?updated=true");
+                Roles selectedRole = roleDAO.findRoleById(assignedRoleId);
+                
+                // Only assign role if it's active
+                if (selectedRole != null && selectedRole.isActive()) {
+                    roleDAO.removeAllUserRoles(userId);
+                    roleDAO.assignDefaultRole(userId, assignedRoleId);
+                    response.sendRedirect(request.getContextPath() + "/admin/user-list?updated=true");
+                } else {
+                    request.setAttribute("errorMessage", "Selected role is not active. Please select an active role.");
+                    request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
+                }
             } else {
                 request.setAttribute("errorMessage", "Failed to update user. Please try again.");
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);

@@ -27,9 +27,9 @@ public class AuthenticationFilter implements Filter {
         String path = requestURI.substring(contextPath.length());
 
         // Các trang không cần login
-        if (path.equals("/") || path.equals("/login") || path.equals("/logout") || path.equals("/common/homepage.jsp") || 
-            path.startsWith("/assets/") || path.startsWith("/common/") || path.equals("/ForgotPassword.jsp") || 
-            path.equals("/changePassword.jsp")) {
+        if (path.equals("/") || path.equals("/login") || path.equals("/register") || path.equals("/logout") || path.equals("/common/homepage.jsp") || 
+            path.startsWith("/assets/") || path.startsWith("/uploads/") || path.startsWith("/common/") || path.equals("/ForgotPassword.jsp") || 
+            path.equals("/changePassword.jsp") || path.equals("/access-denied.jsp")) {
             chain.doFilter(request, response);
             return;
         }

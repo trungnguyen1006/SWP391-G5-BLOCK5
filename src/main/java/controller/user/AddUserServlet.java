@@ -143,8 +143,16 @@ public class AddUserServlet extends HttpServlet {
 
         if (newUserId > 0) {
             int assignedRoleId = Integer.parseInt(roleId);
-            roleDAO.assignDefaultRole(newUserId, assignedRoleId);
-            response.sendRedirect(request.getContextPath() + USER_LIST_URL + "?added=true");
+            Roles selectedRole = roleDAO.findRoleById(assignedRoleId);
+            
+            // Only assign role if it's active
+            if (selectedRole != null && selectedRole.isActive()) {
+                roleDAO.assignDefaultRole(newUserId, assignedRoleId);
+                response.sendRedirect(request.getContextPath() + "/admin/user-list?added=true");
+            } else {
+                request.setAttribute("errorMessage", "Selected role is not active. Please select an active role.");
+                request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
+            }
         } else {
             request.setAttribute("errorMessage", "Failed to create user. Please try again.");
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);

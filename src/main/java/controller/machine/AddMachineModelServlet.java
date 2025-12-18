@@ -67,7 +67,9 @@ public class AddMachineModelServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
-            request.setAttribute("errorMessage", "Error: " + e.getMessage());
+            e.printStackTrace();
+            String errorMsg = e.getMessage() != null ? e.getMessage() : "Unknown error occurred";
+            request.setAttribute("errorMessage", "Error: " + errorMsg);
             request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
         }
     }

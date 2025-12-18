@@ -364,4 +364,59 @@ public class UserDAO extends DBContext {
         }
         return 0;
     }
+
+    public java.util.List<Users> getUsersByPageWithBothFilters(int page, int pageSize, int roleId, String status) {
+        java.util.List<Users> users = new java.util.ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = """
+            SELECT DISTINCT u.* FROM Users u
+            JOIN UserRoles ur ON u.UserId = ur.UserId
+            WHERE ur.RoleId = ? AND u.IsActive = ?
+            ORDER BY u.CreatedDate DESC
+            LIMIT ? OFFSET ?
+            """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setInt(1, roleId);
+            ps.setBoolean(2, isActive);
+            ps.setInt(3, pageSize);
+            ps.setInt(4, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Users user = new Users();
+                    user.setUserId(rs.getInt("UserId"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setPassword(rs.getString("Password"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setActive(rs.getBoolean("IsActive"));
+                    Timestamp ts = rs.getTimestamp("CreatedDate");
+                    user.setCreatedDate(ts != null ? ts.toLocalDateTime() : null);
+                    user.setPhone(rs.getString("Phone"));
+                    user.setImage(rs.getString("Image"));
+                    users.add(user);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return users;
+    }
+
+    public int getTotalUsersWithBothFilters(int roleId, String status) {
+        String sql = "SELECT COUNT(DISTINCT u.UserId) FROM Users u JOIN UserRoles ur ON u.UserId = ur.UserId WHERE ur.RoleId = ? AND u.IsActive = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            ps.setInt(1, roleId);
+            ps.setBoolean(2, isActive);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
 }

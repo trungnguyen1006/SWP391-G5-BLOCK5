@@ -16,9 +16,6 @@ public class FileUploadUtil {
     
     public static String getSourceWebappPath(String realPath) {
         String path = realPath;
-        if (path.contains("target")) {
-            path = path.replaceFirst("target[/\\\\][^/\\\\]+", "src/main/webapp");
-        }
         // Đảm bảo path kết thúc bằng separator
         if (!path.endsWith(File.separator)) {
             path += File.separator;

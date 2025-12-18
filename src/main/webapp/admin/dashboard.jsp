@@ -83,86 +83,11 @@
                                 </div>
                             </div>
 
-                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mt-4">
-                                <div class="card border-0 shadow-sm rounded h-100">
-                                    <div class="card-body d-flex align-items-center">
-                                        <div class="icon bg-soft-warning text-warning rounded-circle p-3 me-3">
-                                            <i class="uil uil-file-contract h4 mb-0"></i>
-                                        </div>
-                                        <div>
-                                            <h4 class="mb-0 fw-bold">${dashboard.totalContract}</h4>
-                                            <small class="text-muted">Total Contracts</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+
 
                         </div>
 
-                        <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-12 mt-4">
-                                <div class="card border-0 shadow rounded">
-                                    <div class="card-header bg-white border-bottom">
-                                        <div class="d-flex align-items-center">
-                                            <div class="icon text-center rounded-md me-3">
-                                                <i class="uil uil-cog h3 mb-0 text-success"></i>
-                                            </div>
-                                            <div>
-                                                <h5 class="card-title mb-0">Machine Management</h5>
-                                                <p class="text-muted mb-0">Equipment Overview & Statistics</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="text-center py-3">
-                                            <h3 class="text-success mb-2">${totalMachines}</h3>
-                                            <p class="text-muted mb-0">Total Machines in System</p>
-                                        </div>
 
-                                        <div class="mt-4 d-flex gap-2">
-                                            <a href="${pageContext.request.contextPath}/admin/machines" class="btn btn-success flex-fill">
-                                                <i class="uil uil-list-ul me-1"></i>View All
-                                            </a>
-                                            <a href="${pageContext.request.contextPath}/admin/add-machine" class="btn btn-outline-success flex-fill">
-                                                <i class="uil uil-plus me-1"></i>Add New
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-6 col-lg-6 col-md-12 mt-4">
-                                <div class="card border-0 shadow rounded">
-                                    <div class="card-header bg-white border-bottom">
-                                        <div class="d-flex align-items-center">
-                                            <div class="icon text-center rounded-md me-3">
-                                                <i class="uil uil-invoice h3 mb-0 text-warning"></i>
-                                            </div>
-                                            <div>
-                                                <h5 class="card-title mb-0">Invoice Management</h5>
-                                                <p class="text-muted mb-0">Contract & Sales Overview</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="text-center py-3">
-                                            <h3 class="text-warning mb-2">${dashboard.totalContract}</h3>
-                                            <p class="text-muted mb-0">Total Contracts</p>
-                                        </div>
-
-                                        <div class="mt-4 d-flex gap-2">
-                                            <a href="${pageContext.request.contextPath}/sale/invoices" class="btn btn-warning flex-fill">
-                                                <i class="uil uil-list-ul me-1"></i>View All
-                                            </a>
-                                            <a href="${pageContext.request.contextPath}/sale/add-invoice" class="btn btn-outline-warning flex-fill">
-                                                <i class="uil uil-plus me-1"></i>Create New
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
 
                     </div>
                 </div>

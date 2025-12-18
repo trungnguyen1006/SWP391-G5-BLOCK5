@@ -75,14 +75,7 @@
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <a href="${pageContext.request.contextPath}/employee/add-customer" class="btn btn-primary">
-                                <i class="mdi mdi-plus me-1"></i> Add New Customer
-                            </a>
-                        </div>
-                    </div>
+
 
                     <!-- Customer List -->
                     <div class="row">
@@ -100,7 +93,6 @@
                                                             <th class="border-bottom p-3">Contact Name</th>
                                                             <th class="border-bottom p-3">Phone</th>
                                                             <th class="border-bottom p-3">Email</th>
-                                                            <th class="border-bottom p-3">Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -120,17 +112,6 @@
                                                                 </td>
                                                                 <td class="p-3">
                                                                     ${customer.contactEmail}
-                                                                </td>
-                                                                <td class="p-3">
-                                                                    <a href="${pageContext.request.contextPath}/employee/update-customer?id=${customer.customerId}" 
-                                                                       class="btn btn-icon btn-pills btn-soft-success btn-sm" title="Edit">
-                                                                        <i class="mdi mdi-pencil"></i>
-                                                                    </a>
-                                                                    <a href="${pageContext.request.contextPath}/employee/delete-customer?id=${customer.customerId}" 
-                                                                       class="btn btn-icon btn-pills btn-soft-danger btn-sm" title="Delete" 
-                                                                       onclick="return confirm('Are you sure you want to delete this customer?');">
-                                                                        <i class="mdi mdi-delete"></i>
-                                                                    </a>
                                                                 </td>
                                                             </tr>
                                                         </c:forEach>
@@ -167,10 +148,7 @@
                                         <c:otherwise>
                                             <div class="text-center py-5">
                                                 <i class="mdi mdi-account-multiple-outline h1 text-muted"></i>
-                                                <p class="text-muted mt-3">No customers found. Add your first customer.</p>
-                                                <a href="${pageContext.request.contextPath}/employee/add-customer" class="btn btn-primary mt-3">
-                                                    <i class="mdi mdi-plus me-1"></i> Add Customer
-                                                </a>
+                                                <p class="text-muted mt-3">No customers found.</p>
                                             </div>
                                         </c:otherwise>
                                     </c:choose>

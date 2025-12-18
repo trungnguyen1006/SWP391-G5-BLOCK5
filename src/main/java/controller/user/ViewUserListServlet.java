@@ -46,7 +46,20 @@ public class ViewUserListServlet extends HttpServlet {
         RoleDAO roleDAO = new RoleDAO();
         List<Roles> allRoles = roleDAO.getAllActiveRoles();
         
-        if (roleParam != null && !roleParam.isEmpty()) {
+        boolean hasRoleFilter = roleParam != null && !roleParam.isEmpty();
+        boolean hasStatusFilter = statusParam != null && !statusParam.isEmpty();
+        
+        if (hasRoleFilter && hasStatusFilter) {
+            // Both filters applied
+            try {
+                int roleId = Integer.parseInt(roleParam);
+                totalUsers = userDAO.getTotalUsersWithBothFilters(roleId, statusParam);
+                userList = userDAO.getUsersByPageWithBothFilters(currentPage, PAGE_SIZE, roleId, statusParam);
+            } catch (NumberFormatException e) {
+                totalUsers = userDAO.getTotalUsers();
+                userList = userDAO.getUsersByPage(currentPage, PAGE_SIZE);
+            }
+        } else if (hasRoleFilter) {
             try {
                 int roleId = Integer.parseInt(roleParam);
                 totalUsers = userDAO.getTotalUsersWithRoleFilter(roleId);
@@ -55,7 +68,7 @@ public class ViewUserListServlet extends HttpServlet {
                 totalUsers = userDAO.getTotalUsers();
                 userList = userDAO.getUsersByPage(currentPage, PAGE_SIZE);
             }
-        } else if (statusParam != null && !statusParam.isEmpty()) {
+        } else if (hasStatusFilter) {
             totalUsers = userDAO.getTotalUsersWithFilter(statusParam);
             userList = userDAO.getUsersByPageWithFilter(currentPage, PAGE_SIZE, statusParam);
         } else {
