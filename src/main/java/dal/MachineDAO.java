@@ -222,7 +222,13 @@ public class MachineDAO extends DBContext {
     }
 
     // Add Machine Model
-    public int addMachineModel(MachineModel model) {
+    /**
+     * Thêm machine model mới
+     * @param model - MachineModel object
+     * @return ID của model vừa tạo, hoặc 0 nếu thất bại
+     * @throws SQLException nếu có lỗi database
+     */
+    public int addMachineModel(MachineModel model) throws SQLException {
         String sql = "INSERT INTO MachineModels (ModelCode, ModelName, Brand, Category, Specs, IsActive, CreatedDate) VALUES (?, ?, ?, ?, ?, ?, NOW())";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, model.getModelCode());
@@ -245,6 +251,8 @@ public class MachineDAO extends DBContext {
             System.out.println("DEBUG: SQL State: " + ex.getSQLState());
             System.out.println("DEBUG: Error Code: " + ex.getErrorCode());
             ex.printStackTrace();
+            // Throw exception để servlet có thể catch và thông báo chi tiết
+            throw ex;
         }
         return 0;
     }

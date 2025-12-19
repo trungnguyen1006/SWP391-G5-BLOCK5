@@ -109,7 +109,35 @@ public class AddMachineModelServlet extends HttpServlet {
                 request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
             }
 
+        } catch (java.sql.SQLException sqlEx) {
+            // ===== CATCH SQL EXCEPTION - THÔNG BÁO CHI TIẾT LỖI DATABASE =====
+            String sqlErrorMsg = sqlEx.getMessage();
+            String errorMessage = "❌ Database Error: ";
+            
+            // Phân tích lỗi SQL để thông báo chi tiết
+            if (sqlErrorMsg != null) {
+                if (sqlErrorMsg.contains("Duplicate entry") || sqlErrorMsg.contains("UNIQUE")) {
+                    errorMessage += "Model Code already exists. Please use a different code.";
+                } else if (sqlErrorMsg.contains("Data too long")) {
+                    errorMessage += "One of the fields contains too much data. Please check your input.";
+                } else if (sqlErrorMsg.contains("Column") && sqlErrorMsg.contains("cannot be null")) {
+                    errorMessage += "A required field is missing or empty.";
+                } else if (sqlErrorMsg.contains("Connection")) {
+                    errorMessage += "Cannot connect to database. Please try again later.";
+                } else {
+                    errorMessage += sqlErrorMsg;
+                }
+            } else {
+                errorMessage += "Unknown database error occurred.";
+            }
+            
+            System.out.println("DEBUG: SQL Error - " + sqlErrorMsg);
+            sqlEx.printStackTrace();
+            request.setAttribute("errorMessage", errorMessage);
+            request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
+            
         } catch (Exception e) {
+            // ===== CATCH OTHER EXCEPTIONS =====
             e.printStackTrace();
             String errorMsg = e.getMessage() != null ? e.getMessage() : "Unknown error occurred";
             request.setAttribute("errorMessage", "❌ Error: " + errorMsg);
