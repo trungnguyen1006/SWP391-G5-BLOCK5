@@ -26,13 +26,17 @@ public class DashboardEmployeeServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
+        System.out.println("DEBUG DashboardEmployeeServlet: session=" + (session != null ? session.getId() : "null"));
         if (session == null) {
+            System.out.println("DEBUG DashboardEmployeeServlet: Session is null, redirecting to login");
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
         Users u = (Users) session.getAttribute("user");
+        System.out.println("DEBUG DashboardEmployeeServlet: user=" + (u != null ? u.getUsername() : "null"));
         if (u == null) {
+            System.out.println("DEBUG DashboardEmployeeServlet: User is null, redirecting to login");
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }

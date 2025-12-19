@@ -79,11 +79,14 @@ public class AuthenticationFilter implements Filter {
         }
 
         // Check role access
+        System.out.println("DEBUG AuthFilter: path=" + path + ", userRole=" + userRole);
         if (!hasAccessToPath(path, userRole)) {
+            System.out.println("DEBUG AuthFilter: Access denied for path=" + path + ", role=" + userRole);
             httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
             return;
         }
 
+        System.out.println("DEBUG AuthFilter: Access granted for path=" + path + ", role=" + userRole);
         chain.doFilter(request, response);
     }
 

@@ -1,6 +1,8 @@
 package controller.user;
 
 import controller.common.PasswordHasher;
+import dal.CustomerDAO;
+import dal.EmployeeDAO;
 import dal.RoleDAO;
 import dal.UserDAO;
 import jakarta.servlet.ServletException;
@@ -10,6 +12,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import model.Customers;
+import model.Employee;
 import model.Roles;
 import model.Users;
 import util.FileUploadUtil;
@@ -31,6 +35,8 @@ public class UpdateUserServlet extends HttpServlet {
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
+    private final CustomerDAO customerDAO = new CustomerDAO();
+    private final EmployeeDAO employeeDAO = new EmployeeDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -177,6 +183,35 @@ public class UpdateUserServlet extends HttpServlet {
                 if (selectedRole != null && selectedRole.isActive()) {
                     roleDAO.removeAllUserRoles(userId);
                     roleDAO.assignDefaultRole(userId, assignedRoleId);
+                    
+                    // If role is CUSTOMER, create customer record if not exists
+                    if ("CUSTOMER".equalsIgnoreCase(selectedRole.getRoleName())) {
+                        Customers existingCustomer = customerDAO.getCustomerByUserId(userId);
+                        if (existingCustomer == null) {
+                            Customers customer = new Customers();
+                            customer.setUserId(userId);
+                            customer.setCustomerCode("CUST" + userId);
+                            customer.setCustomerName(fullName);
+                            customer.setContactEmail(email);
+                            customer.setContactPhone(phone);
+                            customer.setActive(true);
+                            customerDAO.createCustomer(customer);
+                        }
+                    }
+                    
+                    // If role is EMPLOYEE, create employee record if not exists
+                    if ("EMPLOYEE".equalsIgnoreCase(selectedRole.getRoleName())) {
+                        Employee existingEmployee = employeeDAO.getEmployeebyUserId(userId);
+                        if (existingEmployee == null) {
+                            Employee employee = new Employee();
+                            employee.setUserId(userId);
+                            employee.setEmployeeCode("EMP" + userId);
+                            employee.setEmployeeName(fullName);
+                            employee.setActive(true);
+                            employeeDAO.createEmployee(employee);
+                        }
+                    }
+                    
                     response.sendRedirect(request.getContextPath() + "/admin/user-list?updated=true");
                 } else {
                     request.setAttribute("errorMessage", "Selected role is not active. Please select an active role.");

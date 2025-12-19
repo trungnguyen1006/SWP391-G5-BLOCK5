@@ -66,6 +66,12 @@ public class LoginServlet extends HttpServlet {
 
                 List<Roles> userRoles = roleDAO.getRolesByUserId(user.getUserId());
                 
+                // If no roles found, assign CUSTOMER role as default
+                if (userRoles == null || userRoles.isEmpty()) {
+                    roleDAO.assignDefaultRole(user.getUserId(), 4); // Role ID 4 for CUSTOMER
+                    userRoles = roleDAO.getRolesByUserId(user.getUserId());
+                }
+                
                 // Check if all roles are inactive
                 boolean hasActiveRole = false;
                 if (userRoles != null && !userRoles.isEmpty()) {
@@ -80,43 +86,40 @@ public class LoginServlet extends HttpServlet {
                 if (!hasActiveRole && userRoles != null && !userRoles.isEmpty()) {
                     errorMessage = "Your roles have been deactivated. Please contact administrator.";
                 } else {
+                    // Ensure user has only 1 active role
+                    if (userRoles != null && userRoles.size() > 1) {
+                        // Keep only the first active role
+                        Roles primaryRole = null;
+                        for (Roles role : userRoles) {
+                            if (role.isActive()) {
+                                primaryRole = role;
+                                break;
+                            }
+                        }
+                        if (primaryRole != null) {
+                            userRoles.clear();
+                            userRoles.add(primaryRole);
+                        }
+                    }
+                    
+                    // Create session with final roles
                     HttpSession session = request.getSession();
                     session.setAttribute("user", user);
                     session.setAttribute("roles", userRoles);
+                    System.out.println("DEBUG LoginServlet: Session set - user=" + user.getUsername() + ", roles=" + (userRoles != null ? userRoles.size() : 0));
 
-                if ("on".equals(rememberMe)) {
-                    Cookie usernameCookie = new Cookie("rememberedUsername", username);
-                    usernameCookie.setMaxAge(30 * 24 * 60 * 60);
-                    usernameCookie.setPath(request.getContextPath() + "/");
-                    response.addCookie(usernameCookie);
-                } else {
-                    Cookie usernameCookie = new Cookie("rememberedUsername", "");
-                    usernameCookie.setMaxAge(0);
-                    usernameCookie.setPath(request.getContextPath() + "/");
-                    response.addCookie(usernameCookie);
-                }
-
-                // If no roles found, assign CUSTOMER role as default
-                if (userRoles == null || userRoles.isEmpty()) {
-                    roleDAO.assignDefaultRole(user.getUserId(), 4); // Role ID 4 for CUSTOMER
-                    userRoles = roleDAO.getRolesByUserId(user.getUserId());
-                }
-                
-                // Ensure user has only 1 active role
-                if (userRoles != null && userRoles.size() > 1) {
-                    // Keep only the first active role
-                    Roles primaryRole = null;
-                    for (Roles role : userRoles) {
-                        if (role.isActive()) {
-                            primaryRole = role;
-                            break;
-                        }
+                    // Handle remember me cookie
+                    if ("on".equals(rememberMe)) {
+                        Cookie usernameCookie = new Cookie("rememberedUsername", username);
+                        usernameCookie.setMaxAge(30 * 24 * 60 * 60);
+                        usernameCookie.setPath(request.getContextPath() + "/");
+                        response.addCookie(usernameCookie);
+                    } else {
+                        Cookie usernameCookie = new Cookie("rememberedUsername", "");
+                        usernameCookie.setMaxAge(0);
+                        usernameCookie.setPath(request.getContextPath() + "/");
+                        response.addCookie(usernameCookie);
                     }
-                    if (primaryRole != null) {
-                        userRoles.clear();
-                        userRoles.add(primaryRole);
-                    }
-                }
                     
                     String redirectUrl = getRedirectUrlByRole(userRoles);
                     response.sendRedirect(request.getContextPath() + redirectUrl);

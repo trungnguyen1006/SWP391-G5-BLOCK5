@@ -1,6 +1,8 @@
 package controller.user;
 
 import controller.common.PasswordHasher;
+import dal.CustomerDAO;
+import dal.EmployeeDAO;
 import dal.RoleDAO;
 import dal.UserDAO;
 import jakarta.servlet.ServletException;
@@ -10,6 +12,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import model.Customers;
+import model.Employee;
 import model.Roles;
 import model.Users;
 import util.FileUploadUtil;
@@ -31,6 +35,8 @@ public class AddUserServlet extends HttpServlet {
 
     private final UserDAO userDAO = new UserDAO();
     private final RoleDAO roleDAO = new RoleDAO();
+    private final CustomerDAO customerDAO = new CustomerDAO();
+    private final EmployeeDAO employeeDAO = new EmployeeDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -148,6 +154,29 @@ public class AddUserServlet extends HttpServlet {
             // Only assign role if it's active
             if (selectedRole != null && selectedRole.isActive()) {
                 roleDAO.assignDefaultRole(newUserId, assignedRoleId);
+                
+                // If role is CUSTOMER, create customer record
+                if ("CUSTOMER".equalsIgnoreCase(selectedRole.getRoleName())) {
+                    Customers customer = new Customers();
+                    customer.setUserId(newUserId);
+                    customer.setCustomerCode("CUST" + newUserId);
+                    customer.setCustomerName(fullName);
+                    customer.setContactEmail(email);
+                    customer.setContactPhone(phone);
+                    customer.setActive(true);
+                    customerDAO.createCustomer(customer);
+                }
+                
+                // If role is EMPLOYEE, create employee record
+                if ("EMPLOYEE".equalsIgnoreCase(selectedRole.getRoleName())) {
+                    Employee employee = new Employee();
+                    employee.setUserId(newUserId);
+                    employee.setEmployeeCode("EMP" + newUserId);
+                    employee.setEmployeeName(fullName);
+                    employee.setActive(true);
+                    employeeDAO.createEmployee(employee);
+                }
+                
                 response.sendRedirect(request.getContextPath() + "/admin/user-list?added=true");
             } else {
                 request.setAttribute("errorMessage", "Selected role is not active. Please select an active role.");
