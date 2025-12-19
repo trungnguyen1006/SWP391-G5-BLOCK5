@@ -11,6 +11,16 @@ import model.Roles;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * AuthenticationFilter - Kiểm tra quyền truy cập dựa trên role
+ * 
+ * Luồng:
+ * 1. Kiểm tra request có cần login không (public pages)
+ * 2. Kiểm tra session có user không
+ * 3. Kiểm tra user có active role không
+ * 4. Kiểm tra role có quyền truy cập path không
+ * 5. Cho phép hoặc từ chối request
+ */
 @WebFilter(urlPatterns = {"/*"})
 public class AuthenticationFilter implements Filter {
 
@@ -26,18 +36,14 @@ public class AuthenticationFilter implements Filter {
         String contextPath = httpRequest.getContextPath();
         String path = requestURI.substring(contextPath.length());
 
-        // Các trang không cần login
-        if (path.equals("/") || path.equals("/login") || path.equals("/register") || path.equals("/logout") || path.equals("/common/homepage.jsp") || 
-            path.startsWith("/assets/") || path.startsWith("/uploads/") || path.startsWith("/common/") || path.equals("/ForgotPassword.jsp") || 
-            path.equals("/changePassword.jsp") || path.equals("/access-denied.jsp")) {
+        // ===== BƯỚC 1: Kiểm tra trang public (không cần login) =====
+        if (isPublicPage(path)) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Các trang có thể truy cập bởi tất cả users đã login (không cần kiểm tra role)
-        if (path.equals("/profile") || path.equals("/change-password") || path.equals("/edit-profile") || 
-            path.equals("/changePassword")) {
-            // Kiểm tra session
+        // ===== BƯỚC 2: Kiểm tra trang chung (tất cả users đã login) =====
+        if (isCommonPage(path)) {
             if (session == null || session.getAttribute("user") == null) {
                 httpResponse.sendRedirect(contextPath + "/login");
                 return;
@@ -46,7 +52,7 @@ public class AuthenticationFilter implements Filter {
             return;
         }
 
-        // Kiểm tra session
+        // ===== BƯỚC 3: Kiểm tra session =====
         if (session == null || session.getAttribute("user") == null) {
             httpResponse.sendRedirect(contextPath + "/login");
             return;
@@ -55,7 +61,7 @@ public class AuthenticationFilter implements Filter {
         Users user = (Users) session.getAttribute("user");
         List<Roles> roles = (List<Roles>) session.getAttribute("roles");
 
-        // Kiểm tra role có active không
+        // ===== BƯỚC 4: Kiểm tra role active =====
         if (roles == null || roles.isEmpty()) {
             session.invalidate();
             httpResponse.sendRedirect(contextPath + "/login");
@@ -78,51 +84,72 @@ public class AuthenticationFilter implements Filter {
             return;
         }
 
-        // Check role access
-        System.out.println("DEBUG AuthFilter: path=" + path + ", userRole=" + userRole);
+        // ===== BƯỚC 5: Kiểm tra quyền truy cập path =====
         if (!hasAccessToPath(path, userRole)) {
-            System.out.println("DEBUG AuthFilter: Access denied for path=" + path + ", role=" + userRole);
             httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
             return;
         }
 
-        System.out.println("DEBUG AuthFilter: Access granted for path=" + path + ", role=" + userRole);
+        // ===== BƯỚC 6: Cho phép request =====
         chain.doFilter(request, response);
     }
 
+    /**
+     * Kiểm tra trang có phải public (không cần login) không
+     */
+    private boolean isPublicPage(String path) {
+        return path.equals("/") || 
+               path.equals("/login") || 
+               path.equals("/register") || 
+               path.equals("/logout") || 
+               path.equals("/common/homepage.jsp") || 
+               path.startsWith("/assets/") || 
+               path.startsWith("/uploads/") || 
+               path.startsWith("/common/") || 
+               path.equals("/ForgotPassword.jsp") || 
+               path.equals("/changePassword.jsp") || 
+               path.equals("/access-denied.jsp");
+    }
+
+    /**
+     * Kiểm tra trang có phải chung (tất cả users đã login) không
+     */
+    private boolean isCommonPage(String path) {
+        return path.equals("/profile") || 
+               path.equals("/change-password") || 
+               path.equals("/edit-profile") || 
+               path.equals("/changePassword");
+    }
+
+    /**
+     * Kiểm tra role có quyền truy cập path không
+     * 
+     * Quy tắc:
+     * - ADMIN: /admin, /common
+     * - MANAGER: /mgr, /common
+     * - EMPLOYEE: /employee, /common
+     * - CUSTOMER: /customer, /common
+     */
     private boolean hasAccessToPath(String path, String role) {
-        if (role == null) {
-            return false;
-        }
+        if (role == null) return false;
 
-        // ADMIN - có quyền truy cập /admin
-        if (role.equals("ADMIN")) {
-            return path.startsWith("/admin") || path.startsWith("/common");
+        switch (role) {
+            case "ADMIN":
+                return path.startsWith("/admin") || path.startsWith("/common");
+            case "MANAGER":
+                return path.startsWith("/mgr") || path.startsWith("/common");
+            case "EMPLOYEE":
+                return path.startsWith("/employee") || path.startsWith("/common");
+            case "CUSTOMER":
+                return path.startsWith("/customer") || path.startsWith("/common");
+            default:
+                return false;
         }
-
-        // MANAGER - có quyền truy cập /mgr
-        if (role.equals("MANAGER")) {
-            return path.startsWith("/mgr") || path.startsWith("/common");
-        }
-
-        // EMPLOYEE - có quyền truy cập /employee
-        if (role.equals("EMPLOYEE")) {
-            return path.startsWith("/employee") || path.startsWith("/common");
-        }
-
-        // CUSTOMER - có quyền truy cập /customer
-        if (role.equals("CUSTOMER")) {
-            return path.startsWith("/customer") || path.startsWith("/common");
-        }
-
-        return false;
     }
 
     @Override
-    public void init(FilterConfig config) throws ServletException {
-    }
+    public void init(FilterConfig config) throws ServletException {}
 
     @Override
-    public void destroy() {
-    }
+    public void destroy() {}
 }

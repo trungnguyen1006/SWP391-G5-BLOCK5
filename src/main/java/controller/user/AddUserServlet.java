@@ -22,6 +22,17 @@ import util.Validator;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * AddUserServlet - Tạo user mới
+ * 
+ * Luồng:
+ * 1. Validate input (fullName, email, username, password, role)
+ * 2. Tạo user trong bảng Users
+ * 3. Assign role cho user
+ * 4. Nếu role là CUSTOMER → tạo customer record
+ * 5. Nếu role là EMPLOYEE → tạo employee record
+ * 6. Redirect đến user list
+ */
 @WebServlet(name = "AddUserServlet", urlPatterns = {"/admin/add-user"})
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024 * 1,
@@ -38,19 +49,25 @@ public class AddUserServlet extends HttpServlet {
     private final CustomerDAO customerDAO = new CustomerDAO();
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
 
+    /**
+     * GET: Hiển thị form thêm user
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         List<Roles> allRoles = roleDAO.getAllRoles();
         request.setAttribute("allRoles", allRoles);
         request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
     }
 
+    /**
+     * POST: Xử lý tạo user mới
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Lấy dữ liệu từ form
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String username = request.getParameter("username");
@@ -66,6 +83,9 @@ public class AddUserServlet extends HttpServlet {
         List<Roles> allRoles = roleDAO.getAllRoles();
         request.setAttribute("allRoles", allRoles);
 
+        // ===== VALIDATE INPUT =====
+        
+        // Kiểm tra required fields
         if (fullName == null || email == null || username == null || 
             password == null || confirmPassword == null ||
             fullName.trim().isEmpty() || email.trim().isEmpty() || 
@@ -75,54 +95,63 @@ public class AddUserServlet extends HttpServlet {
             return;
         }
 
+        // Validate fullName
         if (!Validator.isValidFullName(fullName)) {
             request.setAttribute("errorMessage", Validator.getFullNameErrorMessage());
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
 
+        // Validate username
         if (!Validator.isValidUsername(username)) {
             request.setAttribute("errorMessage", Validator.getUsernameErrorMessage());
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
 
+        // Validate email
         if (!Validator.isValidEmail(email)) {
             request.setAttribute("errorMessage", Validator.getEmailErrorMessage());
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
 
+        // Validate phone (nếu có)
         if (phone != null && !phone.trim().isEmpty() && !Validator.isValidPhone(phone)) {
             request.setAttribute("errorMessage", Validator.getPhoneErrorMessage());
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
 
+        // Validate password
         if (!Validator.isValidPassword(password)) {
             request.setAttribute("errorMessage", Validator.getPasswordErrorMessage());
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
 
+        // Kiểm tra password match
         if (!password.equals(confirmPassword)) {
             request.setAttribute("errorMessage", "Passwords do not match.");
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
 
+        // Kiểm tra username/email đã tồn tại
         if (userDAO.isUserExists(username, email)) {
             request.setAttribute("errorMessage", "Username or email already exists.");
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
 
+        // Kiểm tra role được chọn
         if (roleId == null || roleId.trim().isEmpty()) {
             request.setAttribute("errorMessage", "Please select a role.");
             request.getRequestDispatcher(ADD_USER_PAGE).forward(request, response);
             return;
         }
 
+        // ===== UPLOAD IMAGE =====
         try {
             if (imagePart != null && imagePart.getSize() > 0) {
                 String realPath = getServletContext().getRealPath("/");
@@ -136,6 +165,7 @@ public class AddUserServlet extends HttpServlet {
             return;
         }
 
+        // ===== TẠO USER =====
         Users newUser = new Users();
         newUser.setUsername(username);
         newUser.setEmail(email);
@@ -151,11 +181,12 @@ public class AddUserServlet extends HttpServlet {
             int assignedRoleId = Integer.parseInt(roleId);
             Roles selectedRole = roleDAO.findRoleById(assignedRoleId);
             
-            // Only assign role if it's active
+            // Kiểm tra role active
             if (selectedRole != null && selectedRole.isActive()) {
+                // Assign role
                 roleDAO.assignDefaultRole(newUserId, assignedRoleId);
                 
-                // If role is CUSTOMER, create customer record
+                // ===== TẠO CUSTOMER RECORD (nếu role là CUSTOMER) =====
                 if ("CUSTOMER".equalsIgnoreCase(selectedRole.getRoleName())) {
                     Customers customer = new Customers();
                     customer.setUserId(newUserId);
@@ -167,7 +198,7 @@ public class AddUserServlet extends HttpServlet {
                     customerDAO.createCustomer(customer);
                 }
                 
-                // If role is EMPLOYEE, create employee record
+                // ===== TẠO EMPLOYEE RECORD (nếu role là EMPLOYEE) =====
                 if ("EMPLOYEE".equalsIgnoreCase(selectedRole.getRoleName())) {
                     Employee employee = new Employee();
                     employee.setUserId(newUserId);

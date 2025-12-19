@@ -28,15 +28,33 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+/**
+ * ExportContractPdfServlet - Xuất hợp đồng thành PDF
+ * 
+ * Luồng:
+ * 1. Lấy contractId từ parameter
+ * 2. Lấy contract từ database
+ * 3. Tạo PDF với iText7
+ * 4. Hiển thị thông tin hợp đồng, danh sách máy, tổng tiền
+ * 5. Thêm phần ký tên (Company, Customer, Date)
+ * 6. Download PDF
+ * 
+ * Ngôn ngữ: Tiếng Anh
+ * Tiền tệ: USD ($)
+ */
 @WebServlet(name = "ExportContractPdfServlet", urlPatterns = {"/employee/export-contract-pdf"})
 public class ExportContractPdfServlet extends HttpServlet {
 
     private final ContractDAO contractDAO = new ContractDAO();
 
+    /**
+     * GET: Xuất hợp đồng thành PDF
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // ===== LẤY USER TỪ SESSION =====
         HttpSession session = request.getSession();
         Users currentUser = (Users) session.getAttribute("user");
 
@@ -45,6 +63,7 @@ public class ExportContractPdfServlet extends HttpServlet {
             return;
         }
 
+        // ===== LẤY CONTRACT ID =====
         String contractIdStr = request.getParameter("contractId");
         if (contractIdStr == null || contractIdStr.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Contract ID is required");
@@ -60,12 +79,12 @@ public class ExportContractPdfServlet extends HttpServlet {
                 return;
             }
 
-            // Set response headers for PDF download
+            // ===== SET RESPONSE HEADERS =====
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", 
                 "attachment; filename=\"Contract_" + contract.getContractCode() + ".pdf\"");
 
-            // Generate PDF
+            // ===== GENERATE PDF =====
             OutputStream out = response.getOutputStream();
             generatePdf(contract, out);
             out.flush();
@@ -79,16 +98,29 @@ public class ExportContractPdfServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Tạo PDF từ contract object
+     * 
+     * Cấu trúc PDF:
+     * 1. Tiêu đề: MACHINE RENTAL CONTRACT
+     * 2. Contract Code
+     * 3. Contract Information (Customer, Location, Dates, Status)
+     * 4. Machine List (Table với Serial, Model, Brand, Dates, Price, Deposit)
+     * 5. Tổng tiền (Total Price + Total Deposit)
+     * 6. Notes (nếu có)
+     * 7. Signature Section (Company, Customer, Date)
+     * 8. Footer
+     */
     private void generatePdf(Contract contract, OutputStream out) throws Exception {
         PdfWriter writer = new PdfWriter(out);
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc);
 
-        // Set font with Vietnamese support
+        // ===== SETUP FONTS =====
         PdfFont font = PdfFontFactory.createFont("Helvetica");
         PdfFont boldFont = PdfFontFactory.createFont("Helvetica-Bold");
 
-        // Title
+        // ===== TITLE =====
         Paragraph title = new Paragraph("MACHINE RENTAL CONTRACT")
                 .setFont(boldFont)
                 .setFontSize(18)
@@ -96,14 +128,14 @@ public class ExportContractPdfServlet extends HttpServlet {
                 .setMarginBottom(20);
         document.add(title);
 
-        // Contract Code
+        // ===== CONTRACT CODE =====
         Paragraph code = new Paragraph("Contract Code: " + contract.getContractCode())
                 .setFont(font)
                 .setFontSize(11)
                 .setMarginBottom(15);
         document.add(code);
 
-        // Contract Information Section
+        // ===== CONTRACT INFORMATION SECTION =====
         Paragraph infoTitle = new Paragraph("CONTRACT INFORMATION")
                 .setFont(boldFont)
                 .setFontSize(12)
@@ -123,7 +155,7 @@ public class ExportContractPdfServlet extends HttpServlet {
 
         document.add(infoTable);
 
-        // Machines Section
+        // ===== MACHINE LIST SECTION =====
         Paragraph machineTitle = new Paragraph("MACHINE LIST")
                 .setFont(boldFont)
                 .setFontSize(12)
@@ -135,7 +167,7 @@ public class ExportContractPdfServlet extends HttpServlet {
             machineTable.setWidth(UnitValue.createPercentValue(100));
             machineTable.setMarginBottom(15);
 
-            // Header
+            // ===== TABLE HEADER =====
             addHeaderCell(machineTable, "Serial Number", boldFont);
             addHeaderCell(machineTable, "Model", boldFont);
             addHeaderCell(machineTable, "Brand", boldFont);
@@ -144,11 +176,10 @@ public class ExportContractPdfServlet extends HttpServlet {
             addHeaderCell(machineTable, "Rental Price", boldFont);
             addHeaderCell(machineTable, "Deposit", boldFont);
 
-            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-
             BigDecimal totalPrice = BigDecimal.ZERO;
             BigDecimal totalDeposit = BigDecimal.ZERO;
 
+            // ===== TABLE DATA ROWS =====
             for (ContractItem item : contract.getContractItems()) {
                 addDataCell(machineTable, item.getSerialNumber(), font);
                 addDataCell(machineTable, item.getModelName(), font);
@@ -162,7 +193,7 @@ public class ExportContractPdfServlet extends HttpServlet {
                 totalDeposit = totalDeposit.add(item.getDeposit());
             }
 
-            // Total row
+            // ===== TOTAL ROW =====
             Cell totalCell = new Cell(1, 5)
                     .add(new Paragraph("TOTAL").setFont(boldFont))
                     .setTextAlignment(TextAlignment.RIGHT);
@@ -178,7 +209,7 @@ public class ExportContractPdfServlet extends HttpServlet {
             document.add(noMachines);
         }
 
-        // Note Section
+        // ===== NOTES SECTION =====
         if (contract.getNote() != null && !contract.getNote().isEmpty()) {
             Paragraph noteTitle = new Paragraph("NOTES")
                     .setFont(boldFont)
@@ -192,7 +223,7 @@ public class ExportContractPdfServlet extends HttpServlet {
             document.add(note);
         }
 
-        // Signature Section
+        // ===== SIGNATURE SECTION =====
         document.add(new Paragraph("\n\n").setMarginTop(30));
         
         Paragraph signatureTitle = new Paragraph("AUTHORIZED SIGNATURES")
@@ -205,7 +236,7 @@ public class ExportContractPdfServlet extends HttpServlet {
         signatureTable.setWidth(UnitValue.createPercentValue(100));
         signatureTable.setMarginBottom(15);
 
-        // Signature cells
+        // Company Representative
         Cell companyCell = new Cell()
                 .add(new Paragraph("COMPANY REPRESENTATIVE").setFont(boldFont).setTextAlignment(TextAlignment.CENTER))
                 .add(new Paragraph("\n\n\n").setFont(font))
@@ -213,6 +244,7 @@ public class ExportContractPdfServlet extends HttpServlet {
                 .add(new Paragraph("Name & Signature").setFont(font).setTextAlignment(TextAlignment.CENTER).setFontSize(9));
         signatureTable.addCell(companyCell);
 
+        // Customer Representative
         Cell customerCell = new Cell()
                 .add(new Paragraph("CUSTOMER REPRESENTATIVE").setFont(boldFont).setTextAlignment(TextAlignment.CENTER))
                 .add(new Paragraph("\n\n\n").setFont(font))
@@ -220,6 +252,7 @@ public class ExportContractPdfServlet extends HttpServlet {
                 .add(new Paragraph("Name & Signature").setFont(font).setTextAlignment(TextAlignment.CENTER).setFontSize(9));
         signatureTable.addCell(customerCell);
 
+        // Date
         Cell dateCell = new Cell()
                 .add(new Paragraph("DATE").setFont(boldFont).setTextAlignment(TextAlignment.CENTER))
                 .add(new Paragraph("\n\n\n").setFont(font))
@@ -229,7 +262,7 @@ public class ExportContractPdfServlet extends HttpServlet {
 
         document.add(signatureTable);
 
-        // Footer
+        // ===== FOOTER =====
         document.add(new Paragraph("\n"));
         Paragraph footer = new Paragraph("This document is automatically generated. Please contact the company for confirmation.")
                 .setFont(font)

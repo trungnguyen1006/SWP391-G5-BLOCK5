@@ -22,6 +22,16 @@ import util.Validator;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * UpdateUserServlet - Cập nhật thông tin user
+ * 
+ * Luồng:
+ * 1. GET: Lấy user theo ID, hiển thị form edit
+ * 2. POST: Validate input, cập nhật user
+ * 3. Nếu role thay đổi thành CUSTOMER → tạo customer record nếu chưa có
+ * 4. Nếu role thay đổi thành EMPLOYEE → tạo employee record nếu chưa có
+ * 5. Redirect đến user list
+ */
 @WebServlet(name = "UpdateUserServlet", urlPatterns = {"/admin/update-user"})
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024 * 1,
@@ -38,12 +48,17 @@ public class UpdateUserServlet extends HttpServlet {
     private final CustomerDAO customerDAO = new CustomerDAO();
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
 
+    /**
+     * GET: Hiển thị form edit user
+     * Lấy user theo ID từ parameter, load tất cả roles và roles của user
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String userIdParam = request.getParameter("id");
 
+        // Kiểm tra ID parameter
         if (userIdParam == null || userIdParam.isEmpty()) {
             response.sendRedirect(request.getContextPath() + USER_LIST_URL);
             return;
@@ -53,11 +68,13 @@ public class UpdateUserServlet extends HttpServlet {
             int userId = Integer.parseInt(userIdParam);
             Users user = userDAO.findUserById(userId);
 
+            // Kiểm tra user tồn tại
             if (user == null) {
                 response.sendRedirect(request.getContextPath() + USER_LIST_URL);
                 return;
             }
 
+            // Lấy tất cả roles và roles của user
             List<Roles> allRoles = roleDAO.getAllRoles();
             List<Roles> userRoles = roleDAO.getRolesByUserId(userId);
 
@@ -71,10 +88,14 @@ public class UpdateUserServlet extends HttpServlet {
         }
     }
 
+    /**
+     * POST: Xử lý cập nhật user
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Lấy dữ liệu từ form
         String userIdParam = request.getParameter("userId");
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
@@ -91,63 +112,73 @@ public class UpdateUserServlet extends HttpServlet {
             int userId = Integer.parseInt(userIdParam);
             Users user = userDAO.findUserById(userId);
 
+            // Kiểm tra user tồn tại
             if (user == null) {
                 response.sendRedirect(request.getContextPath() + USER_LIST_URL);
                 return;
             }
 
+            // Chuẩn bị dữ liệu cho form nếu có lỗi
             List<Roles> allRoles = roleDAO.getAllRoles();
             List<Roles> userRoles = roleDAO.getRolesByUserId(userId);
             request.setAttribute("user", user);
             request.setAttribute("allRoles", allRoles);
             request.setAttribute("userRoles", userRoles);
 
+            // ===== VALIDATE INPUT =====
+
+            // Kiểm tra required fields
             if (fullName == null || email == null || fullName.trim().isEmpty() || email.trim().isEmpty()) {
                 request.setAttribute("errorMessage", "Full name and email are required.");
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                 return;
             }
 
+            // Validate fullName
             if (!Validator.isValidFullName(fullName)) {
                 request.setAttribute("errorMessage", Validator.getFullNameErrorMessage());
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                 return;
             }
 
+            // Validate email
             if (!Validator.isValidEmail(email)) {
                 request.setAttribute("errorMessage", Validator.getEmailErrorMessage());
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                 return;
             }
 
+            // Validate phone (nếu có)
             if (phone != null && !phone.trim().isEmpty() && !Validator.isValidPhone(phone)) {
                 request.setAttribute("errorMessage", Validator.getPhoneErrorMessage());
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                 return;
             }
 
+            // Kiểm tra email đã tồn tại cho user khác
             if (userDAO.isEmailExistsForOtherUser(email, userId)) {
                 request.setAttribute("errorMessage", "Email already exists for another user.");
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                 return;
             }
 
-            // Password change is disabled - do not allow password updates
-            // Password fields are ignored in admin user management
+            // Ghi chú: Password change bị disable - không cho phép cập nhật password từ admin
 
+            // Kiểm tra role được chọn
             if (roleId == null || roleId.trim().isEmpty()) {
                 request.setAttribute("errorMessage", "Please select a role.");
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                 return;
             }
 
-            // Check if trying to assign Admin role (roleId = 1)
+            // Không cho phép assign Admin role
             if (roleId.equals("1")) {
                 request.setAttribute("errorMessage", "Cannot assign Admin role to users.");
                 request.getRequestDispatcher(UPDATE_USER_PAGE).forward(request, response);
                 return;
             }
 
+            // ===== UPLOAD IMAGE =====
             try {
                 if (imagePart != null && imagePart.getSize() > 0) {
                     String realPath = getServletContext().getRealPath("/");
@@ -155,6 +186,7 @@ public class UpdateUserServlet extends HttpServlet {
                     String uploadPath = webappPath + "uploads";
                     newImagePath = FileUploadUtil.saveFile(imagePart, uploadPath);
                     
+                    // Xóa ảnh cũ nếu có
                     if (user.getImage() != null && !user.getImage().isEmpty()) {
                         FileUploadUtil.deleteFile(user.getImage(), webappPath);
                     }
@@ -165,6 +197,7 @@ public class UpdateUserServlet extends HttpServlet {
                 return;
             }
 
+            // ===== CẬP NHẬT USER =====
             user.setFullName(fullName);
             user.setEmail(email);
             user.setPhone(phone);
@@ -179,12 +212,13 @@ public class UpdateUserServlet extends HttpServlet {
                 int assignedRoleId = Integer.parseInt(roleId);
                 Roles selectedRole = roleDAO.findRoleById(assignedRoleId);
                 
-                // Only assign role if it's active
+                // Kiểm tra role active
                 if (selectedRole != null && selectedRole.isActive()) {
+                    // Xóa tất cả roles cũ, assign role mới
                     roleDAO.removeAllUserRoles(userId);
                     roleDAO.assignDefaultRole(userId, assignedRoleId);
                     
-                    // If role is CUSTOMER, create customer record if not exists
+                    // ===== TẠO CUSTOMER RECORD (nếu role là CUSTOMER) =====
                     if ("CUSTOMER".equalsIgnoreCase(selectedRole.getRoleName())) {
                         Customers existingCustomer = customerDAO.getCustomerByUserId(userId);
                         if (existingCustomer == null) {
@@ -199,7 +233,7 @@ public class UpdateUserServlet extends HttpServlet {
                         }
                     }
                     
-                    // If role is EMPLOYEE, create employee record if not exists
+                    // ===== TẠO EMPLOYEE RECORD (nếu role là EMPLOYEE) =====
                     if ("EMPLOYEE".equalsIgnoreCase(selectedRole.getRoleName())) {
                         Employee existingEmployee = employeeDAO.getEmployeebyUserId(userId);
                         if (existingEmployee == null) {

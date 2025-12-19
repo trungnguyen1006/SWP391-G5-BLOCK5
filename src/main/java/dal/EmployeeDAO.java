@@ -12,10 +12,19 @@ import java.sql.Types;
 import model.Employee;
 
 /**
- *
- * @author Administrator
+ * EmployeeDAO - Quản lý dữ liệu Employee
+ * 
+ * Chức năng:
+ * - Lấy employee theo userId
+ * - Tạo employee record mới
  */
-public class EmployeeDAO extends DBContext{
+public class EmployeeDAO extends DBContext {
+    
+    /**
+     * Lấy employee theo userId
+     * @param userID - ID của user
+     * @return Employee object hoặc null nếu không tìm thấy
+     */
     public Employee getEmployeebyUserId(int userID) {
         String sql = "SELECT * FROM employees WHERE UserId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -38,6 +47,11 @@ public class EmployeeDAO extends DBContext{
         return null;
     }
     
+    /**
+     * Tạo employee record mới
+     * @param employee - Employee object chứa dữ liệu
+     * @return ID của employee vừa tạo, hoặc 0 nếu thất bại
+     */
     public int createEmployee(Employee employee) {
         String sql = "INSERT INTO Employees (UserId, EmployeeCode, EmployeeName, Department, Position, IsActive) " +
                      "VALUES (?, ?, ?, ?, ?, ?)";

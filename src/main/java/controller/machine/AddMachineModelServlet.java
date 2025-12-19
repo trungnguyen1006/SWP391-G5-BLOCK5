@@ -40,10 +40,53 @@ public class AddMachineModelServlet extends HttpServlet {
         List<MachineModel> machineModels = machineDAO.getAllMachineModels();
         request.setAttribute("machineModels", machineModels);
 
-        // Validation
-        if (modelCode == null || modelCode.trim().isEmpty() || 
-            modelName == null || modelName.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Model Code and Model Name are required.");
+        // ===== VALIDATE INPUT - CHI TIẾT CHO TỪNG FIELD =====
+        
+        // Kiểm tra Model Code
+        if (modelCode == null || modelCode.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "❌ Model Code is required. Please enter a model code (e.g., EXC001).");
+            request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
+            return;
+        }
+        
+        // Kiểm tra Model Name
+        if (modelName == null || modelName.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "❌ Model Name is required. Please enter a model name (e.g., Excavator CAT 320D).");
+            request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
+            return;
+        }
+        
+        // Kiểm tra Model Code có chứa số không
+        if (!modelCode.matches(".*\\d.*")) {
+            request.setAttribute("errorMessage", "❌ Model Code must contain at least one number (e.g., EXC001, CAT320).");
+            request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
+            return;
+        }
+        
+        // Kiểm tra độ dài Model Code
+        if (modelCode.trim().length() > 50) {
+            request.setAttribute("errorMessage", "❌ Model Code is too long. Maximum 50 characters allowed.");
+            request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
+            return;
+        }
+        
+        // Kiểm tra độ dài Model Name
+        if (modelName.trim().length() > 100) {
+            request.setAttribute("errorMessage", "❌ Model Name is too long. Maximum 100 characters allowed.");
+            request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
+            return;
+        }
+        
+        // Kiểm tra Brand độ dài
+        if (brand != null && brand.trim().length() > 50) {
+            request.setAttribute("errorMessage", "❌ Brand is too long. Maximum 50 characters allowed.");
+            request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
+            return;
+        }
+        
+        // Kiểm tra Specs độ dài
+        if (specs != null && specs.trim().length() > 500) {
+            request.setAttribute("errorMessage", "❌ Specifications is too long. Maximum 500 characters allowed.");
             request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
             return;
         }
@@ -62,14 +105,14 @@ public class AddMachineModelServlet extends HttpServlet {
             if (newModelId > 0) {
                 response.sendRedirect(request.getContextPath() + "/mgr/add-machine-model?added=true");
             } else {
-                request.setAttribute("errorMessage", "Failed to add machine model. Please try again.");
+                request.setAttribute("errorMessage", "❌ Failed to add machine model. Please try again.");
                 request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             String errorMsg = e.getMessage() != null ? e.getMessage() : "Unknown error occurred";
-            request.setAttribute("errorMessage", "Error: " + errorMsg);
+            request.setAttribute("errorMessage", "❌ Error: " + errorMsg);
             request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
         }
     }
