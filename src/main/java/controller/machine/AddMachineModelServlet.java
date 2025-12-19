@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.MachineModel;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.util.List;
@@ -90,6 +92,35 @@ public class AddMachineModelServlet extends HttpServlet {
             request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
             return;
         }
+        
+        // ===== VALIDATE SPECS - PHẢI LÀ JSON HOẶC NULL =====
+        String specsJson = null;
+        if (specs != null && !specs.trim().isEmpty()) {
+            specs = specs.trim();
+            // Nếu specs không phải JSON format, convert thành JSON object
+            if (!specs.startsWith("{") && !specs.startsWith("[")) {
+                // Nếu là plain text, convert thành JSON object: {"description": "text"}
+                // Escape special characters properly for JSON
+                String escapedSpecs = specs
+                    .replace("\\", "\\\\")  // Escape backslash first
+                    .replace("\"", "\\\"")  // Escape double quotes
+                    .replace("\n", "\\n")   // Escape newlines
+                    .replace("\r", "\\r")   // Escape carriage returns
+                    .replace("\t", "\\t");  // Escape tabs
+                specsJson = "{\"description\": \"" + escapedSpecs + "\"}";
+            } else {
+                // Nếu đã là JSON, validate format using Gson
+                try {
+                    Gson gson = new Gson();
+                    gson.fromJson(specs, Object.class);
+                    specsJson = specs;
+                } catch (JsonSyntaxException e) {
+                    request.setAttribute("errorMessage", "❌ Specifications must be valid JSON format or plain text.");
+                    request.getRequestDispatcher(ADD_MODEL_PAGE).forward(request, response);
+                    return;
+                }
+            }
+        }
 
         try {
             MachineModel model = new MachineModel();
@@ -97,7 +128,7 @@ public class AddMachineModelServlet extends HttpServlet {
             model.setModelName(modelName.trim());
             model.setBrand(brand != null ? brand.trim() : "");
             model.setCategory(category != null ? category.trim() : "");
-            model.setSpecs(specs != null ? specs.trim() : "");
+            model.setSpecs(specsJson != null ? specsJson : "");
             model.setActive(true);
 
             int newModelId = machineDAO.addMachineModel(model);
@@ -124,6 +155,8 @@ public class AddMachineModelServlet extends HttpServlet {
                     errorMessage += "A required field is missing or empty.";
                 } else if (sqlErrorMsg.contains("Connection")) {
                     errorMessage += "Cannot connect to database. Please try again later.";
+                } else if (sqlErrorMsg.contains("Invalid JSON")) {
+                    errorMessage += "Specifications contains invalid JSON format. Please check your input.";
                 } else {
                     errorMessage += sqlErrorMsg;
                 }
